@@ -1,0 +1,49 @@
+{
+  "dashboard": {
+    "title": "5. Prometheus & Monitoring Stack",
+    "tags": ["project"],
+    "timezone": "utc",
+    "refresh": "15s",
+    "panels": [
+      {"id":1,"type":"stat","title":"Prometheus","gridPos":{"h":4,"w":4,"x":0,"y":0},"datasource":{"type":"prometheus","uid":"prometheus"},"targets":[{"expr":"up{job=\"prometheus-kube-prometheus-prometheus\"}","refId":"A"}],"fieldConfig":{"defaults":{"mappings":[{"type":"value","options":{"0":{"text":"DOWN","color":"red"},"1":{"text":"UP","color":"green"}}}],"thresholds":{"steps":[{"value":0,"color":"red"},{"value":1,"color":"green"}]}}}},
+      {"id":2,"type":"stat","title":"Grafana","gridPos":{"h":4,"w":4,"x":4,"y":0},"datasource":{"type":"prometheus","uid":"prometheus"},"targets":[{"expr":"kube_deployment_status_replicas_available{namespace=\"monitoring\",deployment=\"prometheus-grafana\"}","refId":"A"}],"fieldConfig":{"defaults":{"mappings":[{"type":"value","options":{"0":{"text":"DOWN","color":"red"},"1":{"text":"UP","color":"green"}}}],"thresholds":{"steps":[{"value":0,"color":"red"},{"value":1,"color":"green"}]}}}},
+      {"id":3,"type":"stat","title":"AlertManager","gridPos":{"h":4,"w":4,"x":8,"y":0},"datasource":{"type":"prometheus","uid":"prometheus"},"targets":[{"expr":"up{job=\"prometheus-kube-prometheus-alertmanager\"}","refId":"A"}],"fieldConfig":{"defaults":{"mappings":[{"type":"value","options":{"0":{"text":"DOWN","color":"red"},"1":{"text":"UP","color":"green"}}}],"thresholds":{"steps":[{"value":0,"color":"red"},{"value":1,"color":"green"}]}}}},
+      {"id":4,"type":"stat","title":"Loki","gridPos":{"h":4,"w":4,"x":12,"y":0},"datasource":{"type":"prometheus","uid":"prometheus"},"targets":[{"expr":"kube_statefulset_status_replicas_ready{namespace=\"monitoring\",statefulset=\"loki\"}","refId":"A"}],"fieldConfig":{"defaults":{"mappings":[{"type":"value","options":{"0":{"text":"DOWN","color":"red"},"1":{"text":"UP","color":"green"}}}],"thresholds":{"steps":[{"value":0,"color":"red"},{"value":1,"color":"green"}]}}}},
+      {"id":5,"type":"stat","title":"Scrape Targets Up","gridPos":{"h":4,"w":4,"x":16,"y":0},"datasource":{"type":"prometheus","uid":"prometheus"},"targets":[{"expr":"count(up == 1)","refId":"A"}],"fieldConfig":{"defaults":{"thresholds":{"steps":[{"value":0,"color":"red"},{"value":10,"color":"green"}]}}}},
+      {"id":6,"type":"stat","title":"Targets Down","gridPos":{"h":4,"w":4,"x":20,"y":0},"datasource":{"type":"prometheus","uid":"prometheus"},"targets":[{"expr":"count(up == 0) or vector(0)","refId":"A"}],"fieldConfig":{"defaults":{"thresholds":{"steps":[{"value":0,"color":"green"},{"value":1,"color":"red"}]}}}},
+
+      {"id":10,"type":"timeseries","title":"Prometheus CPU & Memory Usage","gridPos":{"h":8,"w":12,"x":0,"y":4},"datasource":{"type":"prometheus","uid":"prometheus"},"targets":[
+        {"expr":"sum(rate(container_cpu_usage_seconds_total{namespace=\"monitoring\",pod=~\"prometheus-prometheus-kube-prometheus-prometheus-.*\"}[5m])) * 1000","legendFormat":"Prometheus CPU (m)","refId":"A"},
+        {"expr":"sum(rate(container_cpu_usage_seconds_total{namespace=\"monitoring\",pod=~\"prometheus-grafana-.*\"}[5m])) * 1000","legendFormat":"Grafana CPU (m)","refId":"B"},
+        {"expr":"sum(rate(container_cpu_usage_seconds_total{namespace=\"monitoring\",pod=~\"loki-.*\",container=\"loki\"}[5m])) * 1000","legendFormat":"Loki CPU (m)","refId":"C"},
+        {"expr":"sum(rate(container_cpu_usage_seconds_total{namespace=\"monitoring\",pod=~\"alertmanager-.*\"}[5m])) * 1000","legendFormat":"AlertManager CPU (m)","refId":"D"}
+      ],"fieldConfig":{"defaults":{"unit":"short","custom":{"lineWidth":2,"fillOpacity":10}}}},
+
+      {"id":11,"type":"timeseries","title":"Monitoring Stack Memory (MB)","gridPos":{"h":8,"w":12,"x":12,"y":4},"datasource":{"type":"prometheus","uid":"prometheus"},"targets":[
+        {"expr":"sum(container_memory_usage_bytes{namespace=\"monitoring\",pod=~\"prometheus-prometheus-kube-prometheus-prometheus-.*\"}) / 1024 / 1024","legendFormat":"Prometheus RAM","refId":"A"},
+        {"expr":"sum(container_memory_usage_bytes{namespace=\"monitoring\",pod=~\"prometheus-grafana-.*\"}) / 1024 / 1024","legendFormat":"Grafana RAM","refId":"B"},
+        {"expr":"sum(container_memory_usage_bytes{namespace=\"monitoring\",pod=~\"loki-.*\",container=\"loki\"}) / 1024 / 1024","legendFormat":"Loki RAM","refId":"C"},
+        {"expr":"sum(container_memory_usage_bytes{namespace=\"monitoring\",pod=~\"alertmanager-.*\"}) / 1024 / 1024","legendFormat":"AlertManager RAM","refId":"D"},
+        {"expr":"sum(container_memory_usage_bytes{namespace=\"monitoring\",pod=~\"ml-predictor-.*\",container=\"ml-predictor\"}) / 1024 / 1024","legendFormat":"ML Predictor RAM","refId":"E"}
+      ],"fieldConfig":{"defaults":{"unit":"decmbytes","custom":{"lineWidth":2,"fillOpacity":10}}}},
+
+      {"id":20,"type":"timeseries","title":"Prometheus Scrape Duration (seconds)","gridPos":{"h":8,"w":12,"x":0,"y":12},"datasource":{"type":"prometheus","uid":"prometheus"},"targets":[
+        {"expr":"scrape_duration_seconds","legendFormat":"{{job}}","refId":"A"}
+      ],"fieldConfig":{"defaults":{"unit":"s","custom":{"lineWidth":1,"fillOpacity":5}}}},
+
+      {"id":21,"type":"timeseries","title":"Prometheus Time Series Count","gridPos":{"h":8,"w":12,"x":12,"y":12},"datasource":{"type":"prometheus","uid":"prometheus"},"targets":[
+        {"expr":"prometheus_tsdb_head_series","legendFormat":"Active Time Series","refId":"A"},
+        {"expr":"rate(prometheus_tsdb_head_samples_appended_total[5m])","legendFormat":"Samples/sec ingested","refId":"B"}
+      ],"fieldConfig":{"defaults":{"custom":{"lineWidth":2,"fillOpacity":10}}}},
+
+      {"id":30,"type":"table","title":"All Scrape Targets","gridPos":{"h":8,"w":24,"x":0,"y":20},"datasource":{"type":"prometheus","uid":"prometheus"},"targets":[
+        {"expr":"up","refId":"A","format":"table","instant":true}
+      ],"transformations":[
+        {"id":"organize","options":{"excludeByName":{"Time":true,"__name__":true,"container":true,"endpoint":true,"namespace":true,"service":true},"renameByName":{"job":"Job","instance":"Target","Value":"Status"}}},
+        {"id":"convertFieldType","options":{"conversions":[{"targetField":"Status","destinationType":"string"}]}}
+      ]}
+    ]
+  },
+  "folderUid": "efheb7xt9jbwge",
+  "overwrite": true
+}

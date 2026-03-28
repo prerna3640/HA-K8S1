@@ -1,0 +1,110 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    argocd.argoproj.io/tracking-id: myapp-gitops:apps/Deployment:myapp/web
+    deployment.kubernetes.io/revision: "7"
+    kubectl.kubernetes.io/last-applied-configuration: "{\"apiVersion\":\"apps/v1\",\"kind\":\"Deployment\",\"metadata\":{\"annotations\":{\"argocd.argoproj.io/tracking-id\":\"myapp-gitops:apps/Deployment:myapp/web\",\"deployment.kubernetes.io/revision\":\"6\"},\"creationTimestamp\":\"2025-09-17T10:41:29Z\",\"generation\":8,\"name\":\"web\",\"namespace\":\"myapp\",\"resourceVersion\":\"37578071\",\"uid\":\"93b47696-d4cb-43f6-8613-69c131734966\"},\"spec\":{\"progressDeadlineSeconds\":600,\"replicas\":2,\"revisionHistoryLimit\":10,\"selector\":{\"matchLabels\":{\"app\":\"web\"}},\"strategy\":{\"rollingUpdate\":{\"maxSurge\":\"25%\",\"maxUnavailable\":\"25%\"},\"type\":\"RollingUpdate\"},\"template\":{\"metadata\":{\"annotations\":{\"kubectl.kubernetes.io/restartedAt\":\"2025-09-22T11:58:12Z\"},\"creationTimestamp\":null,\"labels\":{\"app\":\"web\"}},\"spec\":{\"containers\":[{\"env\":[{\"name\":\"POD_NAME\",\"valueFrom\":{\"fieldRef\":{\"apiVersion\":\"v1\",\"fieldPath\":\"metadata.name\"}}}],\"image\":\"nginx:1.25\",\"imagePullPolicy\":\"IfNotPresent\",\"name\":\"nginx\",\"ports\":[{\"containerPort\":80,\"protocol\":\"TCP\"}],\"resources\":{\"limits\":{\"cpu\":\"200m\"},\"requests\":{\"cpu\":\"100m\"}},\"terminationMessagePath\":\"/dev/termination-log\",\"terminationMessagePolicy\":\"File\",\"volumeMounts\":[{\"mountPath\":\"/usr/share/nginx/html\",\"name\":\"web-content\"}]}],\"dnsPolicy\":\"ClusterFirst\",\"initContainers\":[{\"args\":[\"echo
+      \\\"\\u003chtml\\u003e\\u003chead\\u003e\\u003ctitle\\u003eMy HA Website\\u003c/title\\u003e\\u003c/head\\u003e\\u003cbody\\u003e\\n\\u003ch1\\u003eWelcome
+      to my High Availability Kubernetes Site \U0001F680\\u003c/h1\\u003e\\n\\u003cp\\u003eServed
+      from pod: ${POD_NAME}\\u003c/p\\u003e\\n\\u003c/body\\u003e\\u003c/html\\u003e\\\"
+      \\u003e /work-dir/index.html\\n\"],\"command\":[\"/bin/sh\",\"-c\"],\"env\":[{\"name\":\"POD_NAME\",\"valueFrom\":{\"fieldRef\":{\"apiVersion\":\"v1\",\"fieldPath\":\"metadata.name\"}}}],\"image\":\"busybox\",\"imagePullPolicy\":\"Always\",\"name\":\"init-index\",\"resources\":{},\"terminationMessagePath\":\"/dev/termination-log\",\"terminationMessagePolicy\":\"File\",\"volumeMounts\":[{\"mountPath\":\"/work-dir\",\"name\":\"web-content\"}]}],\"restartPolicy\":\"Always\",\"schedulerName\":\"default-scheduler\",\"securityContext\":{},\"terminationGracePeriodSeconds\":30,\"volumes\":[{\"emptyDir\":{},\"name\":\"web-content\"}]}}},\"status\":{\"availableReplicas\":2,\"conditions\":[{\"lastTransitionTime\":\"2025-09-17T10:41:29Z\",\"lastUpdateTime\":\"2025-12-11T09:51:05Z\",\"message\":\"ReplicaSet
+      \\\"web-6f87855868\\\" has successfully progressed.\",\"reason\":\"NewReplicaSetAvailable\",\"status\":\"True\",\"type\":\"Progressing\"},{\"lastTransitionTime\":\"2026-01-27T09:59:36Z\",\"lastUpdateTime\":\"2026-01-27T09:59:36Z\",\"message\":\"Deployment
+      has minimum availability.\",\"reason\":\"MinimumReplicasAvailable\",\"status\":\"True\",\"type\":\"Available\"}],\"observedGeneration\":8,\"readyReplicas\":2,\"replicas\":2,\"updatedReplicas\":2}}\n"
+  creationTimestamp: "2026-03-25T09:11:28Z"
+  generation: 7
+  name: web
+  namespace: myapp
+  resourceVersion: "58386012"
+  uid: e4769836-a8b7-433a-8374-2a6eab9781a7
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 2
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app: web
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      annotations:
+        kubectl.kubernetes.io/restartedAt: "2026-03-25T09:42:40Z"
+      creationTimestamp: null
+      labels:
+        app: web
+    spec:
+      containers:
+      - env:
+        - name: POD_NAME
+          value: controller-kub
+        - name: RANDOM
+          value: "true"
+        image: nginx:1.25
+        imagePullPolicy: IfNotPresent
+        name: nginx
+        ports:
+        - containerPort: 80
+          protocol: TCP
+        resources:
+          limits:
+            cpu: 200m
+          requests:
+            cpu: 100m
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /usr/share/nginx/html
+          name: web-content
+      dnsPolicy: ClusterFirst
+      initContainers:
+      - args:
+        - 'echo "<html><body><h1>HA Site</h1><p>Pod: ${POD_NAME}</p><p>Time: $(date)</p></body></html>"
+          > /work-dir/index.html'
+        command:
+        - /bin/sh
+        - -c
+        env:
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.name
+        image: busybox
+        imagePullPolicy: Always
+        name: init-index
+        resources: {}
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /work-dir
+          name: web-content
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+      volumes:
+      - emptyDir: {}
+        name: web-content
+status:
+  availableReplicas: 2
+  conditions:
+  - lastTransitionTime: "2026-03-25T09:11:36Z"
+    lastUpdateTime: "2026-03-25T09:11:36Z"
+    message: Deployment has minimum availability.
+    reason: MinimumReplicasAvailable
+    status: "True"
+    type: Available
+  - lastTransitionTime: "2026-03-25T09:11:28Z"
+    lastUpdateTime: "2026-03-25T09:42:57Z"
+    message: ReplicaSet "web-68c8bf98f" has successfully progressed.
+    reason: NewReplicaSetAvailable
+    status: "True"
+    type: Progressing
+  observedGeneration: 7
+  readyReplicas: 2
+  replicas: 2
+  updatedReplicas: 2

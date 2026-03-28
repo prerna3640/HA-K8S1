@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: predictive-scaler
+  namespace: monitoring
+  labels:
+    app: predictive-scaler
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: predictive-scaler
+  template:
+    metadata:
+      labels:
+        app: predictive-scaler
+    spec:
+      serviceAccountName: predictive-scaler
+      nodeSelector:
+        workload: app
+      containers:
+        - name: predictive-scaler
+          image: predictive-scaler:v1.0.0
+          imagePullPolicy: Never
+          env:
+            - name: PREDICTOR_URL
+              value: "http://ml-predictor.monitoring.svc.cluster.local:5000"
+            - name: NAMESPACE
+              value: "myapp"
+            - name: DEPLOYMENT_NAME
+              value: "web"
+            - name: MIN_REPLICAS
+              value: "2"
+            - name: MAX_REPLICAS
+              value: "5"
+            - name: CHECK_INTERVAL_SECONDS
+              value: "60"
+            - name: PREDICTION_HORIZON
+              value: "30"
+          resources:
+            requests:
+              cpu: "50m"
+              memory: "64Mi"
+            limits:
+              cpu: "200m"
+              memory: "128Mi"

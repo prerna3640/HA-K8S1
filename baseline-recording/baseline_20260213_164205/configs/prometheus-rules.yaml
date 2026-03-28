@@ -1,0 +1,118 @@
+apiVersion: v1
+items:
+- apiVersion: monitoring.coreos.com/v1
+  kind: PrometheusRule
+  metadata:
+    annotations:
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"monitoring.coreos.com/v1","kind":"PrometheusRule","metadata":{"annotations":{},"name":"cluster-alert-rules","namespace":"monitoring"},"spec":{"groups":[{"name":"node-alerts","rules":[{"alert":"HighCPUUsage","annotations":{"description":"CPU usage is above 80% on node {{ $labels.instance }}.","summary":"High CPU Usage Detected"},"expr":"(100 - (avg by(instance) (rate(node_cpu_seconds_total{mode=\"idle\"}[2m])) * 100)) \u003e 80","for":"1m","labels":{"severity":"warning"}},{"alert":"HighMemoryUsage","annotations":{"description":"Available memory is below 20% on {{ $labels.instance }}.","summary":"High Memory Usage"},"expr":"(node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes) \u003c 0.2","for":"2m","labels":{"severity":"warning"}},{"alert":"HighMemoryUsage","annotations":{"description":"Available memory is below 20% on {{ $labels.instance }}.","summary":"High Memory Usage"},"expr":"(node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes) \u003c 0.2","for":"2m","labels":{"severity":"warning"}},{"alert":"DiskSpaceLow","annotations":{"description":"Disk space is below 15% on {{ $labels.instance }}. Current: {{ $value | humanizePercentage }}","summary":"Disk Space Low"},"expr":"(node_filesystem_avail_bytes{mountpoint=\"/\"} / node_filesystem_size_bytes{mountpoint=\"/\"}) \u003c 0.15","for":"5m","labels":{"severity":"critical"}},{"alert":"NodeDown","annotations":{"description":"Node {{ $labels.instance }} is unreachable for 3 minutes.","summary":"Node is Down"},"expr":"up{job=\"node-exporter\"} == 0","for":"3m","labels":{"severity":"critical"}}]},{"name":"pod-alerts","rules":[{"alert":"PodCrashLooping","annotations":{"description":"Pod {{ $labels.pod }} in namespace {{ $labels.namespace }} is restarting frequently.","summary":"Pod Crash Looping"},"expr":"rate(kube_pod_container_status_restarts_total[15m]) \u003e 0","for":"5m","labels":{"severity":"critical"}},{"alert":"PodNotReady","annotations":{"description":"Pod {{ $labels.pod }} in {{ $labels.namespace }} has been not ready for 10 minutes.","summary":"Pod Not Ready"},"expr":"kube_pod_status_phase{phase!=\"Running\",phase!=\"Succeeded\"} \u003e 0","for":"10m","labels":{"severity":"warning"}},{"alert":"ContainerKilled","annotations":{"description":"Container {{ $labels.container }} in pod {{ $labels.pod }} was killed.","summary":"Container was killed"},"expr":"time() - container_last_seen{pod!=\"\"} \u003e 60","for":"2m","labels":{"severity":"warning"}}]}]}}
+    creationTimestamp: "2025-11-21T09:49:31Z"
+    generation: 2
+    name: cluster-alert-rules
+    namespace: monitoring
+    resourceVersion: "37912281"
+    uid: b8b1dd89-a076-409b-bc9a-a7b54a359ce3
+  spec:
+    groups:
+    - name: node-alerts
+      rules:
+      - alert: HighCPUUsage
+        annotations:
+          description: CPU usage is above 80% on node {{ $labels.instance }}.
+          summary: High CPU Usage Detected
+        expr: (100 - (avg by(instance) (rate(node_cpu_seconds_total{mode="idle"}[2m]))
+          * 100)) > 80
+        for: 1m
+        labels:
+          severity: warning
+      - alert: HighMemoryUsage
+        annotations:
+          description: Available memory is below 20% on {{ $labels.instance }}.
+          summary: High Memory Usage
+        expr: (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes) < 0.2
+        for: 2m
+        labels:
+          severity: warning
+      - alert: HighMemoryUsage
+        annotations:
+          description: Available memory is below 20% on {{ $labels.instance }}.
+          summary: High Memory Usage
+        expr: (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes) < 0.2
+        for: 2m
+        labels:
+          severity: warning
+      - alert: DiskSpaceLow
+        annotations:
+          description: 'Disk space is below 15% on {{ $labels.instance }}. Current:
+            {{ $value | humanizePercentage }}'
+          summary: Disk Space Low
+        expr: (node_filesystem_avail_bytes{mountpoint="/"} / node_filesystem_size_bytes{mountpoint="/"})
+          < 0.15
+        for: 5m
+        labels:
+          severity: critical
+      - alert: NodeDown
+        annotations:
+          description: Node {{ $labels.instance }} is unreachable for 3 minutes.
+          summary: Node is Down
+        expr: up{job="node-exporter"} == 0
+        for: 3m
+        labels:
+          severity: critical
+    - name: pod-alerts
+      rules:
+      - alert: PodCrashLooping
+        annotations:
+          description: Pod {{ $labels.pod }} in namespace {{ $labels.namespace }}
+            is restarting frequently.
+          summary: Pod Crash Looping
+        expr: rate(kube_pod_container_status_restarts_total[15m]) > 0
+        for: 5m
+        labels:
+          severity: critical
+      - alert: PodNotReady
+        annotations:
+          description: Pod {{ $labels.pod }} in {{ $labels.namespace }} has been not
+            ready for 10 minutes.
+          summary: Pod Not Ready
+        expr: kube_pod_status_phase{phase!="Running",phase!="Succeeded"} > 0
+        for: 10m
+        labels:
+          severity: warning
+      - alert: ContainerKilled
+        annotations:
+          description: Container {{ $labels.container }} in pod {{ $labels.pod }}
+            was killed.
+          summary: Container was killed
+        expr: time() - container_last_seen{pod!=""} > 60
+        for: 2m
+        labels:
+          severity: warning
+- apiVersion: monitoring.coreos.com/v1
+  kind: PrometheusRule
+  metadata:
+    annotations:
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"monitoring.coreos.com/v1","kind":"PrometheusRule","metadata":{"annotations":{},"name":"disk-alert-rules","namespace":"monitoring"},"spec":{"groups":[{"name":"disk-alerts","rules":[{"alert":"DiskSpaceLow","annotations":{"description":"Disk space is below 15% on {{ $labels.instance }}","summary":"Disk space running low"},"expr":"(node_filesystem_avail_bytes{mountpoint=\"/\"} / node_filesystem_size_bytes{mountpoint=\"/\"}) \u003c 0.15","for":"5m","labels":{"severity":"critical"}}]}]}}
+    creationTimestamp: "2026-01-28T08:56:36Z"
+    generation: 1
+    name: disk-alert-rules
+    namespace: monitoring
+    resourceVersion: "37910224"
+    uid: 27756dae-b763-49d6-9f68-3a70339e486c
+  spec:
+    groups:
+    - name: disk-alerts
+      rules:
+      - alert: DiskSpaceLow
+        annotations:
+          description: Disk space is below 15% on {{ $labels.instance }}
+          summary: Disk space running low
+        expr: (node_filesystem_avail_bytes{mountpoint="/"} / node_filesystem_size_bytes{mountpoint="/"})
+          < 0.15
+        for: 5m
+        labels:
+          severity: critical
+kind: List
+metadata:
+  resourceVersion: ""

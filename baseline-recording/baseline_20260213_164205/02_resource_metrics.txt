@@ -1,0 +1,55 @@
+RESOURCE METRICS BASELINE
+Generated: Fri Feb 13 16:42:07 UTC 2026
+============================================================
+
+NODE RESOURCES:
+NAME             CPU(cores)   CPU%   MEMORY(bytes)   MEMORY%   
+controller-kub   424m         21%    2544Mi          66%       
+worker-2         194m         9%     2184Mi          57%       
+workernew        99m          4%     2031Mi          53%       
+
+POD RESOURCES (ALL NAMESPACES):
+============================================================
+NAMESPACE            NAME                                                              CPU(cores)   MEMORY(bytes)   
+argocd               argocd-application-controller-0                                   78m          185Mi           
+argocd               argocd-dex-server-559c7cbb9-6nxj7                                 1m           45Mi            
+argocd               argocd-notifications-controller-6d85b6c699-dflbj                  1m           19Mi            
+argocd               argocd-redis-c47c65946-54lh4                                      10m          4Mi             
+argocd               argocd-repo-server-694d47b449-6d424                               4m           32Mi            
+argocd               argocd-server-57c7545d66-7g284                                    2m           29Mi            
+cert-manager         cert-manager-57656bd7b6-jllf9                                     1m           22Mi            
+cert-manager         cert-manager-cainjector-db64958d9-5rs27                           5m           44Mi            
+cert-manager         cert-manager-webhook-64c558df9f-sj7wq                             1m           10Mi            
+default              whoami-98d7579fb-4p28m                                            0m           3Mi             
+kube-flannel         kube-flannel-ds-b5rmd                                             13m          13Mi            
+kube-flannel         kube-flannel-ds-gzjgq                                             14m          18Mi            
+kube-flannel         kube-flannel-ds-wszzq                                             16m          16Mi            
+kube-system          coredns-55cb58b774-49qfq                                          3m           19Mi            
+kube-system          coredns-55cb58b774-w86wx                                          4m           22Mi            
+kube-system          etcd-controller-kub                                               47m          311Mi           
+kube-system          kube-apiserver-controller-kub                                     232m         854Mi           
+kube-system          kube-controller-manager-controller-kub                            46m          95Mi            
+kube-system          kube-proxy-fhm5c                                                  1m           16Mi            
+kube-system          kube-proxy-gd648                                                  3m           23Mi            
+kube-system          kube-proxy-s2xlk                                                  1m           22Mi            
+kube-system          kube-scheduler-controller-kub                                     4m           23Mi            
+kube-system          metrics-server-595b94c786-5bks4                                   5m           28Mi            
+local-path-storage   local-path-provisioner-7dc9b86879-8bntj                           1m           10Mi            
+logging              loki-0                                                            5m           37Mi            
+monitoring           grafana-66d95b4674-mbd5g                                          5m           95Mi            
+monitoring           grafana-upgrade-7d94cd8995-qmhrd                                  2m           81Mi            
+monitoring           prometheus-alertmanager-0                                         2m           25Mi            
+monitoring           prometheus-kube-state-metrics-7b845c4b4d-xr5nt                    2m           23Mi            
+monitoring           prometheus-prometheus-node-exporter-g54mm                         5m           11Mi            
+monitoring           prometheus-prometheus-node-exporter-h8b4j                         1m           15Mi            
+monitoring           prometheus-prometheus-node-exporter-qtrnx                         4m           14Mi            
+monitoring           prometheus-prometheus-pushgateway-65966498f7-sxbd8                1m           12Mi            
+monitoring           prometheus-server-7b8b4456c-wmdpk                                 10m          241Mi           
+myapp                web-6f87855868-5wxs8                                              0m           2Mi             
+myapp                web-6f87855868-8mhnb                                              0m           3Mi             
+nfs-provisioner      nfs-provisioner-nfs-subdir-external-provisioner-fb49fc8d8-snbc8   2m           9Mi             
+traefik              traefik-6657fc7d7b-tfnb5                                          1m           42Mi            
+
+NAMESPACE RESOURCE QUOTAS:
+============================================================
+No resources found

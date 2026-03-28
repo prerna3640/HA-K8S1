@@ -1,0 +1,151 @@
+SCALING BEHAVIOR BASELINE TEST
+Generated: Fri Feb 13 16:42:12 UTC 2026
+============================================================
+
+INITIAL STATE:
+NAME                   READY   STATUS    RESTARTS   AGE
+web-6f87855868-5wxs8   1/1     Running   0          3d6h
+web-6f87855868-8mhnb   1/1     Running   0          3d6h
+NAME   REFERENCE        TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+web    Deployment/web   cpu: 0%/50%   2         5         2          149d
+NAME                   CPU(cores)   MEMORY(bytes)   
+web-6f87855868-5wxs8   0m           2Mi             
+web-6f87855868-8mhnb   0m           3Mi             
+
+LOAD TEST (to trigger scaling):
+============================================================
+Starting load test for 2 minutes...
+
+Time: 10s
+---
+Pod count: 2
+web-6f87855868-5wxs8   0m    2Mi   
+web-6f87855868-8mhnb   0m    3Mi   
+web   Deployment/web   cpu: 0%/50%   2     5     2     149d
+
+Time: 20s
+---
+Pod count: 2
+web-6f87855868-5wxs8   0m    2Mi   
+web-6f87855868-8mhnb   0m    3Mi   
+web   Deployment/web   cpu: 0%/50%   2     5     2     149d
+
+Time: 30s
+---
+Pod count: 2
+web-6f87855868-5wxs8   9m    3Mi   
+web-6f87855868-8mhnb   6m    3Mi   
+web   Deployment/web   cpu: 7%/50%   2     5     2     149d
+
+Time: 40s
+---
+Pod count: 2
+web-6f87855868-5wxs8   2m    3Mi   
+web-6f87855868-8mhnb   2m    3Mi   
+web   Deployment/web   cpu: 2%/50%   2     5     2     149d
+
+Time: 50s
+---
+Pod count: 2
+web-6f87855868-5wxs8   2m    3Mi   
+web-6f87855868-8mhnb   2m    3Mi   
+web   Deployment/web   cpu: 2%/50%   2     5     2     149d
+
+Time: 60s
+---
+Pod count: 2
+web-6f87855868-5wxs8   2m    3Mi   
+web-6f87855868-8mhnb   2m    3Mi   
+web   Deployment/web   cpu: 2%/50%   2     5     2     149d
+
+Time: 70s
+---
+Pod count: 2
+web-6f87855868-5wxs8   2m    3Mi   
+web-6f87855868-8mhnb   2m    3Mi   
+web   Deployment/web   cpu: 2%/50%   2     5     2     149d
+
+Time: 80s
+---
+Pod count: 2
+web-6f87855868-5wxs8   2m    3Mi   
+web-6f87855868-8mhnb   2m    3Mi   
+web   Deployment/web   cpu: 2%/50%   2     5     2     149d
+
+Time: 90s
+---
+Pod count: 2
+web-6f87855868-5wxs8   2m    3Mi   
+web-6f87855868-8mhnb   2m    3Mi   
+web   Deployment/web   cpu: 2%/50%   2     5     2     149d
+
+Time: 100s
+---
+Pod count: 2
+web-6f87855868-5wxs8   2m    3Mi   
+web-6f87855868-8mhnb   2m    3Mi   
+web   Deployment/web   cpu: 2%/50%   2     5     2     149d
+
+Time: 110s
+---
+Pod count: 2
+web-6f87855868-5wxs8   2m    3Mi   
+web-6f87855868-8mhnb   2m    3Mi   
+web   Deployment/web   cpu: 2%/50%   2     5     2     149d
+
+Time: 120s
+---
+Pod count: 2
+web-6f87855868-5wxs8   2m    3Mi   
+web-6f87855868-8mhnb   2m    3Mi   
+web   Deployment/web   cpu: 2%/50%   2     5     2     149d
+
+Time: 130s
+---
+Pod count: 2
+web-6f87855868-5wxs8   2m    3Mi   
+web-6f87855868-8mhnb   2m    3Mi   
+web   Deployment/web   cpu: 2%/50%   2     5     2     149d
+
+Time: 140s
+---
+Pod count: 2
+web-6f87855868-5wxs8   1m    3Mi   
+web-6f87855868-8mhnb   1m    3Mi   
+web   Deployment/web   cpu: 1%/50%   2     5     2     149d
+
+Time: 150s
+---
+Pod count: 2
+web-6f87855868-5wxs8   0m    3Mi   
+web-6f87855868-8mhnb   0m    3Mi   
+web   Deployment/web   cpu: 1%/50%   2     5     2     149d
+
+Time: 160s
+---
+Pod count: 2
+web-6f87855868-5wxs8   0m    3Mi   
+web-6f87855868-8mhnb   0m    3Mi   
+web   Deployment/web   cpu: 0%/50%   2     5     2     149d
+
+Time: 170s
+---
+Pod count: 2
+web-6f87855868-5wxs8   0m    3Mi   
+web-6f87855868-8mhnb   0m    3Mi   
+web   Deployment/web   cpu: 0%/50%   2     5     2     149d
+
+Time: 180s
+---
+Pod count: 2
+web-6f87855868-5wxs8   1m    3Mi   
+web-6f87855868-8mhnb   0m    3Mi   
+web   Deployment/web   cpu: 0%/50%   2     5     2     149d
+
+FINAL STATE:
+============================================================
+NAME                   READY   STATUS    RESTARTS   AGE
+web-6f87855868-5wxs8   1/1     Running   0          3d6h
+web-6f87855868-8mhnb   1/1     Running   0          3d6h
+NAME   REFERENCE        TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+web    Deployment/web   cpu: 0%/50%   2         5         2          149d

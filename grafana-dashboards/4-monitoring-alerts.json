@@ -1,0 +1,21 @@
+{
+  "dashboard": {
+    "title": "4. Monitoring & Alerts",
+    "tags": ["project"],
+    "timezone": "utc",
+    "refresh": "15s",
+    "panels": [
+      {"id":1,"type":"stat","title":"Firing Alerts","gridPos":{"h":4,"w":6,"x":0,"y":0},"datasource":{"type":"prometheus","uid":"prometheus"},"targets":[{"expr":"count(ALERTS{alertstate=\"firing\"}) or vector(0)","refId":"A"}],"fieldConfig":{"defaults":{"thresholds":{"steps":[{"value":0,"color":"green"},{"value":1,"color":"orange"},{"value":5,"color":"red"}]}}}},
+      {"id":2,"type":"stat","title":"Pending Alerts","gridPos":{"h":4,"w":6,"x":6,"y":0},"datasource":{"type":"prometheus","uid":"prometheus"},"targets":[{"expr":"count(ALERTS{alertstate=\"pending\"}) or vector(0)","refId":"A"}],"fieldConfig":{"defaults":{"thresholds":{"steps":[{"value":0,"color":"green"},{"value":1,"color":"yellow"}]}}}},
+      {"id":3,"type":"stat","title":"Pod Restarts (1h)","gridPos":{"h":4,"w":6,"x":12,"y":0},"datasource":{"type":"prometheus","uid":"prometheus"},"targets":[{"expr":"sum(increase(kube_pod_container_status_restarts_total[1h]))","refId":"A"}],"fieldConfig":{"defaults":{"decimals":0,"thresholds":{"steps":[{"value":0,"color":"green"},{"value":3,"color":"yellow"},{"value":10,"color":"red"}]}}}},
+      {"id":4,"type":"stat","title":"Prometheus Targets Up","gridPos":{"h":4,"w":6,"x":18,"y":0},"datasource":{"type":"prometheus","uid":"prometheus"},"targets":[{"expr":"count(up == 1)","refId":"A"}],"fieldConfig":{"defaults":{"thresholds":{"steps":[{"value":0,"color":"red"},{"value":10,"color":"green"}]}}}},
+
+      {"id":10,"type":"timeseries","title":"Pod Restarts Over Time","gridPos":{"h":8,"w":12,"x":0,"y":4},"datasource":{"type":"prometheus","uid":"prometheus"},"targets":[{"expr":"increase(kube_pod_container_status_restarts_total{namespace=~\"myapp|monitoring\"}[10m])","legendFormat":"{{pod}}","refId":"A"}],"fieldConfig":{"defaults":{"custom":{"lineWidth":2,"fillOpacity":10}}}},
+      {"id":11,"type":"timeseries","title":"Disk Usage (%) per Node","gridPos":{"h":8,"w":12,"x":12,"y":4},"datasource":{"type":"prometheus","uid":"prometheus"},"targets":[{"expr":"100 - ((node_filesystem_avail_bytes{mountpoint=\"/\"} / node_filesystem_size_bytes{mountpoint=\"/\"}) * 100)","legendFormat":"{{instance}}","refId":"A"}],"fieldConfig":{"defaults":{"unit":"percent","min":0,"max":100,"custom":{"lineWidth":2,"fillOpacity":10},"thresholds":{"steps":[{"value":0,"color":"green"},{"value":70,"color":"yellow"},{"value":90,"color":"red"}]}}}},
+
+      {"id":20,"type":"table","title":"All Active Alerts","gridPos":{"h":8,"w":24,"x":0,"y":12},"datasource":{"type":"prometheus","uid":"prometheus"},"targets":[{"expr":"ALERTS{alertstate=\"firing\"}","refId":"A","format":"table","instant":true}],"transformations":[{"id":"organize","options":{"excludeByName":{"Time":true,"Value":true,"__name__":true,"job":true,"instance":true,"endpoint":true,"service":true}}}]}
+    ]
+  },
+  "folderUid": "efheb7xt9jbwge",
+  "overwrite": true
+}

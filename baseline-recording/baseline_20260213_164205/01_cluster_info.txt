@@ -1,0 +1,271 @@
+KUBERNETES CLUSTER BASELINE RECORDING
+Generated: Fri Feb 13 16:42:05 UTC 2026
+============================================================
+
+CLUSTER VERSION:
+error: unknown flag: --short
+See 'kubectl version --help' for usage.
+
+NODES:
+============================================================
+NAME             STATUS   ROLES           AGE    VERSION    INTERNAL-IP   EXTERNAL-IP   OS-IMAGE             KERNEL-VERSION       CONTAINER-RUNTIME
+controller-kub   Ready    control-plane   149d   v1.30.14   10.0.1.68     <none>        Ubuntu 22.04.5 LTS   5.15.0-105-generic   containerd://1.7.27
+worker-2         Ready    <none>          149d   v1.30.14   10.0.1.30     <none>        Ubuntu 22.04.5 LTS   5.15.0-161-generic   containerd://1.7.27
+workernew        Ready    <none>          149d   v1.30.14   10.0.1.29     <none>        Ubuntu 22.04.5 LTS   5.15.0-105-generic   containerd://1.7.27
+
+NODE DETAILS:
+============================================================
+Name:               controller-kub
+Roles:              control-plane
+Labels:             beta.kubernetes.io/arch=amd64
+                    beta.kubernetes.io/os=linux
+                    kubernetes.io/arch=amd64
+                    kubernetes.io/hostname=controller-kub
+                    kubernetes.io/os=linux
+                    node-role.kubernetes.io/control-plane=
+                    node.kubernetes.io/exclude-from-external-load-balancers=
+Annotations:        flannel.alpha.coreos.com/backend-data: {"VNI":1,"VtepMAC":"d6:95:ae:12:1b:d2"}
+                    flannel.alpha.coreos.com/backend-type: vxlan
+                    flannel.alpha.coreos.com/kube-subnet-manager: true
+                    flannel.alpha.coreos.com/public-ip: 10.0.1.68
+                    kubeadm.alpha.kubernetes.io/cri-socket: unix:///var/run/containerd/containerd.sock
+                    node.alpha.kubernetes.io/ttl: 0
+                    volumes.kubernetes.io/controller-managed-attach-detach: true
+CreationTimestamp:  Wed, 17 Sep 2025 09:13:30 +0000
+Taints:             node-role.kubernetes.io/control-plane:NoSchedule
+Unschedulable:      false
+Lease:
+  HolderIdentity:  controller-kub
+  AcquireTime:     <unset>
+  RenewTime:       Fri, 13 Feb 2026 16:42:00 +0000
+Conditions:
+  Type                 Status  LastHeartbeatTime                 LastTransitionTime                Reason                       Message
+  ----                 ------  -----------------                 ------------------                ------                       -------
+  NetworkUnavailable   False   Wed, 17 Sep 2025 09:15:21 +0000   Wed, 17 Sep 2025 09:15:21 +0000   FlannelIsUp                  Flannel is running on this node
+  MemoryPressure       False   Fri, 13 Feb 2026 16:38:57 +0000   Wed, 17 Sep 2025 09:13:25 +0000   KubeletHasSufficientMemory   kubelet has sufficient memory available
+  DiskPressure         False   Fri, 13 Feb 2026 16:38:57 +0000   Wed, 17 Sep 2025 09:13:25 +0000   KubeletHasNoDiskPressure     kubelet has no disk pressure
+  PIDPressure          False   Fri, 13 Feb 2026 16:38:57 +0000   Wed, 17 Sep 2025 09:13:25 +0000   KubeletHasSufficientPID      kubelet has sufficient PID available
+  Ready                True    Fri, 13 Feb 2026 16:38:57 +0000   Tue, 09 Dec 2025 07:52:33 +0000   KubeletReady                 kubelet is posting ready status
+Addresses:
+  InternalIP:  10.0.1.68
+  Hostname:    controller-kub
+Capacity:
+  cpu:                2
+  ephemeral-storage:  50620216Ki
+  hugepages-2Mi:      0
+  memory:             4005816Ki
+  pods:               110
+Allocatable:
+  cpu:                2
+  ephemeral-storage:  46651590989
+  hugepages-2Mi:      0
+  memory:             3903416Ki
+  pods:               110
+System Info:
+  Machine ID:                 1e3a75bc8471496bb44cded6c6d93d6c
+  System UUID:                f6465e5f-1fb5-47e8-a13e-99cabf3f6180
+  Boot ID:                    cd73b23a-e8de-4070-828d-2837a6b26f40
+  Kernel Version:             5.15.0-105-generic
+  OS Image:                   Ubuntu 22.04.5 LTS
+  Operating System:           linux
+  Architecture:               amd64
+  Container Runtime Version:  containerd://1.7.27
+  Kubelet Version:            v1.30.14
+  Kube-Proxy Version:         v1.30.14
+PodCIDR:                      10.244.0.0/24
+PodCIDRs:                     10.244.0.0/24
+Non-terminated Pods:          (9 in total)
+  Namespace                   Name                                         CPU Requests  CPU Limits  Memory Requests  Memory Limits  Age
+  ---------                   ----                                         ------------  ----------  ---------------  -------------  ---
+  kube-flannel                kube-flannel-ds-wszzq                        100m (5%)     0 (0%)      50Mi (1%)        0 (0%)         149d
+  kube-system                 coredns-55cb58b774-49qfq                     100m (5%)     0 (0%)      70Mi (1%)        170Mi (4%)     149d
+  kube-system                 coredns-55cb58b774-w86wx                     100m (5%)     0 (0%)      70Mi (1%)        170Mi (4%)     149d
+  kube-system                 etcd-controller-kub                          100m (5%)     0 (0%)      100Mi (2%)       0 (0%)         149d
+  kube-system                 kube-apiserver-controller-kub                250m (12%)    0 (0%)      0 (0%)           0 (0%)         149d
+  kube-system                 kube-controller-manager-controller-kub       200m (10%)    0 (0%)      0 (0%)           0 (0%)         149d
+  kube-system                 kube-proxy-s2xlk                             0 (0%)        0 (0%)      0 (0%)           0 (0%)         66d
+  kube-system                 kube-scheduler-controller-kub                100m (5%)     0 (0%)      0 (0%)           0 (0%)         149d
+  monitoring                  prometheus-prometheus-node-exporter-qtrnx    0 (0%)        0 (0%)      0 (0%)           0 (0%)         85d
+Allocated resources:
+  (Total limits may be over 100 percent, i.e., overcommitted.)
+  Resource           Requests    Limits
+  --------           --------    ------
+  cpu                950m (47%)  0 (0%)
+  memory             290Mi (7%)  340Mi (8%)
+  ephemeral-storage  0 (0%)      0 (0%)
+  hugepages-2Mi      0 (0%)      0 (0%)
+Events:              <none>
+
+
+Name:               worker-2
+Roles:              <none>
+Labels:             beta.kubernetes.io/arch=amd64
+                    beta.kubernetes.io/os=linux
+                    kubernetes.io/arch=amd64
+                    kubernetes.io/hostname=worker-2
+                    kubernetes.io/os=linux
+Annotations:        flannel.alpha.coreos.com/backend-data: {"VNI":1,"VtepMAC":"3e:86:b1:51:30:b1"}
+                    flannel.alpha.coreos.com/backend-type: vxlan
+                    flannel.alpha.coreos.com/kube-subnet-manager: true
+                    flannel.alpha.coreos.com/public-ip: 10.0.1.30
+                    kubeadm.alpha.kubernetes.io/cri-socket: unix:///var/run/containerd/containerd.sock
+                    node.alpha.kubernetes.io/ttl: 0
+                    volumes.kubernetes.io/controller-managed-attach-detach: true
+CreationTimestamp:  Wed, 17 Sep 2025 09:23:37 +0000
+Taints:             <none>
+Unschedulable:      false
+Lease:
+  HolderIdentity:  worker-2
+  AcquireTime:     <unset>
+  RenewTime:       Fri, 13 Feb 2026 16:41:58 +0000
+Conditions:
+  Type                 Status  LastHeartbeatTime                 LastTransitionTime                Reason                       Message
+  ----                 ------  -----------------                 ------------------                ------                       -------
+  NetworkUnavailable   False   Tue, 09 Dec 2025 07:46:36 +0000   Tue, 09 Dec 2025 07:46:36 +0000   FlannelIsUp                  Flannel is running on this node
+  MemoryPressure       False   Fri, 13 Feb 2026 16:38:42 +0000   Tue, 09 Dec 2025 07:45:54 +0000   KubeletHasSufficientMemory   kubelet has sufficient memory available
+  DiskPressure         False   Fri, 13 Feb 2026 16:38:42 +0000   Tue, 09 Dec 2025 07:45:54 +0000   KubeletHasNoDiskPressure     kubelet has no disk pressure
+  PIDPressure          False   Fri, 13 Feb 2026 16:38:42 +0000   Tue, 09 Dec 2025 07:45:54 +0000   KubeletHasSufficientPID      kubelet has sufficient PID available
+  Ready                True    Fri, 13 Feb 2026 16:38:42 +0000   Tue, 09 Dec 2025 07:46:00 +0000   KubeletReady                 kubelet is posting ready status
+Addresses:
+  InternalIP:  10.0.1.30
+  Hostname:    worker-2
+Capacity:
+  cpu:                2
+  ephemeral-storage:  40458684Ki
+  hugepages-2Mi:      0
+  memory:             4005708Ki
+  pods:               110
+Allocatable:
+  cpu:                2
+  ephemeral-storage:  37286723113
+  hugepages-2Mi:      0
+  memory:             3903308Ki
+  pods:               110
+System Info:
+  Machine ID:                 1e3a75bc8471496bb44cded6c6d93d6c
+  System UUID:                be7369cb-61f6-41b9-8ac1-5247e3130479
+  Boot ID:                    7871ae9d-ee87-4e6d-aa24-9a441c0474d0
+  Kernel Version:             5.15.0-161-generic
+  OS Image:                   Ubuntu 22.04.5 LTS
+  Operating System:           linux
+  Architecture:               amd64
+  Container Runtime Version:  containerd://1.7.27
+  Kubelet Version:            v1.30.14
+  Kube-Proxy Version:         v1.30.14
+PodCIDR:                      10.244.2.0/24
+PodCIDRs:                     10.244.2.0/24
+Non-terminated Pods:          (16 in total)
+  Namespace                   Name                                                               CPU Requests  CPU Limits  Memory Requests  Memory Limits  Age
+  ---------                   ----                                                               ------------  ----------  ---------------  -------------  ---
+  argocd                      argocd-application-controller-0                                    0 (0%)        0 (0%)      0 (0%)           0 (0%)         11d
+  argocd                      argocd-dex-server-559c7cbb9-6nxj7                                  0 (0%)        0 (0%)      0 (0%)           0 (0%)         11d
+  argocd                      argocd-redis-c47c65946-54lh4                                       0 (0%)        0 (0%)      0 (0%)           0 (0%)         11d
+  argocd                      argocd-repo-server-694d47b449-6d424                                0 (0%)        0 (0%)      0 (0%)           0 (0%)         11d
+  cert-manager                cert-manager-cainjector-db64958d9-5rs27                            0 (0%)        0 (0%)      0 (0%)           0 (0%)         11d
+  cert-manager                cert-manager-webhook-64c558df9f-sj7wq                              0 (0%)        0 (0%)      0 (0%)           0 (0%)         11d
+  default                     whoami-98d7579fb-4p28m                                             0 (0%)        0 (0%)      0 (0%)           0 (0%)         66d
+  kube-flannel                kube-flannel-ds-gzjgq                                              100m (5%)     0 (0%)      50Mi (1%)        0 (0%)         149d
+  kube-system                 kube-proxy-gd648                                                   0 (0%)        0 (0%)      0 (0%)           0 (0%)         66d
+  logging                     loki-0                                                             100m (5%)     500m (25%)  256Mi (6%)       512Mi (13%)    16d
+  monitoring                  prometheus-alertmanager-0                                          0 (0%)        0 (0%)      0 (0%)           0 (0%)         16d
+  monitoring                  prometheus-prometheus-node-exporter-h8b4j                          0 (0%)        0 (0%)      0 (0%)           0 (0%)         85d
+  monitoring                  prometheus-server-7b8b4456c-wmdpk                                  0 (0%)        0 (0%)      0 (0%)           0 (0%)         66d
+  myapp                       web-6f87855868-5wxs8                                               100m (5%)     200m (10%)  0 (0%)           0 (0%)         3d6h
+  nfs-provisioner             nfs-provisioner-nfs-subdir-external-provisioner-fb49fc8d8-snbc8    0 (0%)        0 (0%)      0 (0%)           0 (0%)         11d
+  traefik                     traefik-6657fc7d7b-tfnb5                                           0 (0%)        0 (0%)      0 (0%)           0 (0%)         64d
+Allocated resources:
+  (Total limits may be over 100 percent, i.e., overcommitted.)
+  Resource           Requests    Limits
+  --------           --------    ------
+  cpu                300m (15%)  700m (35%)
+  memory             306Mi (8%)  512Mi (13%)
+  ephemeral-storage  0 (0%)      0 (0%)
+  hugepages-2Mi      0 (0%)      0 (0%)
+Events:              <none>
+
+
+Name:               workernew
+Roles:              <none>
+Labels:             beta.kubernetes.io/arch=amd64
+                    beta.kubernetes.io/os=linux
+                    kubernetes.io/arch=amd64
+                    kubernetes.io/hostname=workernew
+                    kubernetes.io/os=linux
+Annotations:        flannel.alpha.coreos.com/backend-data: {"VNI":1,"VtepMAC":"52:99:13:f5:95:16"}
+                    flannel.alpha.coreos.com/backend-type: vxlan
+                    flannel.alpha.coreos.com/kube-subnet-manager: true
+                    flannel.alpha.coreos.com/public-ip: 10.0.1.29
+                    kubeadm.alpha.kubernetes.io/cri-socket: unix:///var/run/containerd/containerd.sock
+                    node.alpha.kubernetes.io/ttl: 0
+                    volumes.kubernetes.io/controller-managed-attach-detach: true
+CreationTimestamp:  Wed, 17 Sep 2025 09:22:56 +0000
+Taints:             <none>
+Unschedulable:      false
+Lease:
+  HolderIdentity:  workernew
+  AcquireTime:     <unset>
+  RenewTime:       Fri, 13 Feb 2026 16:42:00 +0000
+Conditions:
+  Type                 Status  LastHeartbeatTime                 LastTransitionTime                Reason                       Message
+  ----                 ------  -----------------                 ------------------                ------                       -------
+  NetworkUnavailable   False   Wed, 17 Sep 2025 09:23:49 +0000   Wed, 17 Sep 2025 09:23:49 +0000   FlannelIsUp                  Flannel is running on this node
+  MemoryPressure       False   Fri, 13 Feb 2026 16:38:55 +0000   Wed, 17 Sep 2025 09:22:56 +0000   KubeletHasSufficientMemory   kubelet has sufficient memory available
+  DiskPressure         False   Fri, 13 Feb 2026 16:38:55 +0000   Wed, 17 Sep 2025 09:22:56 +0000   KubeletHasNoDiskPressure     kubelet has no disk pressure
+  PIDPressure          False   Fri, 13 Feb 2026 16:38:55 +0000   Wed, 17 Sep 2025 09:22:56 +0000   KubeletHasSufficientPID      kubelet has sufficient PID available
+  Ready                True    Fri, 13 Feb 2026 16:38:55 +0000   Tue, 27 Jan 2026 10:46:12 +0000   KubeletReady                 kubelet is posting ready status
+Addresses:
+  InternalIP:  10.0.1.29
+  Hostname:    workernew
+Capacity:
+  cpu:                2
+  ephemeral-storage:  40458684Ki
+  hugepages-2Mi:      0
+  memory:             4005816Ki
+  pods:               110
+Allocatable:
+  cpu:                2
+  ephemeral-storage:  37286723113
+  hugepages-2Mi:      0
+  memory:             3903416Ki
+  pods:               110
+System Info:
+  Machine ID:                 1e3a75bc8471496bb44cded6c6d93d6c
+  System UUID:                80d657cc-cc89-43b1-bd35-e9aa6eb5aa82
+  Boot ID:                    34d4b1ea-feac-439b-9ea8-505358849284
+  Kernel Version:             5.15.0-105-generic
+  OS Image:                   Ubuntu 22.04.5 LTS
+  Operating System:           linux
+  Architecture:               amd64
+  Container Runtime Version:  containerd://1.7.27
+  Kubelet Version:            v1.30.14
+  Kube-Proxy Version:         v1.30.14
+PodCIDR:                      10.244.1.0/24
+PodCIDRs:                     10.244.1.0/24
+Non-terminated Pods:          (16 in total)
+  Namespace                   Name                                                  CPU Requests  CPU Limits  Memory Requests  Memory Limits  Age
+  ---------                   ----                                                  ------------  ----------  ---------------  -------------  ---
+  argocd                      argocd-applicationset-controller-fb6d4dd94-cnm4s      0 (0%)        0 (0%)      0 (0%)           0 (0%)         11d
+  argocd                      argocd-notifications-controller-6d85b6c699-dflbj      0 (0%)        0 (0%)      0 (0%)           0 (0%)         11d
+  argocd                      argocd-server-57c7545d66-7g284                        0 (0%)        0 (0%)      0 (0%)           0 (0%)         11d
+  cert-manager                cert-manager-57656bd7b6-jllf9                         0 (0%)        0 (0%)      0 (0%)           0 (0%)         11d
+  default                     kubeblocks-5474dfb6cd-kks4c                           0 (0%)        0 (0%)      0 (0%)           0 (0%)         77d
+  default                     kubeblocks-dataprotection-5b79cf9df5-pb92k            0 (0%)        0 (0%)      0 (0%)           0 (0%)         141d
+  kube-flannel                kube-flannel-ds-b5rmd                                 100m (5%)     0 (0%)      50Mi (1%)        0 (0%)         149d
+  kube-system                 kube-proxy-fhm5c                                      0 (0%)        0 (0%)      0 (0%)           0 (0%)         66d
+  kube-system                 metrics-server-595b94c786-5bks4                       100m (5%)     0 (0%)      200Mi (5%)       0 (0%)         149d
+  local-path-storage          local-path-provisioner-7dc9b86879-8bntj               0 (0%)        0 (0%)      0 (0%)           0 (0%)         77d
+  monitoring                  grafana-66d95b4674-mbd5g                              0 (0%)        0 (0%)      0 (0%)           0 (0%)         77d
+  monitoring                  grafana-upgrade-7d94cd8995-qmhrd                      0 (0%)        0 (0%)      0 (0%)           0 (0%)         16d
+  monitoring                  prometheus-kube-state-metrics-7b845c4b4d-xr5nt        0 (0%)        0 (0%)      0 (0%)           0 (0%)         85d
+  monitoring                  prometheus-prometheus-node-exporter-g54mm             0 (0%)        0 (0%)      0 (0%)           0 (0%)         85d
+  monitoring                  prometheus-prometheus-pushgateway-65966498f7-sxbd8    0 (0%)        0 (0%)      0 (0%)           0 (0%)         77d
+  myapp                       web-6f87855868-8mhnb                                  100m (5%)     200m (10%)  0 (0%)           0 (0%)         3d6h
+Allocated resources:
+  (Total limits may be over 100 percent, i.e., overcommitted.)
+  Resource           Requests    Limits
+  --------           --------    ------
+  cpu                300m (15%)  200m (10%)
+  memory             250Mi (6%)  0 (0%)
+  ephemeral-storage  0 (0%)      0 (0%)
+  hugepages-2Mi      0 (0%)      0 (0%)
+Events:              <none>

@@ -1,0 +1,38 @@
+# ServiceAccount for the predictive scaler controller
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: predictive-scaler
+  namespace: monitoring
+
+---
+# ClusterRole: permissions needed to read & scale deployments in any namespace
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: predictive-scaler
+rules:
+  - apiGroups: ["apps"]
+    resources: ["deployments"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: ["apps"]
+    resources: ["deployments/scale"]
+    verbs: ["get", "update", "patch"]
+  - apiGroups: ["autoscaling"]
+    resources: ["horizontalpodautoscalers"]
+    verbs: ["get", "list", "watch", "update", "patch"]
+
+---
+# Bind the ClusterRole to the ServiceAccount
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: predictive-scaler
+subjects:
+  - kind: ServiceAccount
+    name: predictive-scaler
+    namespace: monitoring
+roleRef:
+  kind: ClusterRole
+  name: predictive-scaler
+  apiGroup: rbac.authorization.k8s.io

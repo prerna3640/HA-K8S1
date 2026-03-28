@@ -1,0 +1,44 @@
+{
+  "dashboard": {
+    "title": "3. ML Auto-Scaling Pipeline",
+    "tags": ["project"],
+    "timezone": "utc",
+    "refresh": "15s",
+    "panels": [
+      {"id":1,"type":"stat","title":"ML Predictor","gridPos":{"h":4,"w":6,"x":0,"y":0},"datasource":{"type":"prometheus","uid":"prometheus"},"targets":[{"expr":"kube_deployment_status_replicas_available{namespace=\"monitoring\",deployment=\"ml-predictor\"}","refId":"A"}],"fieldConfig":{"defaults":{"mappings":[{"type":"value","options":{"0":{"text":"DOWN","color":"red"},"1":{"text":"RUNNING","color":"green"}}}],"thresholds":{"steps":[{"value":0,"color":"red"},{"value":1,"color":"green"}]}}}},
+      {"id":2,"type":"stat","title":"Predictive Scaler","gridPos":{"h":4,"w":6,"x":6,"y":0},"datasource":{"type":"prometheus","uid":"prometheus"},"targets":[{"expr":"kube_deployment_status_replicas_available{namespace=\"monitoring\",deployment=\"predictive-scaler\"}","refId":"A"}],"fieldConfig":{"defaults":{"mappings":[{"type":"value","options":{"0":{"text":"DOWN","color":"red"},"1":{"text":"RUNNING","color":"green"}}}],"thresholds":{"steps":[{"value":0,"color":"red"},{"value":1,"color":"green"}]}}}},
+      {"id":3,"type":"stat","title":"Prometheus","gridPos":{"h":4,"w":6,"x":12,"y":0},"datasource":{"type":"prometheus","uid":"prometheus"},"targets":[{"expr":"up{job=\"prometheus-kube-prometheus-prometheus\"}","refId":"A"}],"fieldConfig":{"defaults":{"mappings":[{"type":"value","options":{"0":{"text":"DOWN","color":"red"},"1":{"text":"RUNNING","color":"green"}}}],"thresholds":{"steps":[{"value":0,"color":"red"},{"value":1,"color":"green"}]}}}},
+      {"id":4,"type":"stat","title":"Web Replicas Now","gridPos":{"h":4,"w":6,"x":18,"y":0},"datasource":{"type":"prometheus","uid":"prometheus"},"targets":[{"expr":"kube_deployment_spec_replicas{namespace=\"myapp\",deployment=\"web\"}","refId":"A"}],"fieldConfig":{"defaults":{"thresholds":{"steps":[{"value":0,"color":"red"},{"value":2,"color":"green"},{"value":4,"color":"orange"}]}}}},
+
+      {"id":10,"type":"timeseries","title":"Pipeline: CPU Actual + HPA Threshold + Scaling","description":"Shows actual CPU, the 70% HPA threshold line, and current replicas. When CPU approaches the threshold, the predictive scaler acts BEFORE HPA.","gridPos":{"h":10,"w":24,"x":0,"y":4},"datasource":{"type":"prometheus","uid":"prometheus"},"targets":[
+        {"expr":"sum(rate(container_cpu_usage_seconds_total{namespace=\"myapp\",pod=~\"web-.*\",container=\"web\"}[5m])) * 1000","legendFormat":"Actual CPU (millicores)","refId":"A"},
+        {"expr":"sum(kube_pod_container_resource_requests{namespace=\"myapp\",container=\"web\",resource=\"cpu\"}) * 1000 * 0.7","legendFormat":"HPA Threshold (70% of request)","refId":"B"},
+        {"expr":"sum(kube_pod_container_resource_limits{namespace=\"myapp\",container=\"web\",resource=\"cpu\"}) * 1000","legendFormat":"Total CPU Limit","refId":"C"}
+      ],"fieldConfig":{"defaults":{"unit":"short","custom":{"lineWidth":2,"fillOpacity":10,"drawStyle":"line","showPoints":"auto","pointSize":5}},"overrides":[
+        {"matcher":{"id":"byName","options":"HPA Threshold (70% of request)"},"properties":[{"id":"custom.lineStyle","value":{"fill":"dash","dash":[10,10]}},{"id":"color","value":{"fixedColor":"red","mode":"fixed"}}]},
+        {"matcher":{"id":"byName","options":"Total CPU Limit"},"properties":[{"id":"custom.lineStyle","value":{"fill":"dash","dash":[4,4]}},{"id":"color","value":{"fixedColor":"orange","mode":"fixed"}}]},
+        {"matcher":{"id":"byName","options":"Actual CPU (millicores)"},"properties":[{"id":"color","value":{"fixedColor":"#00d4ff","mode":"fixed"}}]}
+      ]}},
+
+      {"id":11,"type":"timeseries","title":"Scaling Events: Replica Count Changes","description":"Watch this graph during load tests. The predictive scaler increases replicas BEFORE CPU hits the HPA threshold.","gridPos":{"h":8,"w":12,"x":0,"y":14},"datasource":{"type":"prometheus","uid":"prometheus"},"targets":[
+        {"expr":"kube_deployment_spec_replicas{namespace=\"myapp\",deployment=\"web\"}","legendFormat":"Current Replicas","refId":"A"},
+        {"expr":"kube_horizontalpodautoscaler_status_desired_replicas{namespace=\"myapp\"}","legendFormat":"HPA Desired","refId":"B"},
+        {"expr":"kube_horizontalpodautoscaler_spec_min_replicas{namespace=\"myapp\"}","legendFormat":"Min (2)","refId":"C"},
+        {"expr":"kube_horizontalpodautoscaler_spec_max_replicas{namespace=\"myapp\"}","legendFormat":"Max (5)","refId":"D"}
+      ],"fieldConfig":{"defaults":{"min":0,"max":6,"decimals":0,"custom":{"lineWidth":3,"fillOpacity":10,"stacking":{"mode":"none"}}},"overrides":[
+        {"matcher":{"id":"byName","options":"Current Replicas"},"properties":[{"id":"color","value":{"fixedColor":"#00ff99","mode":"fixed"}}]},
+        {"matcher":{"id":"byName","options":"Min (2)"},"properties":[{"id":"custom.lineStyle","value":{"fill":"dash"}},{"id":"color","value":{"fixedColor":"yellow","mode":"fixed"}}]},
+        {"matcher":{"id":"byName","options":"Max (5)"},"properties":[{"id":"custom.lineStyle","value":{"fill":"dash"}},{"id":"color","value":{"fixedColor":"red","mode":"fixed"}}]}
+      ]}},
+
+      {"id":12,"type":"timeseries","title":"ML Predictor + Scaler Resource Usage","gridPos":{"h":8,"w":12,"x":12,"y":14},"datasource":{"type":"prometheus","uid":"prometheus"},"targets":[
+        {"expr":"sum(rate(container_cpu_usage_seconds_total{namespace=\"monitoring\",pod=~\"ml-predictor-.*\",container=\"ml-predictor\"}[5m])) * 1000","legendFormat":"ML Predictor CPU (m)","refId":"A"},
+        {"expr":"sum(rate(container_cpu_usage_seconds_total{namespace=\"monitoring\",pod=~\"predictive-scaler-.*\",container=\"predictive-scaler\"}[5m])) * 1000","legendFormat":"Scaler CPU (m)","refId":"B"},
+        {"expr":"container_memory_usage_bytes{namespace=\"monitoring\",pod=~\"ml-predictor-.*\",container=\"ml-predictor\"} / 1024 / 1024","legendFormat":"ML Predictor RAM (MB)","refId":"C"},
+        {"expr":"container_memory_usage_bytes{namespace=\"monitoring\",pod=~\"predictive-scaler-.*\",container=\"predictive-scaler\"} / 1024 / 1024","legendFormat":"Scaler RAM (MB)","refId":"D"}
+      ],"fieldConfig":{"defaults":{"custom":{"lineWidth":2,"fillOpacity":10}}}}
+    ]
+  },
+  "folderUid": "efheb7xt9jbwge",
+  "overwrite": true
+}

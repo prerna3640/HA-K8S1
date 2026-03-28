@@ -1,0 +1,141 @@
+PERFORMANCE BASELINE TEST
+Generated: Fri Feb 13 16:42:10 UTC 2026
+============================================================
+
+TEST CONFIGURATION:
+- Tool: Apache Bench
+- Requests: 1000
+- Concurrency: 50
+- Target: web.mycompany.local
+
+RESPONSE TIME TEST (20 samples):
+============================================================
+Sample 1: 89ms
+Sample 2: 19ms
+Sample 3: 13ms
+Sample 4: 12ms
+Sample 5: 13ms
+Sample 6: 14ms
+Sample 7: 13ms
+Sample 8: 13ms
+Sample 9: 14ms
+Sample 10: 14ms
+Sample 11: 21ms
+Sample 12: 14ms
+Sample 13: 16ms
+Sample 14: 17ms
+Sample 15: 16ms
+Sample 16: 17ms
+Sample 17: 15ms
+Sample 18: 15ms
+Sample 19: 17ms
+Sample 20: 14ms
+
+LOAD DISTRIBUTION TEST (50 requests):
+============================================================
+web-6f87855868-8mhnb
+web-6f87855868-5wxs8
+web-6f87855868-8mhnb
+web-6f87855868-5wxs8
+web-6f87855868-8mhnb
+web-6f87855868-5wxs8
+web-6f87855868-8mhnb
+web-6f87855868-5wxs8
+web-6f87855868-8mhnb
+web-6f87855868-5wxs8
+web-6f87855868-8mhnb
+web-6f87855868-5wxs8
+web-6f87855868-8mhnb
+web-6f87855868-5wxs8
+web-6f87855868-8mhnb
+web-6f87855868-5wxs8
+web-6f87855868-8mhnb
+web-6f87855868-5wxs8
+web-6f87855868-8mhnb
+web-6f87855868-5wxs8
+web-6f87855868-8mhnb
+web-6f87855868-5wxs8
+web-6f87855868-8mhnb
+web-6f87855868-5wxs8
+web-6f87855868-8mhnb
+web-6f87855868-5wxs8
+web-6f87855868-8mhnb
+web-6f87855868-5wxs8
+web-6f87855868-8mhnb
+web-6f87855868-5wxs8
+web-6f87855868-8mhnb
+web-6f87855868-5wxs8
+web-6f87855868-8mhnb
+web-6f87855868-5wxs8
+web-6f87855868-8mhnb
+web-6f87855868-5wxs8
+web-6f87855868-8mhnb
+web-6f87855868-5wxs8
+web-6f87855868-8mhnb
+web-6f87855868-5wxs8
+web-6f87855868-8mhnb
+web-6f87855868-5wxs8
+web-6f87855868-8mhnb
+web-6f87855868-5wxs8
+web-6f87855868-8mhnb
+web-6f87855868-5wxs8
+web-6f87855868-8mhnb
+web-6f87855868-5wxs8
+web-6f87855868-8mhnb
+web-6f87855868-5wxs8
+
+APACHE BENCH FULL TEST:
+============================================================
+This is ApacheBench, Version 2.3 <$Revision: 1879490 $>
+Copyright 1996 Adam Twiss, Zeus Technology Ltd, http://www.zeustech.net/
+Licensed to The Apache Software Foundation, http://www.apache.org/
+
+Benchmarking 103.192.199.79 (be patient)
+Completed 100 requests
+Completed 200 requests
+Completed 300 requests
+Completed 400 requests
+Completed 500 requests
+Completed 600 requests
+Completed 700 requests
+Completed 800 requests
+Completed 900 requests
+Completed 1000 requests
+Finished 1000 requests
+
+
+Server Software:        nginx/1.25.5
+Server Hostname:        103.192.199.79
+Server Port:            30080
+
+Document Path:          /
+Document Length:        176 bytes
+
+Concurrency Level:      50
+Time taken for tests:   0.594 seconds
+Complete requests:      1000
+Failed requests:        0
+Total transferred:      389000 bytes
+HTML transferred:       176000 bytes
+Requests per second:    1684.08 [#/sec] (mean)
+Time per request:       29.690 [ms] (mean)
+Time per request:       0.594 [ms] (mean, across all concurrent requests)
+Transfer rate:          639.75 [Kbytes/sec] received
+
+Connection Times (ms)
+              min  mean[+/-sd] median   max
+Connect:        1    4   2.6      4      12
+Processing:     1   25  16.1     21      87
+Waiting:        1   24  16.1     20      86
+Total:          2   29  16.4     25      93
+
+Percentage of the requests served within a certain time (ms)
+  50%     25
+  66%     31
+  75%     35
+  80%     40
+  90%     54
+  95%     65
+  98%     72
+  99%     76
+ 100%     93 (longest request)
