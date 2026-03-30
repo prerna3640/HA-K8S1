@@ -264,7 +264,7 @@ Removed 28 built-in dashboards (deleted ConfigMaps).
 # Noisy alerts (Watchdog, TargetDown, etcd) silenced to null receiver
 ```
 
-**Telegram Bot**: @Fire_k8s_bot | Chat ID: 1150673339
+**Telegram Bot**: @Fire_k8s_bot | Chat ID: 115067367574
 
 **8 Active Alerts**:
 
