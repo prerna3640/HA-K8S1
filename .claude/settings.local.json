@@ -27,7 +27,9 @@
       "Bash(git config:*)",
       "Bash(git rebase:*)",
       "Bash(git stash:*)",
-      "Bash(git push:*)"
+      "Bash(git push:*)",
+      "Bash(git remote:*)",
+      "Bash(ssh -i \"D:/Prerna_project/project/project/kub-cluster-key.pem\" -o StrictHostKeyChecking=no ubuntu@172.83.83.156)"
     ]
   }
 }
