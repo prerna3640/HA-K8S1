@@ -647,3 +647,15 @@ Zoomed-in view showing stable monitoring stack with increasing time series count
 *Author: Prerna Tank | M.Tech(CS) 2410512 | DAVV*
 *Guide: Dr. Shraddha Masih*
 *Date: 2026-03-27 to 2026-04-05*
+
+
+
+
+Good. What do you want to work on next?
+
+#	Task	Time
+1	Write the research paper (I draft it section by section)	2-3 hours
+2	Fix Prophet model (make ensemble work)	30 min
+3	ArgoCD GitOps setup	30 min
+4	Done for today	—
+Which one?
