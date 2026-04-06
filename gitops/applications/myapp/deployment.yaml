@@ -13,8 +13,59 @@ spec:
       labels:
         app: web
     spec:
+      nodeSelector:
+        workload: app
+      initContainers:
+      - name: init-content
+        image: busybox
+        command: ["sh", "-c"]
+        args:
+        - |
+          TIMESTAMP=$(date -u +"%Y-%m-%d %H:%M:%S UTC")
+          cat > /web/index.html << INNEREOF
+          <!DOCTYPE html>
+          <html>
+          <head><title>Intelligent Auto-Scaling Demo</title>
+          <style>
+            body{font-family:Arial;background:#0f0f1a;color:#e0e0ff;display:flex;justify-content:center;align-items:center;min-height:100vh;margin:0}
+            .card{background:#1a1a2e;border:1px solid #2a2a4a;border-radius:12px;padding:40px;max-width:600px;text-align:center}
+            h1{color:#00d4ff}h2{color:#ff9900}
+            .pod-name{background:#00d4ff;color:#0f0f1a;padding:10px 20px;border-radius:8px;font-size:20px;font-weight:bold;display:inline-block;margin:15px 0}
+            .badge{background:#2a2a4a;padding:5px 12px;border-radius:4px;margin:3px;display:inline-block;font-size:12px}
+            .info{color:#888;font-size:14px}
+          </style></head>
+          <body><div class="card">
+            <h1>Intelligent Auto-Scaling in Kubernetes</h1>
+            <h2>ML-Based Predictive Approach</h2><hr>
+            <p class="info">Served by pod:</p>
+            <div class="pod-name">$HOSTNAME</div>
+            <p class="info">Timestamp: $TIMESTAMP</p><hr>
+            <p><span class="badge">Namespace: myapp</span>
+            <span class="badge">Replicas: 2-5</span>
+            <span class="badge">ML Model: LSTM</span>
+            <span class="badge">Prediction: 30 min ahead</span></p><hr>
+            <p class="info">Prerna Tank | M.Tech(CS) 2410512 | DAVV</p>
+            <p style="color:#666;font-size:12px">Refresh to see load balancing</p>
+          </div></body></html>
+          INNEREOF
+        volumeMounts:
+        - name: web-content
+          mountPath: /web
       containers:
       - name: web
-        image: nginx
+        image: nginx:1.25
         ports:
         - containerPort: 80
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            cpu: 200m
+            memory: 256Mi
+        volumeMounts:
+        - name: web-content
+          mountPath: /usr/share/nginx/html
+      volumes:
+      - name: web-content
+        emptyDir: {}
