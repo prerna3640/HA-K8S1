@@ -1,0 +1,285 @@
+<svg width="1800" height="980" viewBox="0 0 1800 980" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">Hand-drawn style CI/CD and Kubernetes scaling diagram</title>
+  <desc id="desc">A sketch-style architecture diagram for intelligent auto-scaling in Kubernetes, showing GitHub, Jenkins, image build and deployment, ArgoCD, Prometheus, ML Predictor, Predictive Scaler, Web App, HPA, and Telegram alerts.</desc>
+
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#17131d"/>
+      <stop offset="100%" stop-color="#1d1822"/>
+    </linearGradient>
+    <filter id="softGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="2" stdDeviation="4" flood-color="#000000" flood-opacity="0.28"/>
+    </filter>
+    <style>
+      text {
+        font-family: "Comic Sans MS", "Trebuchet MS", "Segoe UI", sans-serif;
+      }
+      .title {
+        font-size: 34px;
+        font-weight: 700;
+        fill: #fff8ec;
+      }
+      .subtitle {
+        font-size: 18px;
+        fill: #d7d2e6;
+      }
+      .section {
+        font-size: 24px;
+        font-weight: 700;
+        fill: #fff8ec;
+      }
+      .white {
+        fill: #fff8ec;
+      }
+      .label {
+        font-size: 16px;
+        font-weight: 700;
+        fill: #fff8ec;
+      }
+      .small {
+        font-size: 15px;
+        fill: #f3efe8;
+      }
+      .cardTitle {
+        font-size: 23px;
+        font-weight: 700;
+        fill: #ffffff;
+      }
+      .cardText {
+        font-size: 16px;
+        fill: #ffffff;
+      }
+      .outline {
+        fill: none;
+        stroke: rgba(255,255,255,0.22);
+        stroke-width: 3;
+        stroke-dasharray: 10 10;
+      }
+      .scribble {
+        fill: none;
+        stroke: rgba(255,248,236,0.7);
+        stroke-width: 2.2;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+    </style>
+  </defs>
+
+  <rect width="1800" height="980" fill="url(#bg)"/>
+
+  <text x="900" y="56" text-anchor="middle" class="title">Intelligent Auto-Scaling in Kubernetes</text>
+  <text x="900" y="88" text-anchor="middle" class="subtitle">Hand-drawn view of CI/CD flow and runtime working</text>
+
+  <text x="110" y="145" class="section">CI / CD</text>
+  <text x="1040" y="145" class="section">Runtime</text>
+
+  <rect x="50" y="170" width="820" height="730" rx="30" ry="30" class="outline"/>
+  <rect x="970" y="170" width="780" height="730" rx="30" ry="30" class="outline"/>
+
+  <path d="M85 205 C120 195, 170 198, 210 205" class="scribble"/>
+  <path d="M1000 205 C1060 196, 1140 196, 1210 205" class="scribble"/>
+
+  <!-- Left side nodes -->
+  <g filter="url(#softGlow)">
+    <rect x="100" y="255" width="190" height="96" rx="26" ry="26" fill="#0d7fe8" stroke="#74b9ff" stroke-width="3"/>
+    <path d="M113 268 C153 258, 243 258, 278 269" class="scribble"/>
+    <text x="195" y="304" text-anchor="middle" class="cardTitle">GitHub</text>
+    <text x="195" y="335" text-anchor="middle" class="cardText">Source Code</text>
+  </g>
+
+  <g filter="url(#softGlow)">
+    <rect x="390" y="255" width="255" height="96" rx="26" ry="26" fill="#6d4aff" stroke="#8fd3ff" stroke-width="3"/>
+    <path d="M407 268 C455 260, 575 260, 625 270" class="scribble"/>
+    <text x="518" y="304" text-anchor="middle" class="cardTitle">Jenkins</text>
+    <text x="518" y="335" text-anchor="middle" class="cardText">Pipeline</text>
+  </g>
+
+  <g filter="url(#softGlow)">
+    <rect x="105" y="455" width="235" height="108" rx="24" ry="24" fill="#f4a62a" stroke="#ffd38d" stroke-width="3"/>
+    <path d="M120 468 C170 457, 255 458, 325 469" class="scribble"/>
+    <text x="223" y="500" text-anchor="middle" class="cardTitle">BuildKit</text>
+    <text x="223" y="530" text-anchor="middle" class="cardText">Build Engine</text>
+  </g>
+
+  <g filter="url(#softGlow)">
+    <rect x="435" y="455" width="235" height="108" rx="24" ry="24" fill="#17b56c" stroke="#8affc0" stroke-width="3"/>
+    <path d="M450 468 C515 457, 595 458, 654 469" class="scribble"/>
+    <text x="553" y="500" text-anchor="middle" class="cardTitle">nerdctl</text>
+    <text x="553" y="530" text-anchor="middle" class="cardText">Build Images</text>
+  </g>
+
+  <g filter="url(#softGlow)">
+    <rect x="280" y="655" width="360" height="110" rx="28" ry="28" fill="#ff3d7d" stroke="#ff9cbf" stroke-width="3"/>
+    <path d="M295 670 C350 658, 555 658, 620 670" class="scribble"/>
+    <text x="460" y="700" text-anchor="middle" class="cardTitle">Artifacts</text>
+    <text x="460" y="733" text-anchor="middle" class="cardText">Predictor image + Scaler image</text>
+  </g>
+
+  <g filter="url(#softGlow)">
+    <rect x="100" y="805" width="250" height="94" rx="24" ry="24" fill="#22b8cf" stroke="#93f6ff" stroke-width="3"/>
+    <path d="M116 818 C180 808, 250 808, 333 819" class="scribble"/>
+    <text x="225" y="845" text-anchor="middle" class="cardTitle">scp / ssh</text>
+    <text x="225" y="873" text-anchor="middle" class="cardText">Transfer</text>
+  </g>
+
+  <g filter="url(#softGlow)">
+    <rect x="425" y="805" width="250" height="94" rx="24" ry="24" fill="#44a0ef" stroke="#a8d8ff" stroke-width="3"/>
+    <path d="M440 818 C520 808, 600 808, 660 819" class="scribble"/>
+    <text x="550" y="845" text-anchor="middle" class="cardTitle">ctr</text>
+    <text x="550" y="873" text-anchor="middle" class="cardText">Import Images</text>
+  </g>
+
+  <g filter="url(#softGlow)">
+    <rect x="720" y="455" width="120" height="108" rx="24" ry="24" fill="#7a74ef" stroke="#c2c4ff" stroke-width="3"/>
+    <path d="M732 468 C755 460, 805 460, 826 468" class="scribble"/>
+    <text x="780" y="500" text-anchor="middle" class="cardTitle">kubectl</text>
+    <text x="780" y="530" text-anchor="middle" class="cardText">Deploy</text>
+  </g>
+
+  <g filter="url(#softGlow)">
+    <rect x="720" y="655" width="120" height="110" rx="24" ry="24" fill="#f3b245" stroke="#ffe1a9" stroke-width="3"/>
+    <path d="M734 670 C754 661, 810 661, 828 670" class="scribble"/>
+    <text x="780" y="700" text-anchor="middle" class="cardTitle">Verify</text>
+    <text x="780" y="733" text-anchor="middle" class="cardText">Pods</text>
+  </g>
+
+  <g filter="url(#softGlow)">
+    <rect x="720" y="805" width="120" height="94" rx="24" ry="24" fill="#1fc773" stroke="#97ffc8" stroke-width="3"/>
+    <path d="M734 819 C760 810, 806 810, 828 819" class="scribble"/>
+    <text x="780" y="845" text-anchor="middle" class="cardTitle">Telegram</text>
+    <text x="780" y="873" text-anchor="middle" class="cardText">Alert</text>
+  </g>
+
+  <!-- Left arrows -->
+  <line x1="290" y1="303" x2="390" y2="303" stroke="#f3efe8" stroke-width="3"/>
+  <polygon points="390,303 370,292 370,314" fill="#78bfff"/>
+  <text x="340" y="282" text-anchor="middle" class="label">Webhook</text>
+
+  <line x1="518" y1="351" x2="255" y2="455" stroke="#ffd46b" stroke-width="3.5"/>
+  <polygon points="255,455 276,432 287,460" fill="#ffd46b"/>
+
+  <line x1="518" y1="351" x2="553" y2="455" stroke="#49e3a0" stroke-width="3.5"/>
+  <polygon points="553,455 532,442 563,430" fill="#49e3a0"/>
+
+  <line x1="553" y1="563" x2="553" y2="620" stroke="#ffd46b" stroke-width="3.5"/>
+  <line x1="553" y1="620" x2="460" y2="620" stroke="#ffd46b" stroke-width="3.5"/>
+  <line x1="460" y1="620" x2="460" y2="655" stroke="#ffd46b" stroke-width="3.5"/>
+  <polygon points="460,655 440,624 480,624" fill="#ffd46b"/>
+
+  <line x1="780" y1="563" x2="780" y2="655" stroke="#6ec2ff" stroke-width="3.5"/>
+  <polygon points="780,655 760,620 800,620" fill="#6ec2ff"/>
+
+  <line x1="460" y1="765" x2="225" y2="805" stroke="#6ec2ff" stroke-width="3.5"/>
+  <polygon points="225,805 250,785 260,820" fill="#6ec2ff"/>
+
+  <line x1="460" y1="765" x2="550" y2="805" stroke="#49e3a0" stroke-width="3.5"/>
+  <polygon points="550,805 515,793 532,767" fill="#49e3a0"/>
+
+  <line x1="675" y1="852" x2="720" y2="852" stroke="#ffd46b" stroke-width="3.5"/>
+  <polygon points="720,852 688,832 688,872" fill="#ffd46b"/>
+
+  <line x1="780" y1="765" x2="780" y2="805" stroke="#49e3a0" stroke-width="3.5"/>
+  <polygon points="780,805 758,768 802,768" fill="#49e3a0"/>
+
+  <!-- Middle deploy arrow -->
+  <line x1="840" y1="520" x2="1080" y2="520" stroke="#6ec2ff" stroke-width="4"/>
+  <polygon points="1080,520 1040,495 1040,545" fill="#6ec2ff"/>
+  <text x="960" y="492" text-anchor="middle" class="section">Deploy New Version</text>
+
+  <!-- Runtime cluster inner frame -->
+  <rect x="1075" y="210" width="610" height="610" rx="34" ry="34" fill="rgba(255,255,255,0.05)" stroke="rgba(180,210,255,0.35)" stroke-width="3"/>
+  <text x="1380" y="260" text-anchor="middle" class="section">Kubernetes Cluster</text>
+
+  <!-- Right side nodes -->
+  <g filter="url(#softGlow)">
+    <rect x="1140" y="320" width="270" height="122" rx="26" ry="26" fill="#f5ad39" stroke="#ffe0a7" stroke-width="3"/>
+    <path d="M1156 334 C1220 322, 1320 322, 1392 334" class="scribble"/>
+    <text x="1275" y="370" text-anchor="middle" class="cardTitle">Prometheus</text>
+    <text x="1275" y="403" text-anchor="middle" class="cardText">Collect Metrics</text>
+  </g>
+
+  <g filter="url(#softGlow)">
+    <rect x="1470" y="320" width="220" height="122" rx="26" ry="26" fill="#26bbd7" stroke="#99f3ff" stroke-width="3"/>
+    <path d="M1488 334 C1552 322, 1618 322, 1678 334" class="scribble"/>
+    <text x="1580" y="370" text-anchor="middle" class="cardTitle">Grafana</text>
+    <text x="1580" y="403" text-anchor="middle" class="cardText">Dashboards</text>
+  </g>
+
+  <g filter="url(#softGlow)">
+    <rect x="1140" y="535" width="270" height="122" rx="26" ry="26" fill="#7d70ef" stroke="#c2c6ff" stroke-width="3"/>
+    <path d="M1155 549 C1235 536, 1312 536, 1391 548" class="scribble"/>
+    <text x="1275" y="585" text-anchor="middle" class="cardTitle">ML Predictor</text>
+    <text x="1275" y="618" text-anchor="middle" class="cardText">Flask + LSTM</text>
+  </g>
+
+  <g filter="url(#softGlow)">
+    <rect x="1470" y="535" width="220" height="122" rx="26" ry="26" fill="#22c575" stroke="#9effcc" stroke-width="3"/>
+    <path d="M1486 549 C1540 538, 1625 538, 1674 549" class="scribble"/>
+    <text x="1580" y="585" text-anchor="middle" class="cardTitle">Scaler</text>
+    <text x="1580" y="618" text-anchor="middle" class="cardText">Calls /predict</text>
+  </g>
+
+  <g filter="url(#softGlow)">
+    <rect x="1140" y="730" width="270" height="110" rx="26" ry="26" fill="#ff3f79" stroke="#ff9dbf" stroke-width="3"/>
+    <path d="M1156 744 C1215 732, 1324 732, 1392 744" class="scribble"/>
+    <text x="1275" y="778" text-anchor="middle" class="cardTitle">Web App</text>
+    <text x="1275" y="810" text-anchor="middle" class="cardText">Scales 2 to 5 Pods</text>
+  </g>
+
+  <g filter="url(#softGlow)">
+    <rect x="1470" y="730" width="220" height="110" rx="26" ry="26" fill="#49a2ef" stroke="#a9d9ff" stroke-width="3"/>
+    <path d="M1486 744 C1530 732, 1635 732, 1678 744" class="scribble"/>
+    <text x="1580" y="778" text-anchor="middle" class="cardTitle">HPA</text>
+    <text x="1580" y="810" text-anchor="middle" class="cardText">Reactive Backup</text>
+  </g>
+
+  <g filter="url(#softGlow)">
+    <rect x="1240" y="870" width="180" height="85" rx="24" ry="24" fill="#f4a53a" stroke="#ffe2ad" stroke-width="3"/>
+    <path d="M1252 884 C1292 875, 1372 875, 1406 884" class="scribble"/>
+    <text x="1330" y="910" text-anchor="middle" class="cardTitle">ArgoCD</text>
+    <text x="1330" y="936" text-anchor="middle" class="cardText">GitOps</text>
+  </g>
+
+  <g filter="url(#softGlow)">
+    <rect x="1500" y="870" width="180" height="85" rx="24" ry="24" fill="#6e72ef" stroke="#c6caff" stroke-width="3"/>
+    <path d="M1512 884 C1552 876, 1634 876, 1666 884" class="scribble"/>
+    <text x="1590" y="910" text-anchor="middle" class="cardTitle">Telegram</text>
+    <text x="1590" y="936" text-anchor="middle" class="cardText">Alerts</text>
+  </g>
+
+  <!-- Right arrows -->
+  <line x1="1410" y1="381" x2="1470" y2="381" stroke="#6ec2ff" stroke-width="3.5"/>
+  <polygon points="1470,381 1438,360 1438,402" fill="#6ec2ff"/>
+  <text x="1440" y="362" text-anchor="middle" class="label">metrics</text>
+
+  <line x1="1275" y1="442" x2="1275" y2="535" stroke="#ffd46b" stroke-width="3.5"/>
+  <polygon points="1275,535 1252,495 1298,495" fill="#ffd46b"/>
+  <text x="1322" y="484" class="label">history</text>
+
+  <line x1="1410" y1="596" x2="1470" y2="596" stroke="#49e3a0" stroke-width="3.5"/>
+  <polygon points="1470,596 1437,576 1437,616" fill="#49e3a0"/>
+  <text x="1442" y="575" text-anchor="middle" class="label">prediction</text>
+
+  <line x1="1580" y1="657" x2="1580" y2="730" stroke="#6ec2ff" stroke-width="3.5"/>
+  <polygon points="1580,730 1558,690 1602,690" fill="#6ec2ff"/>
+  <text x="1628" y="700" class="label">scale</text>
+
+  <line x1="1470" y1="785" x2="1410" y2="785" stroke="#ffd46b" stroke-width="3.5"/>
+  <polygon points="1410,785 1442,765 1442,805" fill="#ffd46b"/>
+  <text x="1440" y="764" text-anchor="middle" class="label">fallback</text>
+
+  <line x1="1275" y1="730" x2="1275" y2="657" stroke="#ffd46b" stroke-width="3.5"/>
+  <polygon points="1275,657 1252,697 1298,697" fill="#ffd46b"/>
+  <text x="1325" y="685" class="label">live metrics</text>
+
+  <line x1="1330" y1="870" x2="1330" y2="840" stroke="#49e3a0" stroke-width="3.5"/>
+  <polygon points="1330,840 1308,880 1352,880" fill="#49e3a0"/>
+
+  <line x1="1580" y1="442" x2="1590" y2="870" stroke="#6ec2ff" stroke-width="3.5"/>
+  <polygon points="1590,870 1568,830 1612,830" fill="#6ec2ff"/>
+  <text x="1634" y="668" class="label">alerts</text>
+
+  <text x="90" y="935" class="small">CI tools: GitHub, Jenkins, BuildKit, nerdctl</text>
+  <text x="90" y="958" class="small">CD tools: scp, ssh, ctr, kubectl, ArgoCD</text>
+  <text x="1050" y="935" class="small">Runtime tools: Prometheus, Grafana, Flask, PyTorch, HPA, Telegram</text>
+</svg>

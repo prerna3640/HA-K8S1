@@ -1,0 +1,249 @@
+<svg width="2000" height="1200" viewBox="0 0 2000 1200" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">Intelligent Auto-Scaling in Kubernetes</title>
+  <desc id="desc">A clean, colorful, non-overlapping architecture diagram showing CI/CD flow and runtime working of the Kubernetes predictive auto-scaling project.</desc>
+
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0b1220"/>
+      <stop offset="100%" stop-color="#111b31"/>
+    </linearGradient>
+    <linearGradient id="panel" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#17233b"/>
+      <stop offset="100%" stop-color="#1d2b45"/>
+    </linearGradient>
+    <linearGradient id="blue" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#3b82f6"/>
+      <stop offset="100%" stop-color="#22d3ee"/>
+    </linearGradient>
+    <linearGradient id="purple" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#8b5cf6"/>
+      <stop offset="100%" stop-color="#14b8a6"/>
+    </linearGradient>
+    <linearGradient id="orange" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#fb923c"/>
+      <stop offset="100%" stop-color="#facc15"/>
+    </linearGradient>
+    <linearGradient id="green" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#10b981"/>
+      <stop offset="100%" stop-color="#4ade80"/>
+    </linearGradient>
+    <linearGradient id="pink" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#ec4899"/>
+      <stop offset="100%" stop-color="#f97316"/>
+    </linearGradient>
+    <linearGradient id="cyan" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#06b6d4"/>
+      <stop offset="100%" stop-color="#67e8f9"/>
+    </linearGradient>
+    <linearGradient id="yellow" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#f59e0b"/>
+      <stop offset="100%" stop-color="#fde047"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="160%">
+      <feDropShadow dx="0" dy="10" stdDeviation="14" flood-color="#000000" flood-opacity="0.35"/>
+    </filter>
+    <marker id="arrowBlue" markerWidth="14" markerHeight="14" refX="12" refY="7" orient="auto">
+      <path d="M0,0 L14,7 L0,14 z" fill="#7dd3fc"/>
+    </marker>
+    <marker id="arrowGreen" markerWidth="14" markerHeight="14" refX="12" refY="7" orient="auto">
+      <path d="M0,0 L14,7 L0,14 z" fill="#4ade80"/>
+    </marker>
+    <marker id="arrowYellow" markerWidth="14" markerHeight="14" refX="12" refY="7" orient="auto">
+      <path d="M0,0 L14,7 L0,14 z" fill="#fde047"/>
+    </marker>
+    <style>
+      text { font-family: "Segoe UI", Arial, sans-serif; }
+      .title { font-size: 38px; font-weight: 800; fill: #ffffff; }
+      .subtitle { font-size: 19px; fill: #dbeafe; }
+      .section { font-size: 28px; font-weight: 800; fill: #ffffff; }
+      .panel {
+        fill: url(#panel);
+        stroke: rgba(148, 163, 184, 0.35);
+        stroke-width: 2.5;
+        rx: 34; ry: 34;
+      }
+      .lane {
+        fill: rgba(255,255,255,0.03);
+        stroke: rgba(147,197,253,0.18);
+        stroke-width: 2;
+        rx: 24; ry: 24;
+      }
+      .card {
+        rx: 26; ry: 26;
+        stroke: rgba(255,255,255,0.22);
+        stroke-width: 2;
+        filter: url(#shadow);
+      }
+      .cardTitle {
+        font-size: 28px;
+        font-weight: 800;
+        fill: #ffffff;
+      }
+      .cardText {
+        font-size: 18px;
+        fill: #f8fafc;
+      }
+      .small {
+        font-size: 15px;
+        fill: #eef2ff;
+      }
+      .label {
+        font-size: 17px;
+        font-weight: 700;
+        fill: #dbeafe;
+      }
+      .clusterTitle {
+        font-size: 30px;
+        font-weight: 800;
+        fill: #ffffff;
+      }
+      .legend {
+        font-size: 16px;
+        fill: #dbeafe;
+      }
+    </style>
+  </defs>
+
+  <rect width="2000" height="1200" fill="url(#bg)"/>
+
+  <text x="1000" y="62" text-anchor="middle" class="title">Intelligent Auto-Scaling in Kubernetes</text>
+  <text x="1000" y="96" text-anchor="middle" class="subtitle">Clear visual of CI/CD tools, deployment flow, and runtime architecture</text>
+
+  <rect x="60" y="140" width="860" height="940" class="panel"/>
+  <rect x="1080" y="140" width="860" height="940" class="panel"/>
+
+  <text x="110" y="195" class="section">CI / CD Flow</text>
+  <text x="1130" y="195" class="section">Runtime Working</text>
+
+  <rect x="100" y="230" width="780" height="180" class="lane"/>
+  <rect x="100" y="450" width="780" height="240" class="lane"/>
+  <rect x="100" y="730" width="780" height="300" class="lane"/>
+
+  <rect x="1120" y="230" width="780" height="180" class="lane"/>
+  <rect x="1120" y="450" width="780" height="240" class="lane"/>
+  <rect x="1120" y="730" width="780" height="220" class="lane"/>
+
+  <text x="130" y="265" class="label">1. Trigger</text>
+  <text x="130" y="485" class="label">2. Build and Package</text>
+  <text x="130" y="765" class="label">3. Deploy and Notify</text>
+
+  <text x="1150" y="265" class="label">1. Monitoring Layer</text>
+  <text x="1150" y="485" class="label">2. Prediction and Scaling Layer</text>
+  <text x="1150" y="765" class="label">3. Safety Net and GitOps</text>
+
+  <rect x="130" y="290" width="220" height="90" fill="url(#blue)" class="card"/>
+  <text x="240" y="335" text-anchor="middle" class="cardTitle">GitHub</text>
+  <text x="240" y="362" text-anchor="middle" class="cardText">Source Code</text>
+
+  <rect x="500" y="290" width="260" height="90" fill="url(#purple)" class="card"/>
+  <text x="630" y="335" text-anchor="middle" class="cardTitle">Jenkins</text>
+  <text x="630" y="362" text-anchor="middle" class="cardText">CI/CD Pipeline</text>
+
+  <line x1="350" y1="335" x2="500" y2="335" stroke="#7dd3fc" stroke-width="6" marker-end="url(#arrowBlue)"/>
+  <text x="425" y="315" text-anchor="middle" class="label">Webhook</text>
+
+  <rect x="130" y="530" width="240" height="110" fill="url(#orange)" class="card"/>
+  <text x="250" y="580" text-anchor="middle" class="cardTitle">BuildKit</text>
+  <text x="250" y="612" text-anchor="middle" class="cardText">Build Engine</text>
+
+  <rect x="510" y="530" width="240" height="110" fill="url(#green)" class="card"/>
+  <text x="630" y="580" text-anchor="middle" class="cardTitle">nerdctl</text>
+  <text x="630" y="612" text-anchor="middle" class="cardText">Build Images</text>
+
+  <rect x="245" y="780" width="390" height="110" fill="url(#pink)" class="card"/>
+  <text x="440" y="830" text-anchor="middle" class="cardTitle">Artifacts</text>
+  <text x="440" y="862" text-anchor="middle" class="cardText">Predictor image + Scaler image</text>
+
+  <line x1="630" y1="380" x2="250" y2="530" stroke="#fde047" stroke-width="6" marker-end="url(#arrowYellow)"/>
+  <line x1="630" y1="380" x2="630" y2="530" stroke="#4ade80" stroke-width="6" marker-end="url(#arrowGreen)"/>
+  <line x1="630" y1="640" x2="630" y2="710" stroke="#fde047" stroke-width="6"/>
+  <line x1="630" y1="710" x2="440" y2="710" stroke="#fde047" stroke-width="6"/>
+  <line x1="440" y1="710" x2="440" y2="780" stroke="#fde047" stroke-width="6" marker-end="url(#arrowYellow)"/>
+
+  <rect x="130" y="940" width="220" height="90" fill="url(#cyan)" class="card"/>
+  <text x="240" y="982" text-anchor="middle" class="cardTitle">scp / ssh</text>
+  <text x="240" y="1008" text-anchor="middle" class="cardText">Transfer to Nodes</text>
+
+  <rect x="450" y="940" width="220" height="90" fill="url(#blue)" class="card"/>
+  <text x="560" y="982" text-anchor="middle" class="cardTitle">ctr</text>
+  <text x="560" y="1008" text-anchor="middle" class="cardText">Import Images</text>
+
+  <rect x="760" y="780" width="90" height="110" fill="url(#purple)" class="card"/>
+  <text x="805" y="826" text-anchor="middle" class="cardTitle" font-size="22">kubectl</text>
+  <text x="805" y="858" text-anchor="middle" class="cardText">Deploy</text>
+
+  <rect x="760" y="940" width="90" height="90" fill="url(#green)" class="card"/>
+  <text x="805" y="982" text-anchor="middle" class="cardTitle" font-size="22">Alert</text>
+  <text x="805" y="1008" text-anchor="middle" class="cardText">Telegram</text>
+
+  <line x1="635" y1="890" x2="240" y2="940" stroke="#7dd3fc" stroke-width="6" marker-end="url(#arrowBlue)"/>
+  <line x1="635" y1="890" x2="560" y2="940" stroke="#4ade80" stroke-width="6" marker-end="url(#arrowGreen)"/>
+  <line x1="670" y1="985" x2="760" y2="985" stroke="#fde047" stroke-width="6" marker-end="url(#arrowYellow)"/>
+  <line x1="805" y1="890" x2="805" y2="940" stroke="#4ade80" stroke-width="6" marker-end="url(#arrowGreen)"/>
+
+  <rect x="1180" y="290" width="250" height="90" fill="url(#orange)" class="card"/>
+  <text x="1305" y="335" text-anchor="middle" class="cardTitle">Prometheus</text>
+  <text x="1305" y="362" text-anchor="middle" class="cardText">Collect Metrics</text>
+
+  <rect x="1590" y="290" width="230" height="90" fill="url(#cyan)" class="card"/>
+  <text x="1705" y="335" text-anchor="middle" class="cardTitle">Grafana</text>
+  <text x="1705" y="362" text-anchor="middle" class="cardText">Dashboards</text>
+
+  <line x1="1430" y1="335" x2="1590" y2="335" stroke="#7dd3fc" stroke-width="6" marker-end="url(#arrowBlue)"/>
+  <text x="1510" y="315" text-anchor="middle" class="label">Metrics</text>
+
+  <rect x="1180" y="540" width="260" height="110" fill="url(#purple)" class="card"/>
+  <text x="1310" y="590" text-anchor="middle" class="cardTitle">ML Predictor</text>
+  <text x="1310" y="622" text-anchor="middle" class="cardText">Flask API + LSTM</text>
+
+  <rect x="1560" y="540" width="260" height="110" fill="url(#green)" class="card"/>
+  <text x="1690" y="590" text-anchor="middle" class="cardTitle">Predictive Scaler</text>
+  <text x="1690" y="622" text-anchor="middle" class="cardText">Calls /predict</text>
+
+  <rect x="1180" y="900" width="260" height="90" fill="url(#pink)" class="card"/>
+  <text x="1310" y="943" text-anchor="middle" class="cardTitle">Web App</text>
+  <text x="1310" y="970" text-anchor="middle" class="cardText">Scales 2 to 5 Pods</text>
+
+  <rect x="1560" y="900" width="260" height="90" fill="url(#blue)" class="card"/>
+  <text x="1690" y="943" text-anchor="middle" class="cardTitle">HPA</text>
+  <text x="1690" y="970" text-anchor="middle" class="cardText">Reactive Backup</text>
+
+  <line x1="1310" y1="380" x2="1310" y2="540" stroke="#fde047" stroke-width="6" marker-end="url(#arrowYellow)"/>
+  <text x="1348" y="468" class="label">History</text>
+
+  <line x1="1440" y1="595" x2="1560" y2="595" stroke="#4ade80" stroke-width="6" marker-end="url(#arrowGreen)"/>
+  <text x="1500" y="575" text-anchor="middle" class="label">Prediction API</text>
+
+  <line x1="1690" y1="650" x2="1690" y2="820" stroke="#7dd3fc" stroke-width="6"/>
+  <line x1="1690" y1="820" x2="1310" y2="820" stroke="#7dd3fc" stroke-width="6"/>
+  <line x1="1310" y1="820" x2="1310" y2="900" stroke="#7dd3fc" stroke-width="6" marker-end="url(#arrowBlue)"/>
+  <text x="1500" y="800" text-anchor="middle" class="label">Scale Action</text>
+
+  <line x1="1690" y1="900" x2="1690" y2="820" stroke="#fde047" stroke-width="6"/>
+  <line x1="1690" y1="820" x2="1440" y2="820" stroke="#fde047" stroke-width="6"/>
+  <line x1="1440" y1="820" x2="1440" y2="945" stroke="#fde047" stroke-width="6" marker-end="url(#arrowYellow)"/>
+  <text x="1545" y="850" text-anchor="middle" class="label">Fallback</text>
+
+  <line x1="1310" y1="900" x2="1310" y2="650" stroke="#fde047" stroke-width="6" marker-end="url(#arrowYellow)"/>
+  <text x="1348" y="790" class="label">Live Metrics</text>
+
+  <rect x="1280" y="1040" width="180" height="90" fill="url(#orange)" class="card"/>
+  <text x="1370" y="1083" text-anchor="middle" class="cardTitle">ArgoCD</text>
+  <text x="1370" y="1110" text-anchor="middle" class="cardText">GitOps Sync</text>
+
+  <rect x="1540" y="1040" width="180" height="90" fill="url(#purple)" class="card"/>
+  <text x="1630" y="1083" text-anchor="middle" class="cardTitle">Telegram</text>
+  <text x="1630" y="1110" text-anchor="middle" class="cardText">Alerts</text>
+
+  <line x1="1370" y1="1040" x2="1370" y2="990" stroke="#4ade80" stroke-width="6" marker-end="url(#arrowGreen)"/>
+  <line x1="1705" y1="380" x2="1705" y2="1040" stroke="#7dd3fc" stroke-width="6" marker-end="url(#arrowBlue)"/>
+  <text x="1738" y="730" class="label">Notifications</text>
+
+  <line x1="850" y1="835" x2="1180" y2="835" stroke="#7dd3fc" stroke-width="8" marker-end="url(#arrowBlue)"/>
+  <text x="1015" y="805" text-anchor="middle" class="section">Deploy to Kubernetes</text>
+
+  <rect x="120" y="1125" width="1760" height="32" rx="16" ry="16" fill="rgba(255,255,255,0.07)"/>
+  <text x="145" y="1147" class="legend">CI: GitHub, Jenkins, BuildKit, nerdctl</text>
+  <text x="590" y="1147" class="legend">CD: scp, ssh, ctr, kubectl, ArgoCD</text>
+  <text x="1035" y="1147" class="legend">Runtime: Prometheus, Grafana, Flask, PyTorch, Predictive Scaler, HPA, Telegram</text>
+</svg>

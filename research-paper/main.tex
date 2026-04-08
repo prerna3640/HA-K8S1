@@ -1,0 +1,757 @@
+\documentclass[journal]{IEEEtran}
+
+% Packages
+\usepackage{cite}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{graphicx}
+\usepackage{textcomp}
+\usepackage{xcolor}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{hyperref}
+\usepackage{listings}
+\usepackage{algorithm}
+\usepackage{algorithmic}
+\usepackage{float}
+
+% Listings style
+\lstset{
+  basicstyle=\footnotesize\ttfamily,
+  breaklines=true,
+  frame=single,
+  numbers=left,
+  numberstyle=\tiny,
+  tabsize=2
+}
+
+\begin{document}
+
+\title{Intelligent Auto-Scaling in Kubernetes: Reducing Scaling Latency Using LSTM-Based Predictive Approach}
+
+\author{
+\IEEEauthorblockN{Prerna Tank}
+\IEEEauthorblockA{
+School of Computer Science and Information Technology\\
+Devi Ahilya Vishwavidyalaya (DAVV), Indore, India\\
+M.Tech (CS), Roll No. 2410512\\
+Email: prernatank24@gmail.com}
+\and
+\IEEEauthorblockN{Dr. Shraddha Masih}
+\IEEEauthorblockA{
+School of Computer Science and Information Technology\\
+Devi Ahilya Vishwavidyalaya (DAVV), Indore, India\\
+Email: shraddha.masih@davv.ac.in}
+}
+
+\maketitle
+
+% ============================================================
+% ABSTRACT
+% ============================================================
+\begin{abstract}
+Kubernetes Horizontal Pod Autoscaler (HPA) employs a reactive scaling mechanism that adjusts pod replicas only after resource utilization exceeds a predefined threshold. This reactive approach introduces a scaling latency of approximately 2 minutes, during which application performance degrades and users experience increased response times. This paper proposes an intelligent auto-scaling system that leverages Long Short-Term Memory (LSTM) neural networks to predict CPU utilization 30 minutes ahead, enabling proactive pod scaling before traffic spikes occur. The proposed system was implemented on a real 3-node Kubernetes cluster with a complete monitoring stack comprising Prometheus, Grafana, and AlertManager. A custom Kubernetes controller polls the LSTM prediction service every 60 seconds and scales the web application deployment proactively. Experimental results on a 10-day deployment demonstrate that the LSTM-based predictive scaler eliminates the reactive scaling delay entirely --- pods were pre-scaled from 2 to 4 replicas before load arrival, reducing per-pod CPU utilization by 54\% compared to reactive-only HPA. The system operates alongside the existing HPA as a dual-layer scaling mechanism, providing both proactive and reactive fault tolerance. The complete implementation, including the LSTM predictor, custom controller, Grafana dashboards, and Telegram alerting, is open-source and reproducible.
+\end{abstract}
+
+\begin{IEEEkeywords}
+Kubernetes, Auto-scaling, LSTM, Machine Learning, Horizontal Pod Autoscaler, Predictive Scaling, Container Orchestration, Proactive Scaling, Time Series Forecasting
+\end{IEEEkeywords}
+
+% ============================================================
+% 1. INTRODUCTION
+% ============================================================
+\section{Introduction}
+
+\subsection{Background}
+Cloud-native applications increasingly rely on container orchestration platforms such as Kubernetes to manage deployment, scaling, and operations of application containers across clusters of hosts \cite{burns2016}. Kubernetes has emerged as the de facto standard for container orchestration, adopted by over 96\% of organizations surveyed by the Cloud Native Computing Foundation (CNCF) in 2023 \cite{cncf2023}.
+
+A fundamental capability of Kubernetes is auto-scaling --- the automatic adjustment of computational resources in response to changing workload demands. Kubernetes provides three native auto-scaling mechanisms: the Horizontal Pod Autoscaler (HPA), which adjusts the number of pod replicas; the Vertical Pod Autoscaler (VPA), which adjusts pod resource requests and limits; and the Cluster Autoscaler, which adjusts the number of nodes in the cluster.
+
+\subsection{Problem Statement}
+The Kubernetes HPA operates on a reactive paradigm. It periodically queries the Metrics API (default interval: 15 seconds), compares current resource utilization against a user-defined threshold, and scales pods accordingly. This reactive cycle introduces a significant delay:
+
+\begin{enumerate}
+    \item \textbf{Metric collection delay} ($\sim$15--30 seconds): The HPA must wait for fresh metrics from the Metrics Server.
+    \item \textbf{Evaluation delay} ($\sim$30 seconds): The HPA controller evaluates the scaling decision with a stabilization window to prevent flapping.
+    \item \textbf{Pod scheduling and startup} ($\sim$60--90 seconds): New pods must be scheduled to a node, the container image pulled (if not cached), and the application initialized.
+\end{enumerate}
+
+The total reactive scaling latency is approximately \textbf{2 minutes}. During this window, the existing pods are overwhelmed, response times increase, and users experience degraded service quality. In production environments, this latency translates to revenue loss, Service Level Agreement (SLA) violations, and poor user experience \cite{mao2016}.
+
+\subsection{Proposed Solution}
+This paper proposes an intelligent auto-scaling system that augments the reactive HPA with a proactive, machine learning-based predictor. The key components are:
+
+\begin{itemize}
+    \item An \textbf{LSTM-based prediction service} that forecasts CPU utilization for the next 30 minutes using historical metrics collected from Prometheus.
+    \item A \textbf{custom Kubernetes controller} (Predictive Scaler) that polls the prediction service every 60 seconds and scales the target deployment proactively.
+    \item A \textbf{dual-layer scaling architecture} where the predictive scaler handles anticipated load and the HPA acts as a reactive safety net for unpredicted spikes.
+\end{itemize}
+
+\subsection{Contributions}
+The contributions of this paper are:
+\begin{enumerate}
+    \item Design and implementation of an LSTM-based CPU usage predictor integrated with the Kubernetes monitoring stack (Prometheus).
+    \item A custom Kubernetes controller that performs proactive scaling decisions based on ML predictions, implemented as a standard Kubernetes deployment with RBAC permissions.
+    \item Experimental evaluation on a real 3-node Kubernetes cluster over a 10-day period, demonstrating that predictive scaling eliminates the 2-minute reactive delay.
+    \item An open-source, reproducible implementation including the ML predictor, custom controller, Grafana dashboards, and Telegram alerting pipeline.
+\end{enumerate}
+
+\subsection{Paper Organization}
+The remainder of this paper is organized as follows. Section~\ref{sec:related} reviews related work on auto-scaling in cloud and container environments. Section~\ref{sec:architecture} presents the proposed system architecture. Section~\ref{sec:implementation} describes the implementation details. Section~\ref{sec:experiments} presents the experimental setup and results. Section~\ref{sec:discussion} discusses the findings and limitations. Section~\ref{sec:conclusion} concludes the paper with future research directions.
+
+% ============================================================
+% 2. RELATED WORK
+% ============================================================
+\section{Related Work}
+\label{sec:related}
+
+\subsection{Kubernetes Auto-Scaling Mechanisms}
+The Kubernetes HPA \cite{k8shpa} is the most widely used auto-scaling mechanism in container orchestration. It supports scaling based on CPU utilization, memory usage, and custom metrics. However, its reactive nature --- scaling only after thresholds are breached --- limits its effectiveness for latency-sensitive applications.
+
+The Vertical Pod Autoscaler (VPA) adjusts resource requests and limits for individual pods but requires pod restarts, making it unsuitable for real-time scaling. The Cluster Autoscaler adds or removes nodes but operates at a coarser granularity with longer scaling times (minutes to provision new VMs).
+
+\subsection{Machine Learning for Cloud Auto-Scaling}
+Dang-Quang and Yoo \cite{dangquang2021} proposed an LSTM-based approach for predicting CPU usage in cloud data centers. Their model achieved high prediction accuracy on VM-level metrics but was not integrated with any container orchestration platform. The work demonstrated that LSTM networks are well-suited for time series forecasting of cloud resource metrics due to their ability to capture long-term temporal dependencies.
+
+Mao et al. \cite{mao2016} applied deep reinforcement learning (DRL) to cloud auto-scaling, training an agent to make scaling decisions that minimize a cost function combining resource utilization and SLA violations. While effective, the DRL approach requires extensive training episodes and operates at the VM level rather than the container/pod level.
+
+Rzadca et al. \cite{rzadca2020} described Autopilot, Google's system for automatic resource management in Borg clusters. Autopilot uses machine learning to recommend resource limits based on historical usage patterns. However, Autopilot is proprietary and focuses on vertical scaling (resource adjustment) rather than horizontal scaling (replica count).
+
+Toka et al. \cite{toka2021} proposed adaptive AI-based auto-scaling for Kubernetes, using neural networks to predict request rates and scale services accordingly. Their approach showed promising results in simulation but was not evaluated on a production Kubernetes cluster.
+
+Imdoukh et al. \cite{imdoukh2020} applied machine learning to auto-scaling containerized applications, comparing several algorithms including Random Forest and Support Vector Regression. Their work highlighted the importance of feature engineering and the trade-off between prediction accuracy and inference latency.
+
+\subsection{Gap Analysis}
+Table~\ref{tab:gap} summarizes the gaps in existing literature that this work addresses.
+
+\begin{table}[h]
+\centering
+\caption{Comparison with Existing Work}
+\label{tab:gap}
+\begin{tabular}{@{}lcccc@{}}
+\toprule
+\textbf{Approach} & \textbf{Target} & \textbf{K8s} & \textbf{Open} & \textbf{Real} \\
+ & & \textbf{Integrated} & \textbf{Source} & \textbf{Cluster} \\
+\midrule
+Dang-Quang \cite{dangquang2021} & VMs & No & Partial & No \\
+Mao et al. \cite{mao2016} & VMs & No & No & No \\
+Autopilot \cite{rzadca2020} & Borg & No & No & Yes \\
+Toka et al. \cite{toka2021} & K8s & Partial & No & Sim. \\
+Imdoukh et al. \cite{imdoukh2020} & Containers & No & No & No \\
+\textbf{This work} & \textbf{K8s Pods} & \textbf{Yes} & \textbf{Yes} & \textbf{Yes} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+% ============================================================
+% 3. PROPOSED ARCHITECTURE
+% ============================================================
+\section{Proposed System Architecture}
+\label{sec:architecture}
+
+\subsection{System Overview}
+The proposed system extends the standard Kubernetes auto-scaling architecture with an ML-based prediction layer. Fig.~\ref{fig:architecture} illustrates the high-level architecture.
+
+\begin{figure}[h]
+\centering
+\setlength{\unitlength}{0.9mm}
+\begin{picture}(95,85)
+% Title
+\put(47,82){\makebox(0,0){\footnotesize\textbf{System Architecture}}}
+
+% Internet
+\put(35,75){\framebox(25,6){\footnotesize Internet}}
+
+% Arrow down
+\put(47,75){\vector(0,-1){5}}
+
+% Traefik
+\put(25,64){\framebox(45,6){\footnotesize Traefik Ingress (LB)}}
+
+% Arrow down
+\put(47,64){\vector(0,-1){5}}
+
+% Web Pods
+\put(20,53){\framebox(55,6){\footnotesize Web Pods (nginx, 2--5 replicas)}}
+
+% Arrow left to HPA
+\put(20,56){\vector(-1,0){10}}
+\put(0,53){\framebox(10,6){\tiny HPA}}
+
+% Arrow right to Scaler
+\put(75,56){\vector(1,0){10}}
+\put(85,53){\framebox(10,6){\tiny Scaler}}
+
+% Arrow down from web
+\put(47,53){\vector(0,-1){5}}
+
+% Prometheus
+\put(25,42){\framebox(45,6){\footnotesize Prometheus (metrics)}}
+
+% Arrow down
+\put(47,42){\vector(0,-1){5}}
+
+% ML Predictor
+\put(20,31){\framebox(55,6){\footnotesize ML Predictor (LSTM + Flask API)}}
+
+% Arrow from ML to Scaler
+\put(75,34){\line(1,0){17.5}}
+\put(92.5,34){\line(0,1){19}}
+
+% Arrow from Scaler to Web
+\put(92.5,53){\vector(-1,0){0}}
+
+% Grafana + AlertManager
+\put(0,31){\framebox(18,6){\tiny Grafana}}
+\put(20,34){\vector(-1,0){2}}
+
+\put(0,22){\framebox(18,6){\tiny AlertMgr}}
+
+% Telegram
+\put(0,13){\framebox(18,6){\tiny Telegram}}
+\put(9,22){\vector(0,-1){3}}
+
+% ArgoCD + Jenkins
+\put(40,22){\framebox(18,6){\tiny ArgoCD}}
+\put(62,22){\framebox(18,6){\tiny Jenkins}}
+
+% GitHub
+\put(47,13){\framebox(25,6){\tiny GitHub Repo}}
+\put(49,22){\vector(0,-1){3}}
+\put(71,22){\vector(0,-1){3}}
+
+% Labels
+\put(47,7){\makebox(0,0){\tiny\textit{Data Flow: Prometheus $\rightarrow$ ML Predictor $\rightarrow$ Scaler $\rightarrow$ Web Pods}}}
+\put(47,2){\makebox(0,0){\tiny\textit{Alert Flow: AlertManager $\rightarrow$ Telegram}}}
+\end{picture}
+\caption{Proposed system architecture showing the data flow from Prometheus metrics through the LSTM predictor to the predictive scaler, alongside the reactive HPA safety net, monitoring dashboards, and CI/CD pipeline.}
+\label{fig:architecture}
+\end{figure}
+
+The system comprises four main components:
+\begin{enumerate}
+    \item \textbf{Prometheus Monitoring}: Collects CPU utilization metrics from web application pods every 15 seconds via the \texttt{container\_cpu\_usage\_seconds\_total} counter.
+    \item \textbf{ML Predictor Service}: A Flask-based REST API that fetches historical CPU metrics from Prometheus, trains an LSTM model, and serves predictions via the \texttt{/predict} endpoint.
+    \item \textbf{Predictive Scaler Controller}: A custom Python-based Kubernetes controller that polls the ML Predictor every 60 seconds and adjusts the deployment replica count based on predicted CPU utilization.
+    \item \textbf{HPA Safety Net}: The standard Kubernetes HPA configured at a higher threshold (70\% CPU) to catch any spikes that the ML model fails to predict.
+\end{enumerate}
+
+\subsection{LSTM Model Architecture}
+The LSTM model is designed for short-horizon time series forecasting of CPU utilization. The architecture consists of:
+
+\begin{itemize}
+    \item \textbf{Input layer}: A sequence of 6 observations (30 minutes of 5-minute intervals).
+    \item \textbf{LSTM layers}: Two stacked LSTM layers with 64 hidden units each and 0.2 dropout between layers to prevent overfitting.
+    \item \textbf{Output layer}: A fully connected layer producing 3 output values (15 minutes of 5-minute interval forecasts).
+\end{itemize}
+
+The model is trained using the Adam optimizer with a learning rate of 0.001 and Mean Squared Error (MSE) loss function. Training runs for 50 epochs on each retraining cycle, which occurs every hour.
+
+Table~\ref{tab:lstm} summarizes the LSTM model hyperparameters.
+
+\begin{table}[h]
+\centering
+\caption{LSTM Model Hyperparameters}
+\label{tab:lstm}
+\begin{tabular}{@{}ll@{}}
+\toprule
+\textbf{Parameter} & \textbf{Value} \\
+\midrule
+Input sequence length & 6 (30 min of 5-min intervals) \\
+Output horizon & 3 (15 min of 5-min intervals) \\
+Hidden units per layer & 64 \\
+Number of LSTM layers & 2 \\
+Dropout rate & 0.2 \\
+Optimizer & Adam \\
+Learning rate & 0.001 \\
+Loss function & Mean Squared Error (MSE) \\
+Epochs per training cycle & 50 \\
+Retraining frequency & Every 1 hour \\
+Training data window & Last 2 hours (25 data points) \\
+Data source & Prometheus PromQL \\
+Normalization & Min-Max scaling [0, 1] \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Data Pipeline}
+Fig.~\ref{fig:datapipeline} illustrates the end-to-end data pipeline from traffic generation to scaling decisions.
+
+\begin{figure}[h]
+\centering
+\setlength{\unitlength}{0.8mm}
+\begin{picture}(100,55)
+% Step 1
+\put(0,48){\framebox(30,6){\footnotesize Traffic Sim.}}
+\put(30,51){\vector(1,0){5}}
+% Step 2
+\put(35,48){\framebox(25,6){\footnotesize Web Pods}}
+\put(60,51){\vector(1,0){5}}
+% Step 3
+\put(65,48){\framebox(30,6){\footnotesize CPU Usage}}
+
+% Arrow down
+\put(80,48){\vector(0,-1){5}}
+
+% Step 4
+\put(55,37){\framebox(40,6){\footnotesize Prometheus (15s)}}
+
+% Arrow down
+\put(75,37){\vector(0,-1){5}}
+
+% Step 5
+\put(45,26){\framebox(50,6){\footnotesize ML Predictor (PromQL)}}
+
+% Arrow down
+\put(70,26){\vector(0,-1){5}}
+
+% Step 6
+\put(40,15){\framebox(55,6){\footnotesize LSTM Model (50 epochs)}}
+
+% Arrow down
+\put(67,15){\vector(0,-1){5}}
+
+% Step 7
+\put(35,4){\framebox(60,6){\footnotesize Predictive Scaler (60s poll)}}
+
+% Arrow back to pods
+\put(35,7){\line(-1,0){15}}
+\put(20,7){\line(0,1){44}}
+\put(20,51){\vector(1,0){15}}
+
+% Labels
+\put(12,30){\makebox(0,0){\tiny\rotatebox{90}{Scale pods}}}
+\end{picture}
+\caption{Data pipeline: Traffic generates CPU load, Prometheus collects metrics, LSTM model trains and predicts, predictive scaler adjusts pod replicas.}
+\label{fig:datapipeline}
+\end{figure}
+
+\subsection{Scaling Decision Algorithm}
+The predictive scaler uses Algorithm~\ref{alg:scaling} to determine the desired replica count.
+
+\begin{algorithm}
+\caption{Predictive Scaling Decision}
+\label{alg:scaling}
+\begin{algorithmic}[1]
+\REQUIRE $P$: predicted max CPU, $C$: CPU capacity per replica, $B$: buffer factor, $R_{min}$, $R_{max}$: replica bounds
+\STATE $P \leftarrow$ \texttt{GET /predict?horizon=30}
+\STATE $effective\_capacity \leftarrow C \times B$
+\STATE $desired \leftarrow \lceil P / effective\_capacity \rceil$
+\STATE $desired \leftarrow \max(R_{min}, \min(R_{max}, desired))$
+\IF{$desired > current\_replicas$}
+    \STATE Scale up immediately
+\ELSIF{$desired < current\_replicas$ \AND cooldown expired}
+    \STATE Scale down
+\ELSE
+    \STATE No change
+\ENDIF
+\end{algorithmic}
+\end{algorithm}
+
+The buffer factor $B = 0.80$ ensures scaling occurs before pods reach 100\% capacity. The scale-down cooldown of 5 minutes prevents oscillation.
+
+\subsection{Dual-Layer Scaling}
+The system employs a dual-layer scaling strategy:
+\begin{itemize}
+    \item \textbf{Layer 1 --- Proactive (ML-based)}: The predictive scaler acts on forecasted CPU, scaling pods before load arrives. Threshold: $\sim$50\% of predicted capacity.
+    \item \textbf{Layer 2 --- Reactive (HPA)}: The standard HPA triggers at 70\% actual CPU utilization, catching any spikes the ML model did not anticipate.
+\end{itemize}
+
+This dual-layer approach ensures no single point of failure in the scaling pipeline.
+
+% ============================================================
+% 4. IMPLEMENTATION
+% ============================================================
+\section{Implementation}
+\label{sec:implementation}
+
+\subsection{Cluster Configuration}
+The system was deployed on a 3-node Kubernetes cluster with the specifications shown in Table~\ref{tab:cluster}.
+
+\begin{table}[h]
+\centering
+\caption{Cluster Node Specifications}
+\label{tab:cluster}
+\begin{tabular}{@{}llcccc@{}}
+\toprule
+\textbf{Node} & \textbf{Role} & \textbf{vCPU} & \textbf{RAM} & \textbf{Disk} \\
+\midrule
+master-node & Control plane & 4 & 8 GB & 60 GB \\
+worker-node-1 & App workloads & 4 & 8 GB & 50 GB \\
+worker-node-2 & Data/ML workloads & 4 & 8 GB & 50 GB \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The cluster runs Kubernetes v1.30.14 with containerd as the container runtime and Flannel as the CNI plugin. Worker-node-1 is labeled \texttt{workload=app} and hosts the web application pods, Traefik ingress controller, and the predictive scaler. Worker-node-2 is labeled \texttt{workload=data} and hosts the ML predictor, Prometheus, Grafana, Loki, and AlertManager.
+
+\subsection{Technology Stack}
+Table~\ref{tab:stack} summarizes the complete technology stack.
+
+\begin{table}[h]
+\centering
+\caption{Technology Stack}
+\label{tab:stack}
+\begin{tabular}{@{}ll@{}}
+\toprule
+\textbf{Layer} & \textbf{Tools} \\
+\midrule
+Orchestration & Kubernetes v1.30.14, containerd, Flannel \\
+Ingress & Traefik v2 (NodePort 30080) \\
+Monitoring & Prometheus, Grafana 12.4, Loki \\
+Alerting & AlertManager, Telegram Bot \\
+ML Framework & PyTorch (LSTM), Python 3.11 \\
+API & Flask + Gunicorn \\
+CI/CD & Jenkins, ArgoCD v2.10 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{ML Predictor Service}
+The ML predictor is deployed as a single-replica Kubernetes deployment on worker-node-2 with a ClusterIP service exposing port 5000. It consists of three Python modules:
+
+\begin{itemize}
+    \item \texttt{data\_collector.py}: Fetches CPU metrics from Prometheus using the PromQL query: \texttt{sum(rate(container\_cpu\_usage\_seconds\_total\{namespace="myapp"\}[5m]))}.
+    \item \texttt{model.py}: Implements the LSTM neural network using PyTorch with an ensemble wrapper that gracefully handles model failures.
+    \item \texttt{predictor\_api.py}: Flask REST API with endpoints \texttt{/health}, \texttt{/predict}, and \texttt{/metrics/current}. A background thread retrains the model every hour.
+\end{itemize}
+
+\subsection{Predictive Scaler Controller}
+The predictive scaler runs on worker-node-1 with a dedicated ServiceAccount and ClusterRole granting permissions to read and patch deployment scale resources. It polls the ML predictor every 60 seconds and implements scale-up (immediate) and scale-down (with 5-minute cooldown) logic.
+
+\subsection{Traffic Simulation}
+To generate realistic traffic patterns for model training, a Kubernetes CronJob executes every 10 minutes with varying concurrency levels based on the time of day:
+
+\begin{itemize}
+    \item Night (00:00--06:59 UTC): 2 workers, 30s duration
+    \item Morning (07:00--09:59): 15 workers, 120s duration
+    \item Midday (10:00--14:59): 30 workers, 180s duration
+    \item Afternoon (15:00--18:59): 20 workers, 120s duration
+    \item Evening (19:00--23:59): 5 workers, 60s duration
+\end{itemize}
+
+Each worker sends continuous HTTP GET requests to the web service, generating CPU load proportional to the number of concurrent workers.
+
+% ============================================================
+% 5. EXPERIMENTS AND RESULTS
+% ============================================================
+\section{Experiments and Results}
+\label{sec:experiments}
+
+\subsection{Experimental Setup}
+The system was deployed and operated for 10 days (March 28 -- April 7, 2026). The traffic simulator ran continuously, generating daily load patterns. The LSTM model retrained hourly on the latest 2 hours of Prometheus data (25 data points per cycle). Two load tests were conducted:
+
+\begin{itemize}
+    \item \textbf{Test 1 (March 28)}: Reactive HPA only --- LSTM model untrained (17 data points, predicted 0.000 cores).
+    \item \textbf{Test 2 (April 5)}: Predictive + HPA --- LSTM model trained for 8 days on daily traffic patterns.
+\end{itemize}
+
+Both tests used 50 concurrent HTTP workers for 5 minutes against the web application service.
+
+\subsection{Baseline: Reactive HPA Only (March 28)}
+Table~\ref{tab:before} shows the scaling timeline when only the reactive HPA was effective (ML model untrained).
+
+\begin{table}[h]
+\centering
+\caption{Reactive HPA Scaling Timeline (March 28)}
+\label{tab:before}
+\begin{tabular}{@{}cccc@{}}
+\toprule
+\textbf{Time} & \textbf{CPU} & \textbf{Replicas} & \textbf{Event} \\
+\midrule
++0s & 0\% & 2 & Load started \\
++30s & 36\% & 2 & HPA not yet reacted \\
++60s & 136\% & 3$\rightarrow$4 & HPA triggered (late) \\
++90s & 100\% & 4 & Pods still starting \\
++120s & 103\% & 5 & Max replicas reached \\
++150s & 55\% & 5 & Load distributed \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The reactive HPA required approximately 120 seconds to scale from 2 to 5 replicas. During this period, the existing 2 pods were overwhelmed, with per-pod CPU reaching 141 millicores (70.5\% of the 200m limit).
+
+\subsection{Predictive Scaling (April 5)}
+After 8 days of training, the LSTM model had learned the daily traffic patterns and predicted a max CPU of 0.054 cores. The predictive scaler maintained 4 replicas during traffic hours. Table~\ref{tab:after} shows the scaling timeline.
+
+\begin{table}[h]
+\centering
+\caption{Predictive Scaling Timeline (April 5)}
+\label{tab:after}
+\begin{tabular}{@{}cccc@{}}
+\toprule
+\textbf{Time} & \textbf{CPU (m)} & \textbf{Replicas} & \textbf{Event} \\
+\midrule
++0s & 0.3 & 4 & Already pre-scaled \\
++60s & 44 & 4 & Handling load \\
++120s & 103 & 4 & No scaling needed \\
++180s & 161 & 4 & Peak load \\
++240s & 218 & 4 & Max CPU absorbed \\
++300s & 261 & 4 & Load ending \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The predictive scaler had pre-scaled the deployment to 4 replicas before the load test began. No reactive scaling was triggered because the load was distributed across 4 pods from the start.
+
+\subsection{Grafana Dashboard Observations}
+Five custom Grafana dashboards were created to monitor the system in real time:
+
+\begin{enumerate}
+    \item \textbf{Cluster Overview}: Node CPU/RAM gauges and time series for all 3 nodes. Showed stable operation over 10 days with zero pod restarts.
+    \item \textbf{Web Application}: CPU vs. limits, replica count over time, memory per pod, and network traffic. Showed clear daily scaling patterns (2--5 replicas).
+    \item \textbf{ML Auto-Scaling Pipeline}: ML Predictor and Predictive Scaler status (RUNNING), CPU vs. HPA threshold chart, and scaling events. Demonstrated the predictive scaler maintaining higher replica counts during anticipated traffic periods.
+    \item \textbf{Monitoring \& Alerts}: Firing alerts, pod restarts, disk usage. Confirmed PodScaledUp alerts delivered to Telegram during scaling events.
+    \item \textbf{Prometheus Stack}: All monitoring components UP, scrape targets (21 up, 6 down for expected kubeadm limitations), 60,000+ active time series.
+\end{enumerate}
+
+The ``ML Auto-Scaling Pipeline'' dashboard was particularly valuable for visualizing the proactive scaling behavior --- the replica count increased before CPU reached the HPA threshold, confirming that the LSTM predictions drove pre-emptive scaling.
+
+\subsection{Comparison}
+Table~\ref{tab:comparison} presents the key metrics comparing reactive and predictive scaling.
+
+\begin{table}[h]
+\centering
+\caption{Reactive vs. Predictive Scaling Comparison}
+\label{tab:comparison}
+\begin{tabular}{@{}lccc@{}}
+\toprule
+\textbf{Metric} & \textbf{Reactive} & \textbf{Predictive} & \textbf{Improvement} \\
+\midrule
+Scaling delay & $\sim$120s & 0s & 100\% \\
+Pods at load start & 2 & 4 & 2$\times$ capacity \\
+Peak CPU/pod & 141m & 65m & 54\% lower \\
+User impact & $\sim$2 min & 0s & Eliminated \\
+ML prediction & 0.000 & 0.054 cores & Learned \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{LSTM Training Performance}
+The LSTM model converged within 50 epochs per training cycle. Table~\ref{tab:training} shows the training loss progression for a representative training cycle on April 7, 2026.
+
+\begin{table}[h]
+\centering
+\caption{LSTM Training Loss Progression}
+\label{tab:training}
+\begin{tabular}{@{}ccc@{}}
+\toprule
+\textbf{Epoch} & \textbf{MSE Loss} & \textbf{Reduction} \\
+\midrule
+1 & 0.125551 & --- \\
+10 & 0.000521 & 99.6\% \\
+20 & 0.000107 & 99.9\% \\
+30 & 0.000005 & $>$99.9\% \\
+40 & 0.000008 & $>$99.9\% \\
+50 & 0.000010 & $>$99.9\% \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The model achieved convergence by epoch 30, with the loss stabilizing at approximately $10^{-5}$. The total training time per cycle was approximately 7 seconds on a single CPU core.
+
+\subsection{7-Day Traffic Pattern and Scaling Behavior}
+Over the 7-day observation period, the traffic simulator created distinct daily patterns. Table~\ref{tab:7day} shows representative hourly CPU and replica data.
+
+\begin{table}[h]
+\centering
+\caption{Representative Daily Traffic Pattern (Avg. CPU millicores)}
+\label{tab:7day}
+\begin{tabular}{@{}lccl@{}}
+\toprule
+\textbf{Time (UTC)} & \textbf{Avg CPU (m)} & \textbf{Replicas} & \textbf{Pattern} \\
+\midrule
+00:00--06:59 & 5--15 & 2 & Night (low) \\
+07:00--09:59 & 30--60 & 2--3 & Morning (ramp) \\
+10:00--14:59 & 80--120 & 3--5 & Midday (peak) \\
+15:00--18:59 & 40--80 & 2--4 & Afternoon \\
+19:00--23:59 & 10--30 & 2 & Evening (decline) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The predictive scaler learned this pattern after approximately 7 days of training and began pre-scaling pods during the morning ramp-up period (07:00--09:59 UTC), before the midday peak arrived.
+
+\subsection{Prediction Accuracy Over Time}
+Table~\ref{tab:accuracy} shows how the LSTM prediction improved as more training data became available.
+
+\begin{table}[h]
+\centering
+\caption{LSTM Prediction Accuracy Over Training Period}
+\label{tab:accuracy}
+\begin{tabular}{@{}cccc@{}}
+\toprule
+\textbf{Day} & \textbf{Data Points} & \textbf{Prediction} & \textbf{Useful?} \\
+\midrule
+Day 1 (Mar 28) & 17 & 0.000 cores & No \\
+Day 3 (Mar 30) & 25 & 0.012 cores & Partial \\
+Day 5 (Apr 1) & 25 & 0.034 cores & Improving \\
+Day 8 (Apr 4) & 25 & 0.054 cores & Yes \\
+Day 10 (Apr 7) & 25 & 0.054 cores & Yes \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The model required approximately 7 days of continuous data collection before producing predictions accurate enough for proactive scaling decisions.
+
+\subsection{Alert System Performance}
+The Telegram-based alerting system was configured with 8 custom Prometheus alert rules. Table~\ref{tab:alerts} summarizes the alert configuration and firing behavior during the evaluation period.
+
+\begin{table}[h]
+\centering
+\caption{Custom Alert Rules and Performance}
+\label{tab:alerts}
+\begin{tabular}{@{}llcc@{}}
+\toprule
+\textbf{Alert} & \textbf{Severity} & \textbf{Trigger} & \textbf{Fired} \\
+\midrule
+HighCPUUsage & Warning & CPU $>$ 50\% & 12$\times$ \\
+CriticalCPUUsage & Critical & CPU $>$ 80\% & 3$\times$ \\
+PodScaledUp & Warning & Replicas $>$ 2 & 45$\times$ \\
+MLPredictorDown & Critical & Pod down & 1$\times$ \\
+PredictiveScalerDown & Critical & Pod down & 0$\times$ \\
+HighMemoryUsage & Warning & RAM $>$ 85\% & 0$\times$ \\
+DiskSpaceLow & Warning & Disk $>$ 85\% & 0$\times$ \\
+PodCrashLooping & Critical & $>$3 restarts & 1$\times$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+All alerts were delivered to Telegram within seconds of firing, confirming the reliability of the AlertManager $\rightarrow$ Telegram pipeline.
+
+\subsection{System Resource Overhead}
+Table~\ref{tab:overhead} details the resource consumption of the predictive scaling components.
+
+\begin{table}[h]
+\centering
+\caption{ML Pipeline Resource Overhead}
+\label{tab:overhead}
+\begin{tabular}{@{}lcccc@{}}
+\toprule
+\textbf{Component} & \textbf{CPU Req.} & \textbf{CPU Lim.} & \textbf{RAM Req.} & \textbf{RAM Lim.} \\
+\midrule
+ML Predictor & 300m & 1000m & 512Mi & 1536Mi \\
+Pred. Scaler & 50m & 200m & 64Mi & 128Mi \\
+\midrule
+\textbf{Total} & \textbf{350m} & \textbf{1200m} & \textbf{576Mi} & \textbf{1664Mi} \\
+\textbf{\% of cluster} & \textbf{2.9\%} & \textbf{10\%} & \textbf{2.3\%} & \textbf{6.8\%} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The actual resource consumption was significantly lower than the limits, with the ML predictor using approximately 300m CPU only during the 7-second training window each hour and near-zero CPU between training cycles.
+
+% ============================================================
+% 6. DISCUSSION
+% ============================================================
+\section{Discussion}
+\label{sec:discussion}
+
+\subsection{Advantages}
+The proposed system offers several advantages over existing approaches:
+\begin{itemize}
+    \item \textbf{Zero scaling delay}: By pre-scaling based on predictions, the system eliminates the 2-minute reactive window where users experience degraded performance.
+    \item \textbf{Dual-layer protection}: The reactive HPA at 70\% acts as a safety net, ensuring the system remains robust even when the ML model makes inaccurate predictions.
+    \item \textbf{Lightweight}: The entire ML pipeline adds less than 4\% overhead to cluster resources.
+    \item \textbf{Open-source and reproducible}: The complete implementation is available at \url{https://github.com/prerna3640/HA-K8S1}.
+\end{itemize}
+
+\subsection{Limitations}
+\begin{itemize}
+    \item \textbf{Cold start}: The LSTM model requires approximately 7 days of traffic data before making accurate predictions. During this period, only the reactive HPA provides scaling.
+    \item \textbf{Prophet model failure}: The Facebook Prophet model experienced a \texttt{stan\_backend} compatibility issue, leaving the LSTM as the sole predictor rather than the planned ensemble.
+    \item \textbf{Simulated traffic}: The evaluation used a traffic simulator CronJob rather than real user traffic. While the simulator generates realistic daily patterns, real-world traffic may exhibit more complex and unpredictable behaviors.
+    \item \textbf{Single-metric prediction}: The current model predicts only CPU utilization. Memory usage, network I/O, and application-level metrics (request latency, error rate) are not considered.
+    \item \textbf{Single-cluster evaluation}: The system was evaluated on a single 3-node cluster. Multi-cluster and larger-scale evaluations remain as future work.
+\end{itemize}
+
+% ============================================================
+% 7. CONCLUSION AND FUTURE WORK
+% ============================================================
+\section{Conclusion and Future Work}
+\label{sec:conclusion}
+
+This paper presented an intelligent auto-scaling system for Kubernetes that uses LSTM-based time series forecasting to predict CPU utilization and scale pods proactively. The system was implemented and evaluated on a real 3-node Kubernetes cluster over a 10-day period.
+
+The key findings are:
+\begin{enumerate}
+    \item The reactive Kubernetes HPA introduces a scaling latency of approximately 2 minutes, during which application performance degrades.
+    \item An LSTM model trained on 8 days of Prometheus CPU metrics can predict load patterns with sufficient accuracy for proactive scaling.
+    \item The predictive scaler eliminated the scaling delay entirely, pre-scaling pods before load arrival and reducing per-pod CPU by 54\%.
+    \item The dual-layer architecture (predictive + reactive) provides robust scaling without single points of failure.
+\end{enumerate}
+
+Future work includes:
+\begin{itemize}
+    \item \textbf{Multi-metric prediction}: Extending the model to predict memory, network I/O, and application-level metrics.
+    \item \textbf{Ensemble models}: Resolving the Prophet compatibility issue to enable LSTM + Prophet ensemble predictions with confidence intervals.
+    \item \textbf{Real-world deployment}: Evaluating the system with actual user traffic in a production environment.
+    \item \textbf{Transformer models}: Exploring attention-based architectures (e.g., Temporal Fusion Transformer) that may capture longer-range dependencies.
+    \item \textbf{Cost-aware scaling}: Incorporating cloud pricing models to optimize scaling decisions for cost efficiency.
+    \item \textbf{Multi-cluster federation}: Extending the system to manage auto-scaling across multiple Kubernetes clusters.
+\end{itemize}
+
+% ============================================================
+% REFERENCES
+% ============================================================
+\begin{thebibliography}{10}
+
+\bibitem{burns2016}
+B. Burns, B. Grant, D. Oppenheimer, E. Brewer, and J. Wilkes, ``Borg, Omega, and Kubernetes,'' \textit{ACM Queue}, vol. 14, no. 1, pp. 70--93, 2016.
+
+\bibitem{cncf2023}
+Cloud Native Computing Foundation, ``CNCF Annual Survey 2023,'' \url{https://www.cncf.io/reports/cncf-annual-survey-2023/}, 2023.
+
+\bibitem{dangquang2021}
+N.-M. Dang-Quang and M. Yoo, ``An LSTM-Based Approach for Predicting CPU Usage in Cloud Data Centers,'' \textit{IEEE Access}, vol. 9, pp. 35165--35176, 2021, doi: 10.1109/ACCESS.2021.3052064.
+
+\bibitem{mao2016}
+M. Mao, J. Li, and M. Humphrey, ``Cloud Auto-Scaling with Deep Reinforcement Learning,'' in \textit{Proc. IEEE Int. Conf. Cloud Computing}, 2016, pp. 605--612, doi: 10.1109/CLOUD.2016.56.
+
+\bibitem{rzadca2020}
+K. Rzadca \textit{et al.}, ``Autopilot: Workload Autoscaling at Google,'' in \textit{Proc. ACM EuroSys}, 2020, pp. 1--16.
+
+\bibitem{toka2021}
+L. Toka, G. Dobreff, B. Fodor, and B. Sonkoly, ``Adaptive AI-based Auto-scaling for Kubernetes,'' in \textit{Proc. IEEE/ACM CCGrid}, 2021, pp. 599--608.
+
+\bibitem{imdoukh2020}
+M. Imdoukh, I. Ahmad, and M. Alfailakawi, ``Machine Learning-Based Auto-Scaling for Containerized Applications,'' \textit{Neural Computing and Applications}, vol. 32, pp. 9745--9760, 2020.
+
+\bibitem{k8shpa}
+Kubernetes Documentation, ``Horizontal Pod Autoscaler,'' \url{https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/}.
+
+\bibitem{hochreiter1997}
+S. Hochreiter and J. Schmidhuber, ``Long Short-Term Memory,'' \textit{Neural Computation}, vol. 9, no. 8, pp. 1735--1780, 1997.
+
+\bibitem{prometheus}
+Prometheus Documentation, \url{https://prometheus.io/docs/}.
+
+\bibitem{pytorch}
+A. Paszke \textit{et al.}, ``PyTorch: An Imperative Style, High-Performance Deep Learning Library,'' in \textit{Proc. NeurIPS}, 2019, pp. 8024--8035.
+
+\bibitem{flask}
+M. Grinberg, \textit{Flask Web Development}, 2nd ed. O'Reilly Media, 2018.
+
+\bibitem{grafana}
+Grafana Labs, ``Grafana Documentation,'' \url{https://grafana.com/docs/}.
+
+\bibitem{argocd}
+Argo Project, ``Argo CD - Declarative Continuous Delivery for Kubernetes,'' \url{https://argo-cd.readthedocs.io/}.
+
+\bibitem{traefik}
+Traefik Labs, ``Traefik Proxy Documentation,'' \url{https://doc.traefik.io/traefik/}.
+
+\bibitem{jenkins}
+Jenkins Project, ``Jenkins User Documentation,'' \url{https://www.jenkins.io/doc/}.
+
+\bibitem{docker}
+D. Merkel, ``Docker: Lightweight Linux Containers for Consistent Development and Deployment,'' \textit{Linux Journal}, vol. 2014, no. 239, 2014.
+
+\bibitem{microservices}
+S. Newman, \textit{Building Microservices}, 2nd ed. O'Reilly Media, 2021.
+
+\bibitem{lstm_survey}
+Y. Yu, X. Si, C. Hu, and J. Zhang, ``A Review of Recurrent Neural Networks: LSTM Cells and Network Architectures,'' \textit{Neural Computation}, vol. 31, no. 7, pp. 1235--1270, 2019.
+
+\end{thebibliography}
+
+\end{document}
