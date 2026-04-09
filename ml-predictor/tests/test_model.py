@@ -25,13 +25,13 @@ class TestDriftDetector:
         dd = DriftDetector()
         for _ in range(10):
             dd.record_error(predicted=0.05, actual=0.05)
-        assert dd.is_drift_detected() is False
+        assert dd.is_drift_detected() == False
 
     def test_drift_detected_with_high_errors(self):
         dd = DriftDetector()
         for _ in range(10):
             dd.record_error(predicted=0.90, actual=0.10)
-        assert dd.is_drift_detected() is True
+        assert dd.is_drift_detected() == True
 
     def test_stats_returns_dict(self):
         dd = DriftDetector()
