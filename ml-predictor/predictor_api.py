@@ -17,7 +17,7 @@ import threading
 import time
 from flask import Flask, jsonify, request
 
-from data_collector import fetch_multi_metrics, fetch_cpu_metrics
+from data_collector import fetch_multi_metrics
 from model import EnhancedPredictor
 
 logging.basicConfig(

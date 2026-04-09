@@ -7,7 +7,9 @@ import pandas as pd
 from datetime import datetime, timedelta
 import sys
 import os
+from unittest.mock import patch
 
+# Add parent directory to path so we can import ml-predictor modules
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
 
@@ -23,11 +25,14 @@ def multi_metric_df():
     start = end - timedelta(minutes=n * 5)
     timestamps = pd.date_range(start=start, periods=n, freq="5min")
     np.random.seed(42)
-    cpu = 0.05 + 0.04 * np.sin(np.linspace(0, 4 * np.pi, n)) + np.random.normal(0, 0.005, n)
+    cpu = 0.05 + 0.04 * np.sin(np.linspace(0, 4 * np.pi, n))
+    cpu += np.random.normal(0, 0.005, n)
     cpu = np.clip(cpu, 0.005, 0.95)
-    memory = 0.30 + 0.10 * np.sin(np.linspace(0, 2 * np.pi, n)) + np.random.normal(0, 0.02, n)
+    memory = 0.30 + 0.10 * np.sin(np.linspace(0, 2 * np.pi, n))
+    memory += np.random.normal(0, 0.02, n)
     memory = np.clip(memory, 0.05, 0.90)
-    network = 100 + 50 * np.sin(np.linspace(0, 3 * np.pi, n)) + np.random.normal(0, 10, n)
+    network = 100 + 50 * np.sin(np.linspace(0, 3 * np.pi, n))
+    network += np.random.normal(0, 10, n)
     network = np.clip(network, 0, 500)
     return pd.DataFrame({
         "ds": timestamps,
@@ -53,23 +58,19 @@ def tiny_metric_df():
 def flask_client(multi_metric_df):
     """
     Flask test client with mocked Prometheus.
-    Model is NOT pre-trained (tests untrained state).
+    Mocks data_collector BEFORE importing predictor_api to prevent
+    the background retrain thread from hitting real Prometheus.
     """
-    import data_collector
-    from predictor_api import app, predictor
+    mock_df = multi_metric_df.copy()
 
-    def _mock_fetch_multi(hours=2):
-        return multi_metric_df.copy()
+    with patch("data_collector.fetch_multi_metrics", return_value=mock_df), \
+         patch("data_collector.fetch_cpu_metrics", return_value=mock_df):
 
-    def _mock_fetch_cpu(hours=2):
-        return multi_metric_df[["ds", "cpu"]].copy()
+        from predictor_api import app, predictor
 
-    data_collector.fetch_multi_metrics = _mock_fetch_multi
-    data_collector.fetch_cpu_metrics = _mock_fetch_cpu
+        predictor.last_trained = None
+        predictor._retrain_count = 0
 
-    predictor.last_trained = None
-    predictor._retrain_count = 0
-
-    app.config["TESTING"] = True
-    with app.test_client() as client:
-        yield client, predictor
+        app.config["TESTING"] = True
+        with app.test_client() as client:
+            yield client, predictor

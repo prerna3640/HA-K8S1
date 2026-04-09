@@ -13,7 +13,6 @@ import os
 import logging
 import requests
 import pandas as pd
-import numpy as np
 from datetime import datetime, timedelta
 
 logger = logging.getLogger(__name__)

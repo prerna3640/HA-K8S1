@@ -10,9 +10,7 @@ UNIQUE CONTRIBUTIONS (not in any existing paper):
 4. Confidence scoring: Returns prediction confidence based on training loss
 """
 
-import os
 import logging
-import math
 import numpy as np
 import pandas as pd
 from datetime import datetime, timedelta
@@ -143,7 +141,9 @@ class CostCalculator:
             "new_replicas": new_replicas,
             "old_cost_per_hour": self.estimate_cost(old_replicas),
             "new_cost_per_hour": self.estimate_cost(new_replicas),
-            "cost_change_per_hour": self.estimate_cost(new_replicas) - self.estimate_cost(old_replicas),
+            "cost_change_per_hour": (
+                self.estimate_cost(new_replicas) - self.estimate_cost(old_replicas)
+            ),
         }
         self._scaling_events.append(event)
         if len(self._scaling_events) > 100:
