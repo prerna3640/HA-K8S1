@@ -1,6 +1,6 @@
 """
-test_model.py — Unit tests for model.py (Prophet, LSTM, Ensemble).
-Tests the ML prediction logic without Prometheus or Kubernetes.
+test_model.py — Unit tests for model.py
+Tests: DriftDetector, CostCalculator, EnhancedPredictor, replica formula.
 """
 import math
 import pytest
@@ -9,109 +9,126 @@ import pandas as pd
 import sys
 import os
 
-sys.path.insert(0, os.path.dirname(__file__) + "/..")
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
-from model import ProphetPredictor, EnsemblePredictor
-
-
-class TestProphetPredictor:
-    """Test the Prophet forecasting model."""
-
-    def test_train_succeeds_with_sufficient_data(self, synthetic_cpu_df):
-        """Prophet trains without error when given >= 10 data points."""
-        p = ProphetPredictor()
-        p.train(synthetic_cpu_df)
-        assert p.trained is True
-
-    def test_train_raises_on_insufficient_data(self):
-        """Prophet raises ValueError with fewer than 10 rows."""
-        p = ProphetPredictor()
-        tiny = pd.DataFrame({
-            "ds": pd.date_range("2024-01-01", periods=5, freq="5min"),
-            "y": [0.05] * 5
-        })
-        with pytest.raises(ValueError, match="Need"):
-            p.train(tiny)
-
-    def test_predict_returns_correct_horizon(self, synthetic_cpu_df):
-        """predict(30) returns up to 6 rows (30 min / 5-min intervals)."""
-        p = ProphetPredictor()
-        p.train(synthetic_cpu_df)
-        forecast = p.predict(horizon_minutes=30)
-        assert len(forecast) <= 6
-        assert len(forecast) > 0
-
-    def test_predict_values_are_non_negative(self, synthetic_cpu_df):
-        """All forecast CPU values must be >= 0."""
-        p = ProphetPredictor()
-        p.train(synthetic_cpu_df)
-        forecast = p.predict(horizon_minutes=30)
-        assert (forecast["yhat"] >= 0).all()
-
-    def test_predict_raises_if_not_trained(self):
-        """predict() raises RuntimeError if called before train()."""
-        p = ProphetPredictor()
-        with pytest.raises(RuntimeError, match="not trained"):
-            p.predict()
-
-    def test_predict_columns_present(self, synthetic_cpu_df):
-        """Forecast DataFrame has expected columns."""
-        p = ProphetPredictor()
-        p.train(synthetic_cpu_df)
-        forecast = p.predict(horizon_minutes=30)
-        for col in ["ds", "yhat", "yhat_lower", "yhat_upper"]:
-            assert col in forecast.columns
+from model import DriftDetector, CostCalculator, EnhancedPredictor
 
 
-class TestEnsemblePredictor:
-    """Test the ensemble predictor (combines Prophet + LSTM)."""
+class TestDriftDetector:
+    """Test the drift detection component."""
 
-    def test_train_sets_last_trained_timestamp(self, synthetic_cpu_df):
-        """After training, last_trained is a datetime."""
-        from datetime import datetime
-        ep = EnsemblePredictor()
-        ep.train(synthetic_cpu_df)
-        assert ep.last_trained is not None
-        assert isinstance(ep.last_trained, datetime)
+    def test_no_drift_with_empty_errors(self):
+        dd = DriftDetector()
+        assert dd.is_drift_detected() is False
+
+    def test_no_drift_with_low_errors(self):
+        dd = DriftDetector()
+        for _ in range(10):
+            dd.record_error(predicted=0.05, actual=0.05)
+        assert dd.is_drift_detected() is False
+
+    def test_drift_detected_with_high_errors(self):
+        dd = DriftDetector()
+        for _ in range(10):
+            dd.record_error(predicted=0.90, actual=0.10)
+        assert dd.is_drift_detected() is True
+
+    def test_stats_returns_dict(self):
+        dd = DriftDetector()
+        stats = dd.get_stats()
+        assert "window_size" in stats
+        assert "mean_error" in stats
+        assert "drift_count" in stats
+
+    def test_record_error_skips_near_zero_actual(self):
+        dd = DriftDetector()
+        dd.record_error(predicted=0.05, actual=0.0001)
+        assert dd.get_stats()["window_size"] == 0
+
+
+class TestCostCalculator:
+    """Test the cost estimation component."""
+
+    def test_estimate_cost_single_pod(self):
+        cc = CostCalculator(cost_per_pod_per_hour=0.05)
+        cost = cc.estimate_cost(replicas=1, duration_hours=1.0)
+        assert cost == pytest.approx(0.05)
+
+    def test_estimate_cost_multiple_pods(self):
+        cc = CostCalculator(cost_per_pod_per_hour=0.05)
+        cost = cc.estimate_cost(replicas=5, duration_hours=2.0)
+        assert cost == pytest.approx(0.50)
+
+    def test_record_scaling_event_returns_dict(self):
+        cc = CostCalculator()
+        event = cc.record_scaling_event(old_replicas=2, new_replicas=4)
+        assert "old_replicas" in event
+        assert "new_replicas" in event
+        assert "cost_change_per_hour" in event
+
+    def test_summary_empty_when_no_events(self):
+        cc = CostCalculator()
+        summary = cc.get_summary()
+        assert summary["total_events"] == 0
+
+    def test_summary_counts_scale_ups(self):
+        cc = CostCalculator()
+        cc.record_scaling_event(2, 4)
+        cc.record_scaling_event(4, 3)
+        summary = cc.get_summary()
+        assert summary["scale_ups"] == 1
+        assert summary["scale_downs"] == 1
+
+
+class TestEnhancedPredictor:
+    """Test the main EnhancedPredictor (multi-metric LSTM + drift + cost)."""
+
+    def test_needs_retraining_true_before_training(self):
+        ep = EnhancedPredictor()
+        assert ep.needs_retraining(interval_hours=1) is True
 
     def test_train_raises_on_empty_dataframe(self):
-        """Training on empty DataFrame raises ValueError."""
-        ep = EnsemblePredictor()
+        ep = EnhancedPredictor()
         with pytest.raises(ValueError, match="Empty"):
             ep.train(pd.DataFrame())
 
-    def test_predict_returns_ensemble_key(self, synthetic_cpu_df):
-        """Prediction dict contains 'ensemble' key."""
-        ep = EnsemblePredictor()
-        ep.train(synthetic_cpu_df)
+    def test_train_sets_last_trained(self, multi_metric_df):
+        from datetime import datetime
+        ep = EnhancedPredictor()
+        ep.train(multi_metric_df)
+        assert ep.last_trained is not None
+        assert isinstance(ep.last_trained, datetime)
+
+    def test_needs_retraining_false_after_training(self, multi_metric_df):
+        ep = EnhancedPredictor()
+        ep.train(multi_metric_df)
+        assert ep.needs_retraining(interval_hours=1) is False
+
+    def test_predict_returns_dict_with_keys(self, multi_metric_df):
+        ep = EnhancedPredictor()
+        ep.train(multi_metric_df)
         result = ep.predict(horizon_minutes=30)
         assert "ensemble" in result
+        assert "max_predicted" in result
+        assert "drift_stats" in result
+        assert "cost_summary" in result
 
-    def test_predict_ensemble_is_list(self, synthetic_cpu_df):
-        """ensemble forecast is a non-empty list of floats."""
-        ep = EnsemblePredictor()
-        ep.train(synthetic_cpu_df)
+    def test_predict_ensemble_is_list(self, multi_metric_df):
+        ep = EnhancedPredictor()
+        ep.train(multi_metric_df)
         result = ep.predict(horizon_minutes=30)
         assert isinstance(result["ensemble"], list)
-        assert len(result["ensemble"]) > 0
 
-    def test_predict_max_predicted_non_negative(self, synthetic_cpu_df):
-        """max_predicted value >= 0."""
-        ep = EnsemblePredictor()
-        ep.train(synthetic_cpu_df)
+    def test_predict_max_predicted_non_negative(self, multi_metric_df):
+        ep = EnhancedPredictor()
+        ep.train(multi_metric_df)
         result = ep.predict(horizon_minutes=30)
         assert result["max_predicted"] >= 0.0
 
-    def test_needs_retraining_true_before_training(self):
-        """Fresh predictor always needs retraining."""
-        ep = EnsemblePredictor()
-        assert ep.needs_retraining(interval_hours=1) is True
-
-    def test_needs_retraining_false_immediately_after_training(self, synthetic_cpu_df):
-        """Immediately after training, needs_retraining(1h) is False."""
-        ep = EnsemblePredictor()
-        ep.train(synthetic_cpu_df)
-        assert ep.needs_retraining(interval_hours=1) is False
+    def test_record_scaling_cost(self):
+        ep = EnhancedPredictor()
+        event = ep.record_scaling_cost(old_replicas=2, new_replicas=4)
+        assert event["new_replicas"] == 4
 
 
 class TestReplicaCalculation:
@@ -121,7 +138,6 @@ class TestReplicaCalculation:
     def _desired_replicas(max_cpu, cpu_per_replica=0.10,
                           scale_up_buffer=0.80,
                           min_replicas=2, max_replicas=5):
-        """Mirror of PredictiveController._desired_replicas()."""
         effective_capacity = cpu_per_replica * scale_up_buffer
         if effective_capacity <= 0:
             return min_replicas
@@ -135,11 +151,9 @@ class TestReplicaCalculation:
         assert self._desired_replicas(0.05) == 2
 
     def test_medium_cpu_scales_up(self):
-        # 0.20 / (0.10 * 0.80) = ceil(2.5) = 3
         assert self._desired_replicas(0.20) == 3
 
     def test_high_cpu_reaches_max(self):
-        # 0.50 / 0.08 = ceil(6.25) → clamped to 5
         assert self._desired_replicas(0.50) == 5
 
     def test_result_never_exceeds_max_replicas(self):

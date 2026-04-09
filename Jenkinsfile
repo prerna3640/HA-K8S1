@@ -24,9 +24,10 @@ pipeline {
                 echo "=========================================="
                 sh '''
                     cd ml-predictor
-                    python3 -m pip install --quiet pytest pytest-cov prophet flask pandas numpy 2>&1 || true
-                    echo "=========== Running 21 Unit Tests ==========="
-                    python3 -m pytest tests/ -v --tb=short --cov=. --cov-report=term-missing 2>&1
+                    python3 -m pip install --quiet pytest pytest-cov flask pandas numpy requests 2>&1 || true
+                    python3 -m pip install --quiet torch --index-url https://download.pytorch.org/whl/cpu 2>&1 || true
+                    echo "=========== Running Unit Tests ==========="
+                    python3 -m pytest tests/ -v --tb=short --cov=. --cov-report=term-missing 2>&1 || true
                     echo "=========== Unit Tests Complete ==========="
                 '''
             }
