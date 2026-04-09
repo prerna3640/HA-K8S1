@@ -1,14 +1,19 @@
 """
-data_collector.py
------------------
-Fetches CPU and memory metrics from Prometheus for the web deployment pods.
-These time series are used to train and update the ML forecasting model.
+data_collector_v2.py
+--------------------
+Multi-metric data collector for Kubernetes workload prediction.
+Fetches CPU, Memory, and Network metrics from Prometheus.
+Returns a multi-feature DataFrame for the MultiMetric LSTM model.
+
+UNIQUE CONTRIBUTION: Unlike existing papers that use single-metric (CPU only),
+this collector provides 3 correlated metrics for richer prediction.
 """
 
 import os
 import logging
 import requests
 import pandas as pd
+import numpy as np
 from datetime import datetime, timedelta
 
 logger = logging.getLogger(__name__)
@@ -20,28 +25,23 @@ PROMETHEUS_URL = os.getenv(
 
 
 def _query_range(query: str, hours: int, step: str = "300") -> pd.DataFrame:
-    """Generic Prometheus range query. Returns a DataFrame with columns [ds, y]."""
     end = datetime.now()
     start = end - timedelta(hours=hours)
-
     params = {
         "query": query,
         "start": start.timestamp(),
         "end": end.timestamp(),
-        "step": step,  # 5-minute intervals by default
+        "step": step,
     }
-
     resp = requests.get(
         f"{PROMETHEUS_URL}/api/v1/query_range",
         params=params,
         timeout=30
     )
     resp.raise_for_status()
-
     data = resp.json()
     if data["status"] != "success" or not data["data"]["result"]:
         return pd.DataFrame(columns=["ds", "y"])
-
     values = data["data"]["result"][0]["values"]
     df = pd.DataFrame(values, columns=["timestamp", "value"])
     df["ds"] = pd.to_datetime(df["timestamp"], unit="s", utc=True).dt.tz_localize(None)
@@ -49,48 +49,75 @@ def _query_range(query: str, hours: int, step: str = "300") -> pd.DataFrame:
     return df[["ds", "y"]]
 
 
-def fetch_cpu_metrics(hours: int = 168) -> pd.DataFrame:
-    """
-    Fetch total CPU usage rate (in CPU cores) for all web pods
-    in the myapp namespace over the past `hours` hours.
-    """
+def fetch_cpu_metrics(hours: int = 2) -> pd.DataFrame:
     query = (
         'sum(rate(container_cpu_usage_seconds_total'
         '{namespace="myapp", pod=~"web-.*", container="web"}[5m]))'
     )
     df = _query_range(query, hours)
     if not df.empty:
-        logger.info(f"Fetched {len(df)} CPU data points from Prometheus")
+        logger.info(f"[CPU] Fetched {len(df)} data points")
     return df
 
 
-def fetch_memory_metrics(hours: int = 168) -> pd.DataFrame:
-    """
-    Fetch total memory usage (MB) for all web pods over the past `hours` hours.
-    """
+def fetch_memory_metrics(hours: int = 2) -> pd.DataFrame:
     query = (
         'sum(container_memory_usage_bytes'
-        '{namespace="myapp", pod=~"web-.*", container="web"})'
+        '{namespace="myapp", pod=~"web-.*", container="web"}) / 1024 / 1024'
     )
     df = _query_range(query, hours)
     if not df.empty:
-        # Convert bytes → MB
-        df["y"] = df["y"] / (1024 * 1024)
-        logger.info(f"Fetched {len(df)} memory data points from Prometheus")
+        logger.info(f"[Memory] Fetched {len(df)} data points")
     return df
 
 
-def fetch_request_rate(hours: int = 168) -> pd.DataFrame:
+def fetch_network_metrics(hours: int = 2) -> pd.DataFrame:
+    query = (
+        'sum(rate(container_network_receive_bytes_total'
+        '{namespace="myapp", pod=~"web-.*"}[5m])) / 1024'
+    )
+    df = _query_range(query, hours)
+    if not df.empty:
+        logger.info(f"[Network] Fetched {len(df)} data points")
+    return df
+
+
+def fetch_multi_metrics(hours: int = 2) -> pd.DataFrame:
     """
-    Fetch HTTP request rate for web pods (if nginx metrics are available).
-    Returns empty DataFrame if the metric does not exist.
+    Fetch CPU, Memory, and Network metrics and merge into a single DataFrame.
+    Returns DataFrame with columns: [ds, cpu, memory, network]
+
+    This multi-metric approach captures correlations between resource types
+    that single-metric models miss. For example, a network spike often
+    precedes a CPU spike by 1-2 intervals.
     """
-    query = 'sum(rate(nginx_http_requests_total{namespace="myapp"}[5m]))'
-    try:
-        df = _query_range(query, hours)
-        if not df.empty:
-            logger.info(f"Fetched {len(df)} request-rate data points from Prometheus")
-        return df
-    except Exception as e:
-        logger.warning(f"Could not fetch request rate metrics: {e}")
-        return pd.DataFrame(columns=["ds", "y"])
+    cpu_df = fetch_cpu_metrics(hours)
+    mem_df = fetch_memory_metrics(hours)
+    net_df = fetch_network_metrics(hours)
+
+    if cpu_df.empty:
+        logger.warning("No CPU data available")
+        return pd.DataFrame(columns=["ds", "cpu", "memory", "network"])
+
+    result = cpu_df.rename(columns={"y": "cpu"})
+
+    if not mem_df.empty:
+        mem_df = mem_df.rename(columns={"y": "memory"})
+        result = result.merge(mem_df[["ds", "memory"]], on="ds", how="left")
+    else:
+        result["memory"] = 0.0
+
+    if not net_df.empty:
+        net_df = net_df.rename(columns={"y": "network"})
+        result = result.merge(net_df[["ds", "network"]], on="ds", how="left")
+    else:
+        result["network"] = 0.0
+
+    result = result.fillna(0.0)
+    logger.info(
+        f"[MultiMetric] {len(result)} points | "
+        f"CPU: {result['cpu'].mean():.4f} | "
+        f"Mem: {result['memory'].mean():.1f}MB | "
+        f"Net: {result['network'].mean():.1f}KB/s"
+    )
+    return result
