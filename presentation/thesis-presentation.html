@@ -1,0 +1,1555 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>M.Tech Thesis Defense - Prerna Tank | Intelligent Auto-Scaling in Kubernetes</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ===== RESET & BASE ===== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg-primary: #0a0e27;
+  --bg-secondary: #111638;
+  --bg-card: #161b40;
+  --bg-card-alt: #1a1f4a;
+  --text-primary: #e8eaf6;
+  --text-secondary: #9fa8da;
+  --accent-cyan: #00e5ff;
+  --accent-orange: #ff9100;
+  --accent-green: #69f0ae;
+  --accent-pink: #f06292;
+  --accent-purple: #b388ff;
+  --accent-yellow: #ffd740;
+  --accent-red: #ff5252;
+  --gradient-1: linear-gradient(135deg, #00e5ff, #b388ff);
+  --gradient-2: linear-gradient(135deg, #ff9100, #f06292);
+  --gradient-3: linear-gradient(135deg, #69f0ae, #00e5ff);
+  --shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  --radius: 12px;
+}
+
+html, body {
+  height: 100%;
+  font-family: 'Poppins', sans-serif;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ===== PRESENTATION CONTAINER ===== */
+.presentation {
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+  overflow: hidden;
+}
+
+/* ===== SLIDE BASE ===== */
+.slide {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 60px 80px;
+  opacity: 0;
+  transform: translateX(100px);
+  transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+  pointer-events: none;
+  background: var(--bg-primary);
+}
+
+.slide.active {
+  opacity: 1;
+  transform: translateX(0);
+  pointer-events: auto;
+}
+
+.slide.prev {
+  opacity: 0;
+  transform: translateX(-100px);
+}
+
+/* ===== PROGRESS BAR ===== */
+.progress-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  height: 4px;
+  background: var(--gradient-1);
+  transition: width 0.4s ease;
+  z-index: 1000;
+  border-radius: 0 2px 2px 0;
+}
+
+/* ===== SLIDE NUMBER ===== */
+.slide-number {
+  position: fixed;
+  bottom: 16px;
+  right: 24px;
+  font-size: 14px;
+  color: var(--text-secondary);
+  z-index: 1000;
+  font-weight: 500;
+  font-family: 'Fira Code', monospace;
+}
+
+/* ===== NAVIGATION HINT ===== */
+.nav-hint {
+  position: fixed;
+  bottom: 16px;
+  left: 24px;
+  font-size: 12px;
+  color: rgba(159, 168, 218, 0.5);
+  z-index: 1000;
+}
+
+/* ===== COMMON TYPOGRAPHY ===== */
+.slide-title {
+  font-size: 2.4rem;
+  font-weight: 700;
+  margin-bottom: 40px;
+  text-align: center;
+  background: var(--gradient-1);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.slide-subtitle {
+  font-size: 1.15rem;
+  color: var(--text-secondary);
+  margin-bottom: 32px;
+  text-align: center;
+  font-weight: 400;
+}
+
+.slide-content {
+  width: 100%;
+  max-width: 1100px;
+}
+
+/* ===== GRID LAYOUTS ===== */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+.grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
+.grid-4 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+
+/* ===== CARDS ===== */
+.card {
+  background: var(--bg-card);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: var(--radius);
+  padding: 24px;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow);
+}
+
+.card-icon {
+  font-size: 2rem;
+  margin-bottom: 12px;
+  display: block;
+}
+
+.card-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: var(--accent-cyan);
+}
+
+.card-text {
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+/* Contribution cards special */
+.contrib-card {
+  background: var(--bg-card);
+  border-left: 4px solid var(--accent-cyan);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  padding: 22px 24px;
+  transition: all 0.3s;
+}
+.contrib-card:nth-child(2) { border-left-color: var(--accent-orange); }
+.contrib-card:nth-child(3) { border-left-color: var(--accent-green); }
+.contrib-card:nth-child(4) { border-left-color: var(--accent-pink); }
+
+.contrib-card:hover {
+  transform: translateX(6px);
+  box-shadow: var(--shadow);
+}
+
+.contrib-number {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-bottom: 6px;
+}
+
+.contrib-card:nth-child(1) .contrib-number { color: var(--accent-cyan); }
+.contrib-card:nth-child(2) .contrib-number { color: var(--accent-orange); }
+.contrib-card:nth-child(3) .contrib-number { color: var(--accent-green); }
+.contrib-card:nth-child(4) .contrib-number { color: var(--accent-pink); }
+
+.contrib-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.contrib-desc {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  line-height: 1.55;
+}
+
+/* ===== TABLES ===== */
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.data-table th {
+  background: var(--bg-card);
+  padding: 14px 16px;
+  text-align: left;
+  font-weight: 600;
+  color: var(--accent-cyan);
+  border-bottom: 2px solid rgba(0, 229, 255, 0.2);
+}
+
+.data-table td {
+  padding: 12px 16px;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  color: var(--text-secondary);
+}
+
+.data-table tr:hover td {
+  background: rgba(0, 229, 255, 0.04);
+}
+
+.data-table .highlight-row td {
+  color: var(--accent-cyan);
+  font-weight: 600;
+  background: rgba(0, 229, 255, 0.06);
+}
+
+/* ===== PIPELINE ===== */
+.pipeline {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+  align-items: center;
+}
+
+.pipeline-stage {
+  background: var(--bg-card);
+  border: 1px solid rgba(0, 229, 255, 0.15);
+  border-radius: 8px;
+  padding: 10px 16px;
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  position: relative;
+  transition: all 0.3s;
+  text-align: center;
+  min-width: 130px;
+}
+
+.pipeline-stage:hover {
+  border-color: var(--accent-cyan);
+  transform: scale(1.05);
+  box-shadow: 0 0 20px rgba(0, 229, 255, 0.15);
+}
+
+.pipeline-stage .stage-num {
+  font-size: 0.65rem;
+  color: var(--accent-orange);
+  font-weight: 700;
+  display: block;
+  margin-bottom: 2px;
+}
+
+.pipeline-arrow {
+  color: var(--accent-cyan);
+  font-size: 1.2rem;
+  opacity: 0.5;
+}
+
+/* ===== ARCHITECTURE FLOW ===== */
+.arch-flow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.arch-node {
+  background: var(--bg-card);
+  border: 1px solid rgba(0,229,255,0.2);
+  border-radius: 8px;
+  padding: 10px 18px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  text-align: center;
+  transition: all 0.3s;
+}
+
+.arch-node:hover {
+  border-color: var(--accent-cyan);
+  box-shadow: 0 0 16px rgba(0,229,255,0.12);
+}
+
+.arch-node.highlight {
+  border-color: var(--accent-orange);
+  background: rgba(255, 145, 0, 0.08);
+}
+
+.arch-arrow {
+  color: var(--accent-cyan);
+  font-size: 1.1rem;
+  opacity: 0.5;
+}
+
+/* ===== SECTION LABEL ===== */
+.section-label {
+  display: inline-block;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  color: var(--accent-orange);
+  margin-bottom: 8px;
+}
+
+/* ===== BULLET LIST ===== */
+.bullet-list {
+  list-style: none;
+  padding: 0;
+}
+
+.bullet-list li {
+  padding: 8px 0 8px 28px;
+  position: relative;
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+.bullet-list li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 16px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--accent-cyan);
+  opacity: 0.7;
+}
+
+.bullet-list li:nth-child(even)::before {
+  background: var(--accent-orange);
+}
+
+/* ===== CLUSTER DIAGRAM ===== */
+.cluster-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 20px;
+}
+
+.cluster-node {
+  background: var(--bg-card);
+  border: 2px solid rgba(0,229,255,0.15);
+  border-radius: var(--radius);
+  padding: 24px;
+  text-align: center;
+  transition: all 0.3s;
+}
+
+.cluster-node:hover {
+  border-color: var(--accent-cyan);
+  box-shadow: 0 0 30px rgba(0,229,255,0.1);
+}
+
+.cluster-node.master { border-color: var(--accent-orange); }
+.cluster-node.master:hover { border-color: var(--accent-orange); box-shadow: 0 0 30px rgba(255,145,0,0.15); }
+
+.cluster-role {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-bottom: 8px;
+}
+
+.cluster-ip {
+  font-family: 'Fira Code', monospace;
+  font-size: 0.9rem;
+  color: var(--accent-cyan);
+  margin-bottom: 10px;
+}
+
+.cluster-services {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  line-height: 1.7;
+}
+
+/* ===== TAGS ===== */
+.tag {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  margin: 3px;
+}
+
+.tag-cyan { background: rgba(0,229,255,0.12); color: var(--accent-cyan); }
+.tag-orange { background: rgba(255,145,0,0.12); color: var(--accent-orange); }
+.tag-green { background: rgba(105,240,174,0.12); color: var(--accent-green); }
+.tag-pink { background: rgba(240,98,146,0.12); color: var(--accent-pink); }
+
+/* ===== TITLE SLIDE SPECIAL ===== */
+.title-slide {
+  text-align: center;
+  background: radial-gradient(ellipse at 50% 0%, rgba(0,229,255,0.06) 0%, transparent 60%),
+              var(--bg-primary);
+}
+
+.title-slide .main-title {
+  font-size: 2.2rem;
+  font-weight: 800;
+  line-height: 1.3;
+  max-width: 900px;
+  background: var(--gradient-1);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 24px;
+}
+
+.title-slide .student-info {
+  font-size: 1.15rem;
+  color: var(--text-primary);
+  margin-bottom: 6px;
+  font-weight: 500;
+}
+
+.title-slide .meta-info {
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  margin-bottom: 4px;
+}
+
+.title-slide .divider {
+  width: 80px;
+  height: 3px;
+  background: var(--gradient-1);
+  margin: 20px auto;
+  border-radius: 2px;
+}
+
+.title-badge {
+  display: inline-block;
+  padding: 8px 24px;
+  border: 1px solid rgba(0,229,255,0.3);
+  border-radius: 30px;
+  font-size: 0.85rem;
+  color: var(--accent-cyan);
+  margin-top: 16px;
+  font-weight: 500;
+}
+
+/* ===== FORMULA / CODE BOX ===== */
+.formula-box {
+  background: var(--bg-card);
+  border: 1px solid rgba(0,229,255,0.1);
+  border-radius: 8px;
+  padding: 16px 24px;
+  font-family: 'Fira Code', monospace;
+  font-size: 0.88rem;
+  color: var(--accent-cyan);
+  margin: 12px 0;
+  text-align: center;
+}
+
+/* ===== CHECKMARK LIST ===== */
+.check-list {
+  list-style: none;
+  padding: 0;
+}
+.check-list li {
+  padding: 6px 0 6px 30px;
+  position: relative;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+.check-list li::before {
+  content: '\2713';
+  position: absolute;
+  left: 0;
+  color: var(--accent-green);
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+/* ===== GAP TABLE ===== */
+.gap-table .yes { color: var(--accent-green); font-weight: 700; }
+.gap-table .no { color: var(--accent-red); opacity: 0.6; }
+
+/* ===== THANK YOU SLIDE ===== */
+.thankyou-slide {
+  text-align: center;
+  background: radial-gradient(ellipse at 50% 50%, rgba(0,229,255,0.05) 0%, transparent 70%),
+              var(--bg-primary);
+}
+
+.thankyou-title {
+  font-size: 3.5rem;
+  font-weight: 800;
+  background: var(--gradient-1);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 30px;
+}
+
+.thankyou-link {
+  font-family: 'Fira Code', monospace;
+  font-size: 1rem;
+  color: var(--accent-cyan);
+  text-decoration: none;
+  padding: 10px 24px;
+  border: 1px solid rgba(0,229,255,0.3);
+  border-radius: 30px;
+  display: inline-block;
+  margin-top: 16px;
+  transition: all 0.3s;
+}
+
+.thankyou-link:hover {
+  background: rgba(0,229,255,0.08);
+  border-color: var(--accent-cyan);
+}
+
+/* ===== ANIMATIONS ===== */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.slide.active .animate-in {
+  animation: fadeInUp 0.5s ease forwards;
+}
+
+.slide.active .animate-in:nth-child(1) { animation-delay: 0.1s; }
+.slide.active .animate-in:nth-child(2) { animation-delay: 0.2s; }
+.slide.active .animate-in:nth-child(3) { animation-delay: 0.3s; }
+.slide.active .animate-in:nth-child(4) { animation-delay: 0.4s; }
+.slide.active .animate-in:nth-child(5) { animation-delay: 0.5s; }
+.slide.active .animate-in:nth-child(6) { animation-delay: 0.6s; }
+.slide.active .animate-in:nth-child(7) { animation-delay: 0.7s; }
+.slide.active .animate-in:nth-child(8) { animation-delay: 0.8s; }
+.slide.active .animate-in:nth-child(9) { animation-delay: 0.9s; }
+
+.animate-in { opacity: 0; }
+
+/* ===== TWO COLUMNS ===== */
+.two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  align-items: start;
+}
+
+.col-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--accent-cyan);
+  margin-bottom: 16px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid rgba(0,229,255,0.15);
+}
+
+.col-title.orange { color: var(--accent-orange); border-bottom-color: rgba(255,145,0,0.15); }
+
+/* ===== STAT BOX ===== */
+.stat-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+.stat-box {
+  background: var(--bg-card);
+  border-radius: var(--radius);
+  padding: 20px;
+  text-align: center;
+  border-top: 3px solid var(--accent-cyan);
+  transition: all 0.3s;
+}
+
+.stat-box:nth-child(2) { border-top-color: var(--accent-orange); }
+.stat-box:nth-child(3) { border-top-color: var(--accent-green); }
+.stat-box:nth-child(4) { border-top-color: var(--accent-pink); }
+
+.stat-box:hover { transform: translateY(-4px); box-shadow: var(--shadow); }
+
+.stat-value {
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: var(--accent-cyan);
+}
+
+.stat-box:nth-child(2) .stat-value { color: var(--accent-orange); }
+.stat-box:nth-child(3) .stat-value { color: var(--accent-green); }
+.stat-box:nth-child(4) .stat-value { color: var(--accent-pink); }
+
+.stat-label {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  margin-top: 4px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* ===== SMALL TEXT HELPER ===== */
+.small { font-size: 0.82rem; }
+.muted { color: var(--text-secondary); }
+.center { text-align: center; }
+.mb-16 { margin-bottom: 16px; }
+.mb-24 { margin-bottom: 24px; }
+.mb-8 { margin-bottom: 8px; }
+.mt-16 { margin-top: 16px; }
+
+/* ===== PRINT STYLES ===== */
+@media print {
+  .slide {
+    position: relative !important;
+    opacity: 1 !important;
+    transform: none !important;
+    pointer-events: auto !important;
+    page-break-after: always;
+    height: 100vh;
+    break-inside: avoid;
+  }
+  .slide.prev { opacity: 1 !important; transform: none !important; }
+  .animate-in { opacity: 1 !important; }
+  .progress-bar, .slide-number, .nav-hint { display: none; }
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 900px) {
+  .slide { padding: 30px 24px; }
+  .slide-title { font-size: 1.8rem; }
+  .grid-2, .grid-3, .grid-4, .two-col, .cluster-grid { grid-template-columns: 1fr; }
+  .stat-row { grid-template-columns: 1fr 1fr; }
+  .title-slide .main-title { font-size: 1.6rem; }
+  .pipeline { flex-direction: column; align-items: stretch; }
+  .pipeline-arrow { transform: rotate(90deg); text-align: center; }
+}
+</style>
+</head>
+<body>
+
+<div class="presentation" id="presentation">
+
+  <!-- ============ SLIDE 1: TITLE ============ -->
+  <div class="slide title-slide active" data-slide="1">
+    <span class="section-label animate-in">M.Tech Thesis Defense</span>
+    <h1 class="main-title animate-in">Intelligent Auto-Scaling in Kubernetes:<br>A Machine Learning Based Predictive Approach with End-to-End DevOps Pipeline</h1>
+    <div class="divider animate-in"></div>
+    <p class="student-info animate-in">Prerna Tank</p>
+    <p class="meta-info animate-in">Roll No: 2410512 &nbsp;|&nbsp; M.Tech (Computer Science)</p>
+    <p class="meta-info animate-in">Devi Ahilya Vishwavidyalaya (DAVV), Indore</p>
+    <p class="meta-info animate-in" style="margin-top:12px;">Advisor: <strong style="color:var(--accent-cyan);">Dr. Shraddha Masih</strong></p>
+    <span class="title-badge animate-in">April 2026</span>
+  </div>
+
+  <!-- ============ SLIDE 2: AGENDA ============ -->
+  <div class="slide" data-slide="2">
+    <h2 class="slide-title animate-in">Agenda</h2>
+    <div class="slide-content grid-2">
+      <div class="card animate-in">
+        <span class="card-icon">01</span>
+        <div class="card-title">Problem & Solution</div>
+        <div class="card-text">Reactive HPA limitations and our predictive ML approach</div>
+      </div>
+      <div class="card animate-in">
+        <span class="card-icon">02</span>
+        <div class="card-title">4 Research Contributions</div>
+        <div class="card-text">Multi-Metric LSTM, Drift Detection, Cost-Aware Scaling, Confidence Gate</div>
+      </div>
+      <div class="card animate-in">
+        <span class="card-icon">03</span>
+        <div class="card-title">System Architecture & DevOps</div>
+        <div class="card-text">CI/CD pipeline, GitOps with ArgoCD, 3-node Kubernetes cluster</div>
+      </div>
+      <div class="card animate-in">
+        <span class="card-icon">04</span>
+        <div class="card-title">Technical Deep Dives</div>
+        <div class="card-text">LSTM model, drift detection, cost tracking, confidence gating</div>
+      </div>
+      <div class="card animate-in">
+        <span class="card-icon">05</span>
+        <div class="card-title">Testing & Results</div>
+        <div class="card-text">21 unit tests, experimental comparison, related work gap analysis</div>
+      </div>
+      <div class="card animate-in">
+        <span class="card-icon">06</span>
+        <div class="card-title">Conclusion & Future Work</div>
+        <div class="card-text">Key findings, live demo, and future research directions</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ SLIDE 3: PROBLEM STATEMENT ============ -->
+  <div class="slide" data-slide="3">
+    <h2 class="slide-title animate-in">Problem Statement</h2>
+    <p class="slide-subtitle animate-in">Kubernetes Horizontal Pod Autoscaler is fundamentally reactive</p>
+    <div class="slide-content">
+      <div class="stat-row animate-in">
+        <div class="stat-box">
+          <div class="stat-value">~120s</div>
+          <div class="stat-label">Scaling Delay</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-value">SLA</div>
+          <div class="stat-label">Violations During Spikes</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-value">$$$</div>
+          <div class="stat-label">Wasted Resources</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-value">2 min</div>
+          <div class="stat-label">User Impact</div>
+        </div>
+      </div>
+      <div class="grid-3">
+        <div class="card animate-in">
+          <div class="card-title" style="color:var(--accent-red);">Reactive, Not Proactive</div>
+          <div class="card-text">HPA only acts AFTER CPU exceeds threshold. By then, users are already experiencing degraded performance.</div>
+        </div>
+        <div class="card animate-in">
+          <div class="card-title" style="color:var(--accent-red);">Cold Start Penalty</div>
+          <div class="card-text">New pods need time to pull images, start containers, and warm up. This adds 60-120 seconds of delay.</div>
+        </div>
+        <div class="card animate-in">
+          <div class="card-title" style="color:var(--accent-red);">Over-Provisioning Waste</div>
+          <div class="card-text">To compensate, teams over-provision resources, leading to 30-50% wasted compute capacity.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ SLIDE 4: PROPOSED SOLUTION ============ -->
+  <div class="slide" data-slide="4">
+    <h2 class="slide-title animate-in">Proposed Solution</h2>
+    <p class="slide-subtitle animate-in">Predictive Auto-Scaling using LSTM Neural Networks</p>
+    <div class="slide-content">
+      <div class="two-col">
+        <div class="animate-in">
+          <div class="col-title" style="color:var(--accent-red);">Traditional HPA (Reactive)</div>
+          <ul class="bullet-list">
+            <li>Monitors current CPU utilization only</li>
+            <li>Scales AFTER threshold is breached</li>
+            <li>~120 second delay before new pods are ready</li>
+            <li>Single metric (CPU) decision making</li>
+            <li>No awareness of cost implications</li>
+          </ul>
+        </div>
+        <div class="animate-in">
+          <div class="col-title">Our Approach (Predictive)</div>
+          <ul class="bullet-list">
+            <li>Forecasts CPU load 30 minutes ahead using LSTM</li>
+            <li>Scales BEFORE load arrives (proactive)</li>
+            <li>Zero scaling delay for predicted traffic spikes</li>
+            <li>Multi-metric input (CPU + Memory + Network)</li>
+            <li>Cost tracking for every scaling decision</li>
+          </ul>
+        </div>
+      </div>
+      <div class="formula-box animate-in" style="margin-top:24px;">
+        Predicted CPU(t+30min) = LSTM( CPU(t), Memory(t), Network(t) ) &rarr; Scale proactively
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ SLIDE 5: 4 UNIQUE CONTRIBUTIONS ============ -->
+  <div class="slide" data-slide="5" style="background: radial-gradient(ellipse at 50% 30%, rgba(255,145,0,0.04) 0%, transparent 60%), var(--bg-primary);">
+    <span class="section-label animate-in">Most Important</span>
+    <h2 class="slide-title animate-in">4 Unique Research Contributions</h2>
+    <p class="slide-subtitle animate-in">Not found together in any single prior work</p>
+    <div class="slide-content" style="display:grid; grid-template-columns:1fr 1fr; gap:20px;">
+      <div class="contrib-card animate-in">
+        <div class="contrib-number">Contribution 1</div>
+        <div class="contrib-title">Multi-Metric LSTM</div>
+        <div class="contrib-desc">Uses CPU + Memory + Network I/O as input features instead of CPU alone. Network spikes precede CPU spikes by 1-2 intervals, enabling earlier prediction.</div>
+      </div>
+      <div class="contrib-card animate-in">
+        <div class="contrib-number">Contribution 2</div>
+        <div class="contrib-title">Drift Detection</div>
+        <div class="contrib-desc">Monitors prediction accuracy using sliding window MAPE. Triggers automatic model retraining when accuracy drops below threshold, preventing stale predictions.</div>
+      </div>
+      <div class="contrib-card animate-in">
+        <div class="contrib-number">Contribution 3</div>
+        <div class="contrib-title">Cost-Aware Scaling</div>
+        <div class="contrib-desc">Tracks dollar cost per scaling decision ($0.05/pod/hour). Records every scale event and calculates ROI, enabling cost-benefit analysis of ML predictions.</div>
+      </div>
+      <div class="contrib-card animate-in">
+        <div class="contrib-number">Contribution 4</div>
+        <div class="contrib-title">Confidence-Gated Self-Healing</div>
+        <div class="contrib-desc">When prediction confidence drops below 70%, system falls back to traditional HPA. Safety net ensures uncertain ML predictions never cause wrong scaling.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ SLIDE 6: SYSTEM ARCHITECTURE ============ -->
+  <div class="slide" data-slide="6">
+    <h2 class="slide-title animate-in">System Architecture</h2>
+    <div class="slide-content">
+      <p class="center muted mb-16 animate-in" style="font-size:0.85rem;">CI/CD Pipeline Flow</p>
+      <div class="arch-flow animate-in">
+        <div class="arch-node">Code</div>
+        <span class="arch-arrow">&rarr;</span>
+        <div class="arch-node">GitHub</div>
+        <span class="arch-arrow">&rarr;</span>
+        <div class="arch-node highlight">Jenkins<br><small style="font-size:0.7rem;">9-Stage CI/CD</small></div>
+        <span class="arch-arrow">&rarr;</span>
+        <div class="arch-node">Docker Build</div>
+        <span class="arch-arrow">&rarr;</span>
+        <div class="arch-node highlight">ArgoCD<br><small style="font-size:0.7rem;">GitOps</small></div>
+        <span class="arch-arrow">&rarr;</span>
+        <div class="arch-node">Kubernetes<br><small style="font-size:0.7rem;">3-Node Cluster</small></div>
+      </div>
+      <div class="divider animate-in" style="width:60px; margin:20px auto;"></div>
+      <p class="center muted mb-16 animate-in" style="font-size:0.85rem;">Predictive Scaling Loop</p>
+      <div class="arch-flow animate-in">
+        <div class="arch-node">Prometheus<br><small style="font-size:0.7rem;">Metrics Collection</small></div>
+        <span class="arch-arrow">&rarr;</span>
+        <div class="arch-node highlight">ML Predictor<br><small style="font-size:0.7rem;">LSTM Model</small></div>
+        <span class="arch-arrow">&rarr;</span>
+        <div class="arch-node highlight">Predictive Scaler<br><small style="font-size:0.7rem;">Decision Engine</small></div>
+        <span class="arch-arrow">&rarr;</span>
+        <div class="arch-node">K8s API<br><small style="font-size:0.7rem;">Scale Replicas</small></div>
+      </div>
+      <div class="grid-3 mt-16">
+        <div class="card animate-in" style="text-align:center; padding:14px;">
+          <div class="card-title" style="font-size:0.85rem;">Metrics</div>
+          <div class="card-text" style="font-size:0.78rem;">CPU, Memory, Network I/O collected every 30s</div>
+        </div>
+        <div class="card animate-in" style="text-align:center; padding:14px;">
+          <div class="card-title" style="font-size:0.85rem;">Prediction</div>
+          <div class="card-text" style="font-size:0.78rem;">30-minute forecast with confidence scoring</div>
+        </div>
+        <div class="card animate-in" style="text-align:center; padding:14px;">
+          <div class="card-title" style="font-size:0.85rem;">Action</div>
+          <div class="card-text" style="font-size:0.78rem;">Proactive scaling with cost tracking & drift check</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ SLIDE 7: MULTI-METRIC LSTM MODEL ============ -->
+  <div class="slide" data-slide="7">
+    <h2 class="slide-title animate-in">Multi-Metric LSTM Model</h2>
+    <div class="slide-content">
+      <div class="two-col">
+        <div>
+          <div class="col-title animate-in">Architecture</div>
+          <div class="card animate-in" style="margin-bottom:16px;">
+            <div class="card-text" style="font-family:'Fira Code',monospace; font-size:0.82rem; line-height:2;">
+              <span style="color:var(--accent-cyan);">Input:</span> (batch, seq_len, <strong style="color:var(--accent-orange);">3</strong>)<br>
+              &nbsp;&nbsp;&darr;<br>
+              <span style="color:var(--accent-cyan);">LSTM Layer 1:</span> 64 hidden units<br>
+              &nbsp;&nbsp;&darr;<br>
+              <span style="color:var(--accent-cyan);">LSTM Layer 2:</span> 64 hidden units<br>
+              &nbsp;&nbsp;&darr;<br>
+              <span style="color:var(--accent-cyan);">Fully Connected:</span> 64 &rarr; 1<br>
+              &nbsp;&nbsp;&darr;<br>
+              <span style="color:var(--accent-green);">Output:</span> Predicted CPU (t+30min)
+            </div>
+          </div>
+          <div class="formula-box animate-in" style="font-size:0.8rem;">
+            3 Features: CPU + Memory + Network I/O
+          </div>
+        </div>
+        <div>
+          <div class="col-title animate-in" style="color:var(--accent-orange); border-bottom-color:rgba(255,145,0,0.15);">Why Multi-Metric?</div>
+          <div class="card animate-in" style="margin-bottom:12px;">
+            <div class="card-title" style="font-size:0.9rem;">Network Precedes CPU</div>
+            <div class="card-text">Network I/O spikes 1-2 intervals BEFORE CPU spikes. By including network data, the model gains early warning signals.</div>
+          </div>
+          <div class="card animate-in" style="margin-bottom:12px;">
+            <div class="card-title" style="font-size:0.9rem;">Memory Correlation</div>
+            <div class="card-text">Memory usage patterns add context that helps distinguish between different types of workload increases.</div>
+          </div>
+          <div class="card animate-in">
+            <div class="card-title" style="font-size:0.9rem;">Training Configuration</div>
+            <div class="card-text">
+              <span class="tag tag-cyan">50 Epochs</span>
+              <span class="tag tag-orange">Adam Optimizer</span>
+              <span class="tag tag-green">MSE Loss</span>
+              <span class="tag tag-pink">2 LSTM Layers</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ SLIDE 8: DRIFT DETECTION ============ -->
+  <div class="slide" data-slide="8">
+    <h2 class="slide-title animate-in">Drift Detection Mechanism</h2>
+    <p class="slide-subtitle animate-in">Auto-retrain when prediction accuracy degrades</p>
+    <div class="slide-content">
+      <div class="two-col">
+        <div>
+          <div class="col-title animate-in">How It Works</div>
+          <div class="card animate-in" style="margin-bottom:16px;">
+            <div class="card-text" style="line-height:2;">
+              <strong style="color:var(--accent-cyan);">1.</strong> Maintain sliding window of last <strong>20</strong> prediction errors<br>
+              <strong style="color:var(--accent-cyan);">2.</strong> Calculate <strong>MAPE</strong> (Mean Absolute Percentage Error)<br>
+              <strong style="color:var(--accent-cyan);">3.</strong> Compare against threshold: <strong style="color:var(--accent-orange);">50%</strong><br>
+              <strong style="color:var(--accent-cyan);">4.</strong> If MAPE &gt; 50% &rarr; <strong style="color:var(--accent-red);">Drift Detected!</strong><br>
+              <strong style="color:var(--accent-cyan);">5.</strong> Trigger <strong style="color:var(--accent-green);">emergency retrain</strong>
+            </div>
+          </div>
+          <div class="formula-box animate-in">
+            MAPE = (1/n) &times; &Sigma; |actual - predicted| / actual &times; 100
+          </div>
+        </div>
+        <div>
+          <div class="col-title animate-in" style="color:var(--accent-orange); border-bottom-color:rgba(255,145,0,0.15);">Why Drift Detection?</div>
+          <div class="card animate-in" style="margin-bottom:12px;">
+            <div class="card-title" style="font-size:0.9rem;">Traffic Patterns Change</div>
+            <div class="card-text">User behavior evolves over time. A model trained on old patterns becomes inaccurate on new data.</div>
+          </div>
+          <div class="card animate-in" style="margin-bottom:12px;">
+            <div class="card-title" style="font-size:0.9rem;">Prevents Bad Decisions</div>
+            <div class="card-text">A stale model making wrong predictions is worse than no model. Drift detection catches this early.</div>
+          </div>
+          <div class="card animate-in">
+            <div class="card-title" style="font-size:0.9rem;">Automated Recovery</div>
+            <div class="card-text">No manual intervention needed. System detects degradation and retrains autonomously.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ SLIDE 9: COST-AWARE SCALING ============ -->
+  <div class="slide" data-slide="9">
+    <h2 class="slide-title animate-in">Cost-Aware Scaling</h2>
+    <p class="slide-subtitle animate-in">Track dollar cost per scaling decision for ROI analysis</p>
+    <div class="slide-content">
+      <div class="stat-row animate-in">
+        <div class="stat-box">
+          <div class="stat-value">$0.05</div>
+          <div class="stat-label">Per Pod / Hour</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-value">Every</div>
+          <div class="stat-label">Event Logged</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-value">&Delta;$/hr</div>
+          <div class="stat-label">Cost Change Tracked</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-value">ROI</div>
+          <div class="stat-label">ML vs HPA Analysis</div>
+        </div>
+      </div>
+      <div class="two-col">
+        <div class="card animate-in">
+          <div class="card-title">Scale Event Record</div>
+          <div class="card-text" style="font-family:'Fira Code',monospace; font-size:0.82rem; line-height:2; margin-top:8px;">
+            <span style="color:var(--text-secondary);">{</span><br>
+            &nbsp;&nbsp;<span style="color:var(--accent-cyan);">"timestamp"</span>: "2026-04-09T10:30:00",<br>
+            &nbsp;&nbsp;<span style="color:var(--accent-cyan);">"old_replicas"</span>: 2,<br>
+            &nbsp;&nbsp;<span style="color:var(--accent-cyan);">"new_replicas"</span>: 5,<br>
+            &nbsp;&nbsp;<span style="color:var(--accent-cyan);">"cost_change_per_hour"</span>: +$0.15,<br>
+            &nbsp;&nbsp;<span style="color:var(--accent-cyan);">"trigger"</span>: "ml_prediction"<br>
+            <span style="color:var(--text-secondary);">}</span>
+          </div>
+        </div>
+        <div>
+          <div class="card animate-in" style="margin-bottom:12px;">
+            <div class="card-title">Why Track Costs?</div>
+            <div class="card-text">Most auto-scaling research ignores the financial impact. Our system logs every decision's cost so operators can calculate whether ML predictions save money vs reactive scaling.</div>
+          </div>
+          <div class="card animate-in">
+            <div class="card-title">Enables ROI Analysis</div>
+            <div class="card-text">Compare total cost under predictive scaling vs. over-provisioning. In our experiments, predictive scaling saved approximately <strong style="color:var(--accent-green);">~&#8377;2,450 over 10 days</strong>.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ SLIDE 10: CONFIDENCE-GATED SELF-HEALING ============ -->
+  <div class="slide" data-slide="10">
+    <h2 class="slide-title animate-in">Confidence-Gated Self-Healing</h2>
+    <p class="slide-subtitle animate-in">Safety net: fall back to HPA when ML is uncertain</p>
+    <div class="slide-content">
+      <div class="formula-box animate-in mb-24">
+        Confidence = 1.0 - (training_loss &times; 100) &nbsp;&nbsp;|&nbsp;&nbsp; Threshold: <strong style="color:var(--accent-orange);">70%</strong>
+      </div>
+      <div class="two-col">
+        <div>
+          <div class="col-title animate-in" style="color:var(--accent-green); border-bottom-color:rgba(105,240,174,0.15);">Confidence &ge; 70%</div>
+          <div class="card animate-in" style="border-left:3px solid var(--accent-green);">
+            <div class="card-text" style="line-height:2;">
+              <strong style="color:var(--accent-green);">ML Prediction Active</strong><br>
+              &bull; Use LSTM predicted CPU value<br>
+              &bull; Scale proactively before load<br>
+              &bull; Track cost of scaling decision<br>
+              &bull; Monitor for drift
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="col-title animate-in" style="color:var(--accent-red); border-bottom-color:rgba(255,82,82,0.15);">Confidence &lt; 70%</div>
+          <div class="card animate-in" style="border-left:3px solid var(--accent-red);">
+            <div class="card-text" style="line-height:2;">
+              <strong style="color:var(--accent-red);">Fallback to HPA</strong><br>
+              &bull; Disable ML-based scaling<br>
+              &bull; Let Kubernetes HPA handle scaling<br>
+              &bull; Log confidence failure event<br>
+              &bull; Continue monitoring for recovery
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card animate-in mt-16" style="text-align:center; border-top:2px solid var(--accent-purple);">
+        <div class="card-text"><strong style="color:var(--accent-purple);">Key Insight:</strong> An uncertain ML prediction causing wrong scaling is worse than reactive HPA. The confidence gate ensures the system never makes overconfident mistakes.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ SLIDE 11: CI/CD PIPELINE ============ -->
+  <div class="slide" data-slide="11">
+    <h2 class="slide-title animate-in">CI/CD Pipeline</h2>
+    <p class="slide-subtitle animate-in">Jenkins 9-Stage Automated Pipeline</p>
+    <div class="slide-content">
+      <div class="pipeline animate-in">
+        <div class="pipeline-stage"><span class="stage-num">Stage 1</span>Checkout</div>
+        <span class="pipeline-arrow">&rarr;</span>
+        <div class="pipeline-stage"><span class="stage-num">Stage 2</span>Unit Tests</div>
+        <span class="pipeline-arrow">&rarr;</span>
+        <div class="pipeline-stage"><span class="stage-num">Stage 3</span>Static Analysis</div>
+        <span class="pipeline-arrow">&rarr;</span>
+        <div class="pipeline-stage"><span class="stage-num">Stage 4</span>Build ML Predictor</div>
+        <span class="pipeline-arrow">&rarr;</span>
+        <div class="pipeline-stage"><span class="stage-num">Stage 5</span>Build Scaler</div>
+      </div>
+      <div class="pipeline animate-in" style="margin-top:12px;">
+        <div class="pipeline-stage"><span class="stage-num">Stage 6</span>Transfer to Workers</div>
+        <span class="pipeline-arrow">&rarr;</span>
+        <div class="pipeline-stage"><span class="stage-num">Stage 7</span>Update GitOps</div>
+        <span class="pipeline-arrow">&rarr;</span>
+        <div class="pipeline-stage"><span class="stage-num">Stage 8</span>ArgoCD Sync</div>
+        <span class="pipeline-arrow">&rarr;</span>
+        <div class="pipeline-stage"><span class="stage-num">Stage 9</span>Verify Deploy</div>
+      </div>
+      <div class="grid-3 mt-16">
+        <div class="card animate-in">
+          <div class="card-title" style="font-size:0.85rem;">Testing</div>
+          <div class="card-text" style="font-size:0.8rem;">21 pytest unit tests + flake8 static analysis (0 errors, PEP 8 compliant)</div>
+        </div>
+        <div class="card animate-in">
+          <div class="card-title" style="font-size:0.85rem;">Build</div>
+          <div class="card-text" style="font-size:0.8rem;">Docker/nerdctl images for ML Predictor and Predictive Scaler, SCP transfer to worker nodes</div>
+        </div>
+        <div class="card animate-in">
+          <div class="card-title" style="font-size:0.85rem;">Deploy</div>
+          <div class="card-text" style="font-size:0.8rem;">Git push to trigger ArgoCD auto-sync, kubectl verification of pod status</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ SLIDE 12: GITOPS WITH ARGOCD ============ -->
+  <div class="slide" data-slide="12">
+    <h2 class="slide-title animate-in">GitOps with ArgoCD</h2>
+    <p class="slide-subtitle animate-in">Declarative, version-controlled deployments</p>
+    <div class="slide-content">
+      <div class="arch-flow animate-in mb-24">
+        <div class="arch-node">Developer</div>
+        <span class="arch-arrow">&rarr;</span>
+        <div class="arch-node">Git Push</div>
+        <span class="arch-arrow">&rarr;</span>
+        <div class="arch-node highlight">GitHub Repo<br><small style="font-size:0.7rem;">Source of Truth</small></div>
+        <span class="arch-arrow">&rarr;</span>
+        <div class="arch-node highlight">ArgoCD<br><small style="font-size:0.7rem;">Watches Repo</small></div>
+        <span class="arch-arrow">&rarr;</span>
+        <div class="arch-node">K8s Cluster<br><small style="font-size:0.7rem;">Auto-Synced</small></div>
+      </div>
+      <div class="grid-4">
+        <div class="card animate-in">
+          <div class="card-icon" style="color:var(--accent-cyan);">&#9881;</div>
+          <div class="card-title">Auto-Sync</div>
+          <div class="card-text">ArgoCD watches the GitHub repo. When Jenkins pushes new manifests, ArgoCD automatically syncs the cluster state.</div>
+        </div>
+        <div class="card animate-in">
+          <div class="card-icon" style="color:var(--accent-green);">&#9735;</div>
+          <div class="card-title">Self-Healing</div>
+          <div class="card-text">If someone manually changes K8s resources, ArgoCD detects drift and reverts to the desired state in Git.</div>
+        </div>
+        <div class="card animate-in">
+          <div class="card-icon" style="color:var(--accent-orange);">&#128203;</div>
+          <div class="card-title">Declarative</div>
+          <div class="card-text">Desired state is defined in Git manifests. Actual state in Kubernetes is continuously reconciled to match.</div>
+        </div>
+        <div class="card animate-in">
+          <div class="card-icon" style="color:var(--accent-purple);">&#128259;</div>
+          <div class="card-title">Rollback</div>
+          <div class="card-text">Every deployment is a Git commit. Rolling back is as simple as reverting the commit. Full audit trail.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ SLIDE 13: 3-NODE CLUSTER ============ -->
+  <div class="slide" data-slide="13">
+    <h2 class="slide-title animate-in">3-Node Kubernetes Cluster</h2>
+    <p class="slide-subtitle animate-in">Production infrastructure on private cloud</p>
+    <div class="slide-content">
+      <div class="cluster-grid animate-in">
+        <div class="cluster-node master">
+          <div class="cluster-role" style="color:var(--accent-orange);">Master Node</div>
+          <div class="cluster-ip">10.0.1.7</div>
+          <div class="cluster-services">
+            Control Plane<br>
+            Jenkins CI/CD<br>
+            ArgoCD
+          </div>
+        </div>
+        <div class="cluster-node">
+          <div class="cluster-role" style="color:var(--accent-cyan);">Worker-App</div>
+          <div class="cluster-ip">10.0.1.105</div>
+          <div class="cluster-services">
+            Web Application<br>
+            Predictive Scaler
+          </div>
+        </div>
+        <div class="cluster-node">
+          <div class="cluster-role" style="color:var(--accent-green);">Worker-Data</div>
+          <div class="cluster-ip">10.0.1.114</div>
+          <div class="cluster-services">
+            ML Predictor<br>
+            Prometheus
+          </div>
+        </div>
+      </div>
+      <div class="mt-16 center animate-in">
+        <span class="tag tag-cyan">K8s 1.30.14</span>
+        <span class="tag tag-orange">containerd</span>
+        <span class="tag tag-green">Traefik Ingress</span>
+        <span class="tag tag-pink">Prometheus</span>
+        <span class="tag" style="background:rgba(179,136,255,0.12); color:var(--accent-purple);">ArgoCD</span>
+      </div>
+      <div class="card animate-in mt-16" style="text-align:center;">
+        <div class="card-text">Dedicated node separation ensures ML workloads don't compete with application traffic, while the master node handles orchestration and CI/CD tooling.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ SLIDE 14: TESTING & CODE QUALITY ============ -->
+  <div class="slide" data-slide="14">
+    <h2 class="slide-title animate-in">Testing & Code Quality</h2>
+    <div class="slide-content">
+      <div class="stat-row animate-in">
+        <div class="stat-box">
+          <div class="stat-value">21</div>
+          <div class="stat-label">pytest Unit Tests</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-value">0</div>
+          <div class="stat-label">flake8 Errors</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-value">PEP 8</div>
+          <div class="stat-label">Fully Compliant</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-value">9</div>
+          <div class="stat-label">CI/CD Stages</div>
+        </div>
+      </div>
+      <div class="two-col">
+        <div>
+          <div class="col-title animate-in">Test Coverage</div>
+          <ul class="check-list animate-in">
+            <li>DriftDetector - sliding window, threshold, reset</li>
+            <li>CostCalculator - event recording, cost computation</li>
+            <li>EnhancedPredictor - multi-metric input, confidence</li>
+            <li>API endpoints - /predict, /health, /metrics</li>
+            <li>Edge cases - empty data, zero values, overflow</li>
+            <li>Integration - predictor &rarr; scaler &rarr; K8s API</li>
+          </ul>
+        </div>
+        <div>
+          <div class="col-title animate-in" style="color:var(--accent-orange); border-bottom-color:rgba(255,145,0,0.15);">Quality Gates</div>
+          <ul class="check-list animate-in">
+            <li>All tests must pass before Docker build</li>
+            <li>flake8 static analysis with zero tolerance</li>
+            <li>PEP 8 style compliance enforced</li>
+            <li>Pipeline fails fast on any quality violation</li>
+            <li>Automated in Jenkins Stage 2 & 3</li>
+            <li>No manual quality gate bypassing</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ SLIDE 15: EXPERIMENTAL RESULTS ============ -->
+  <div class="slide" data-slide="15">
+    <h2 class="slide-title animate-in">Experimental Results</h2>
+    <p class="slide-subtitle animate-in">Predictive ML vs Reactive HPA</p>
+    <div class="slide-content">
+      <div class="stat-row animate-in">
+        <div class="stat-box">
+          <div class="stat-value">100%</div>
+          <div class="stat-label">Delay Eliminated</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-value">54%</div>
+          <div class="stat-label">CPU Reduction</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-value">0s</div>
+          <div class="stat-label">User Impact</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-value">~&#8377;2,450</div>
+          <div class="stat-label">10-Day Savings</div>
+        </div>
+      </div>
+      <table class="data-table animate-in">
+        <thead>
+          <tr>
+            <th>Metric</th>
+            <th>Reactive HPA</th>
+            <th>Predictive ML</th>
+            <th>Improvement</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Scaling Delay</td>
+            <td>~120 seconds</td>
+            <td style="color:var(--accent-green); font-weight:600;">0 seconds</td>
+            <td><span style="color:var(--accent-green); font-weight:700;">100% &darr;</span></td>
+          </tr>
+          <tr>
+            <td>Peak CPU per Pod</td>
+            <td>141m</td>
+            <td style="color:var(--accent-green); font-weight:600;">65m</td>
+            <td><span style="color:var(--accent-green); font-weight:700;">54% &darr;</span></td>
+          </tr>
+          <tr>
+            <td>User Impact Duration</td>
+            <td>~2 minutes</td>
+            <td style="color:var(--accent-green); font-weight:600;">0 seconds</td>
+            <td><span style="color:var(--accent-green); font-weight:700;">Eliminated</span></td>
+          </tr>
+          <tr>
+            <td>Cost Savings (10 days)</td>
+            <td>Baseline</td>
+            <td style="color:var(--accent-green); font-weight:600;">~&#8377;2,450 saved</td>
+            <td><span style="color:var(--accent-green); font-weight:700;">Significant &darr;</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ============ SLIDE 16: RELATED WORK ============ -->
+  <div class="slide" data-slide="16">
+    <h2 class="slide-title animate-in">Related Work Comparison</h2>
+    <p class="slide-subtitle animate-in">Gap analysis: our 4 contributions fill existing research gaps</p>
+    <div class="slide-content">
+      <table class="data-table gap-table animate-in">
+        <thead>
+          <tr>
+            <th>Paper</th>
+            <th>ML Model</th>
+            <th>Multi-Metric</th>
+            <th>Drift Detection</th>
+            <th>Cost-Aware</th>
+            <th>Confidence Gate</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Toka et al. 2021</td>
+            <td>LSTM</td>
+            <td class="no">&#10007;</td>
+            <td class="no">&#10007;</td>
+            <td class="no">&#10007;</td>
+            <td class="no">&#10007;</td>
+          </tr>
+          <tr>
+            <td>Yan et al. 2021</td>
+            <td>DRL</td>
+            <td class="no">&#10007;</td>
+            <td class="no">&#10007;</td>
+            <td class="no">&#10007;</td>
+            <td class="no">&#10007;</td>
+          </tr>
+          <tr>
+            <td>Qiu et al. 2020</td>
+            <td>DQN</td>
+            <td class="no">&#10007;</td>
+            <td class="no">&#10007;</td>
+            <td class="no">&#10007;</td>
+            <td class="no">&#10007;</td>
+          </tr>
+          <tr>
+            <td>Rzadca et al. 2020</td>
+            <td>Autopilot</td>
+            <td class="no">&#10007;</td>
+            <td class="no">&#10007;</td>
+            <td class="no">&#10007;</td>
+            <td class="no">&#10007;</td>
+          </tr>
+          <tr class="highlight-row">
+            <td><strong>This Work</strong></td>
+            <td><strong>LSTM</strong></td>
+            <td class="yes" style="color:var(--accent-green); font-weight:700;">&#10003;</td>
+            <td class="yes" style="color:var(--accent-green); font-weight:700;">&#10003;</td>
+            <td class="yes" style="color:var(--accent-green); font-weight:700;">&#10003;</td>
+            <td class="yes" style="color:var(--accent-green); font-weight:700;">&#10003;</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="card animate-in mt-16" style="text-align:center; border-top:2px solid var(--accent-green);">
+        <div class="card-text"><strong style="color:var(--accent-green);">Key Finding:</strong> No single prior work combines all four contributions. Our system is the first to integrate multi-metric LSTM, drift detection, cost awareness, and confidence-gated fallback in a unified Kubernetes auto-scaling framework.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ SLIDE 17: LIVE DEMO ============ -->
+  <div class="slide" data-slide="17">
+    <h2 class="slide-title animate-in">Live Demo Highlights</h2>
+    <div class="slide-content">
+      <div class="grid-3">
+        <div class="card animate-in" style="text-align:center;">
+          <div class="card-icon" style="color:var(--accent-green);">&#9889;</div>
+          <div class="card-title">Jenkins Pipeline</div>
+          <div class="card-text">All 9 stages completed successfully with green status indicators</div>
+        </div>
+        <div class="card animate-in" style="text-align:center;">
+          <div class="card-icon" style="color:var(--accent-cyan);">&#9881;</div>
+          <div class="card-title">Unit Tests</div>
+          <div class="card-text">21 pytest tests passing, verifying all components work correctly</div>
+        </div>
+        <div class="card animate-in" style="text-align:center;">
+          <div class="card-icon" style="color:var(--accent-orange);">&#128269;</div>
+          <div class="card-title">Code Quality</div>
+          <div class="card-text">flake8 analysis: 0 errors, full PEP 8 compliance</div>
+        </div>
+        <div class="card animate-in" style="text-align:center;">
+          <div class="card-icon" style="color:var(--accent-purple);">&#127760;</div>
+          <div class="card-title">Web Application</div>
+          <div class="card-text">Running with student information, health checks passing</div>
+        </div>
+        <div class="card animate-in" style="text-align:center;">
+          <div class="card-icon" style="color:var(--accent-pink);">&#128640;</div>
+          <div class="card-title">ArgoCD Sync</div>
+          <div class="card-text">Auto-sync from GitHub triggered, cluster state reconciled</div>
+        </div>
+        <div class="card animate-in" style="text-align:center;">
+          <div class="card-icon" style="color:var(--accent-green);">&#9096;</div>
+          <div class="card-title">K8s Pods</div>
+          <div class="card-text">All pods running across 3-node cluster, services healthy</div>
+        </div>
+      </div>
+      <div class="formula-box animate-in mt-16" style="font-size:0.9rem;">
+        kubectl get pods &rarr; web-app &#10003; &nbsp;|&nbsp; ml-predictor &#10003; &nbsp;|&nbsp; predictive-scaler &#10003;
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ SLIDE 18: CONCLUSION & FUTURE WORK ============ -->
+  <div class="slide" data-slide="18">
+    <h2 class="slide-title animate-in">Conclusion & Future Work</h2>
+    <div class="slide-content">
+      <div class="two-col">
+        <div>
+          <div class="col-title animate-in" style="color:var(--accent-green); border-bottom-color:rgba(105,240,174,0.15);">Conclusion</div>
+          <div class="card animate-in" style="border-left:3px solid var(--accent-green); margin-bottom:12px;">
+            <div class="card-text" style="line-height:1.8;">
+              <strong style="color:var(--accent-green);">&#10003;</strong> Successfully implemented predictive auto-scaling with LSTM neural networks<br><br>
+              <strong style="color:var(--accent-green);">&#10003;</strong> 4 unique contributions not found together in any single prior work<br><br>
+              <strong style="color:var(--accent-green);">&#10003;</strong> Complete end-to-end DevOps pipeline with CI/CD + GitOps (Jenkins + ArgoCD)<br><br>
+              <strong style="color:var(--accent-green);">&#10003;</strong> 100% elimination of scaling delay, 54% CPU reduction per pod
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="col-title animate-in" style="color:var(--accent-orange); border-bottom-color:rgba(255,145,0,0.15);">Future Work</div>
+          <div class="card animate-in" style="border-left:3px solid var(--accent-orange); margin-bottom:12px;">
+            <div class="card-text" style="line-height:1.8;">
+              <strong style="color:var(--accent-orange);">&#9654;</strong> Transformer-based models for longer forecasting horizons (hours ahead)<br><br>
+              <strong style="color:var(--accent-orange);">&#9654;</strong> Multi-cluster federation for cross-region scaling decisions<br><br>
+              <strong style="color:var(--accent-orange);">&#9654;</strong> Real-time A/B testing of scaling strategies (ML vs HPA vs hybrid)<br><br>
+              <strong style="color:var(--accent-orange);">&#9654;</strong> Integration with cloud cost APIs (AWS Cost Explorer, GCP Billing)
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ SLIDE 19: THANK YOU ============ -->
+  <div class="slide thankyou-slide" data-slide="19">
+    <div class="thankyou-title animate-in">Thank You</div>
+    <p class="animate-in" style="font-size:1.2rem; margin-bottom:8px;"><strong>Prerna Tank</strong></p>
+    <p class="animate-in muted" style="margin-bottom:4px;">M.Tech (Computer Science) | Roll No: 2410512</p>
+    <p class="animate-in muted" style="margin-bottom:4px;">Devi Ahilya Vishwavidyalaya, Indore</p>
+    <p class="animate-in muted" style="margin-bottom:20px;">Advisor: Dr. Shraddha Masih</p>
+    <div class="divider animate-in"></div>
+    <a href="https://github.com/prerna3640/HA-K8S1" target="_blank" class="thankyou-link animate-in">github.com/prerna3640/HA-K8S1</a>
+    <p class="animate-in muted mt-16" style="font-size:0.85rem;">Questions & Discussion</p>
+  </div>
+
+</div>
+
+<!-- Progress Bar -->
+<div class="progress-bar" id="progressBar"></div>
+
+<!-- Slide Number -->
+<div class="slide-number" id="slideNumber">1 / 19</div>
+
+<!-- Navigation Hint -->
+<div class="nav-hint">Use &larr; &rarr; arrow keys or click to navigate</div>
+
+<script>
+(function() {
+  'use strict';
+
+  const slides = document.querySelectorAll('.slide');
+  const progressBar = document.getElementById('progressBar');
+  const slideNumber = document.getElementById('slideNumber');
+  const totalSlides = slides.length;
+  let currentSlide = 0;
+
+  function updateSlide(index) {
+    if (index < 0 || index >= totalSlides) return;
+
+    slides.forEach((slide, i) => {
+      slide.classList.remove('active', 'prev');
+      if (i === index) {
+        slide.classList.add('active');
+      } else if (i < index) {
+        slide.classList.add('prev');
+      }
+    });
+
+    currentSlide = index;
+    progressBar.style.width = ((index + 1) / totalSlides * 100) + '%';
+    slideNumber.textContent = (index + 1) + ' / ' + totalSlides;
+
+    // Reset animations for active slide
+    const activeSlide = slides[index];
+    const animItems = activeSlide.querySelectorAll('.animate-in');
+    animItems.forEach(item => {
+      item.style.animation = 'none';
+      // Force reflow
+      void item.offsetHeight;
+      item.style.animation = '';
+    });
+  }
+
+  function nextSlide() {
+    if (currentSlide < totalSlides - 1) updateSlide(currentSlide + 1);
+  }
+
+  function prevSlide() {
+    if (currentSlide > 0) updateSlide(currentSlide - 1);
+  }
+
+  // Keyboard navigation
+  document.addEventListener('keydown', function(e) {
+    switch(e.key) {
+      case 'ArrowRight':
+      case 'ArrowDown':
+      case ' ':
+      case 'PageDown':
+        e.preventDefault();
+        nextSlide();
+        break;
+      case 'ArrowLeft':
+      case 'ArrowUp':
+      case 'PageUp':
+        e.preventDefault();
+        prevSlide();
+        break;
+      case 'Home':
+        e.preventDefault();
+        updateSlide(0);
+        break;
+      case 'End':
+        e.preventDefault();
+        updateSlide(totalSlides - 1);
+        break;
+    }
+  });
+
+  // Click navigation (left half = prev, right half = next)
+  document.addEventListener('click', function(e) {
+    if (e.target.tagName === 'A') return; // Don't interfere with links
+    const x = e.clientX;
+    const w = window.innerWidth;
+    if (x < w * 0.3) {
+      prevSlide();
+    } else if (x > w * 0.7) {
+      nextSlide();
+    }
+  });
+
+  // Touch navigation
+  let touchStartX = 0;
+  document.addEventListener('touchstart', function(e) {
+    touchStartX = e.changedTouches[0].screenX;
+  });
+  document.addEventListener('touchend', function(e) {
+    const diff = touchStartX - e.changedTouches[0].screenX;
+    if (Math.abs(diff) > 50) {
+      if (diff > 0) nextSlide();
+      else prevSlide();
+    }
+  });
+
+  // Initialize
+  updateSlide(0);
+})();
+</script>
+
+</body>
+</html>
