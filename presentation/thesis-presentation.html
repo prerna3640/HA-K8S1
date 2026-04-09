@@ -1288,67 +1288,222 @@ html, body {
     </div>
   </div>
 
-  <!-- ============ SLIDE 16: RELATED WORK ============ -->
+  <!-- ============ SLIDE 16: RELATED WORK (10 RECENT PAPERS) ============ -->
   <div class="slide" data-slide="16">
-    <h2 class="slide-title animate-in">Related Work Comparison</h2>
-    <p class="slide-subtitle animate-in">Gap analysis: our 4 contributions fill existing research gaps</p>
+    <h2 class="slide-title animate-in">Related Work — Gap Analysis</h2>
+    <p class="slide-subtitle animate-in">10 recent papers (2021–2026) reviewed from IEEE, ACM, Springer, Elsevier, arXiv</p>
     <div class="slide-content">
-      <table class="data-table gap-table animate-in">
+      <table class="data-table gap-table animate-in" style="font-size:0.72rem;">
         <thead>
           <tr>
-            <th>Paper</th>
+            <th style="text-align:left;">Paper</th>
+            <th>Year</th>
             <th>ML Model</th>
             <th>Multi-Metric</th>
-            <th>Drift Detection</th>
+            <th>Drift Detect</th>
             <th>Cost-Aware</th>
             <th>Confidence Gate</th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td>Toka et al. 2021</td>
-            <td>LSTM</td>
-            <td class="no">&#10007;</td>
-            <td class="no">&#10007;</td>
-            <td class="no">&#10007;</td>
-            <td class="no">&#10007;</td>
+            <td style="text-align:left;">Toka et al. <span style="color:var(--text-secondary);">(IEEE TNSM)</span></td>
+            <td>2021</td>
+            <td>AR/HTM/LSTM</td>
+            <td class="no" style="color:var(--accent-red);">&#10007;</td>
+            <td class="no" style="color:var(--accent-red);">&#10007;</td>
+            <td style="color:var(--accent-yellow);">Partial</td>
+            <td class="no" style="color:var(--accent-red);">&#10007;</td>
           </tr>
           <tr>
-            <td>Yan et al. 2021</td>
-            <td>DRL</td>
-            <td class="no">&#10007;</td>
-            <td class="no">&#10007;</td>
-            <td class="no">&#10007;</td>
-            <td class="no">&#10007;</td>
+            <td style="text-align:left;">Dang-Quang & Yoo <span style="color:var(--text-secondary);">(MDPI)</span></td>
+            <td>2021</td>
+            <td>Bi-LSTM</td>
+            <td class="no" style="color:var(--accent-red);">&#10007;</td>
+            <td class="no" style="color:var(--accent-red);">&#10007;</td>
+            <td class="no" style="color:var(--accent-red);">&#10007;</td>
+            <td class="no" style="color:var(--accent-red);">&#10007;</td>
           </tr>
           <tr>
-            <td>Qiu et al. 2020</td>
-            <td>DQN</td>
-            <td class="no">&#10007;</td>
-            <td class="no">&#10007;</td>
-            <td class="no">&#10007;</td>
-            <td class="no">&#10007;</td>
+            <td style="text-align:left;">Xu et al. <span style="color:var(--text-secondary);">(ACM KDD)</span></td>
+            <td>2022</td>
+            <td>Meta-RL</td>
+            <td class="no" style="color:var(--accent-red);">&#10007;</td>
+            <td style="color:var(--accent-yellow);">Partial</td>
+            <td class="no" style="color:var(--accent-red);">&#10007;</td>
+            <td class="no" style="color:var(--accent-red);">&#10007;</td>
           </tr>
           <tr>
-            <td>Rzadca et al. 2020</td>
-            <td>Autopilot</td>
-            <td class="no">&#10007;</td>
-            <td class="no">&#10007;</td>
-            <td class="no">&#10007;</td>
-            <td class="no">&#10007;</td>
+            <td style="text-align:left;">Patil & Singh <span style="color:var(--text-secondary);">(JTIT)</span></td>
+            <td>2023</td>
+            <td>LSTM+ILP</td>
+            <td class="yes" style="color:var(--accent-green); font-weight:700;">&#10003;</td>
+            <td class="no" style="color:var(--accent-red);">&#10007;</td>
+            <td class="no" style="color:var(--accent-red);">&#10007;</td>
+            <td class="no" style="color:var(--accent-red);">&#10007;</td>
           </tr>
-          <tr class="highlight-row">
-            <td><strong>This Work</strong></td>
+          <tr>
+            <td style="text-align:left;">Santos et al. <span style="color:var(--text-secondary);">(Elsevier JNCA)</span></td>
+            <td>2024</td>
+            <td>RL</td>
+            <td style="color:var(--accent-yellow);">Partial</td>
+            <td class="no" style="color:var(--accent-red);">&#10007;</td>
+            <td style="color:var(--accent-yellow);">Partial</td>
+            <td class="no" style="color:var(--accent-red);">&#10007;</td>
+          </tr>
+          <tr>
+            <td style="text-align:left;">Agarwal et al. <span style="color:var(--text-secondary);">(arXiv)</span></td>
+            <td>2025</td>
+            <td>LSTM+Reactive</td>
+            <td style="color:var(--accent-yellow);">Partial</td>
+            <td class="no" style="color:var(--accent-red);">&#10007;</td>
+            <td class="no" style="color:var(--accent-red);">&#10007;</td>
+            <td style="color:var(--accent-yellow);">Partial</td>
+          </tr>
+          <tr>
+            <td style="text-align:left;">Kholidy et al. <span style="color:var(--text-secondary);">(Frontiers CS)</span></td>
+            <td>2025</td>
+            <td>Prophet+LSTM</td>
+            <td class="no" style="color:var(--accent-red);">&#10007;</td>
+            <td class="no" style="color:var(--accent-red);">&#10007;</td>
+            <td class="no" style="color:var(--accent-red);">&#10007;</td>
+            <td class="no" style="color:var(--accent-red);">&#10007;</td>
+          </tr>
+          <tr>
+            <td style="text-align:left;">DInos <span style="color:var(--text-secondary);">(Springer)</span></td>
+            <td>2025</td>
+            <td>Deep RL+LSTM</td>
+            <td style="color:var(--accent-yellow);">Partial</td>
+            <td style="color:var(--accent-yellow);">Partial</td>
+            <td class="no" style="color:var(--accent-red);">&#10007;</td>
+            <td class="no" style="color:var(--accent-red);">&#10007;</td>
+          </tr>
+          <tr>
+            <td style="text-align:left;">Attn-Double-LSTM <span style="color:var(--text-secondary);">(arXiv)</span></td>
+            <td>2026</td>
+            <td>Attn-LSTM</td>
+            <td class="no" style="color:var(--accent-red);">&#10007;</td>
+            <td class="no" style="color:var(--accent-red);">&#10007;</td>
+            <td class="no" style="color:var(--accent-red);">&#10007;</td>
+            <td class="no" style="color:var(--accent-red);">&#10007;</td>
+          </tr>
+          <tr>
+            <td style="text-align:left;">Rossi et al. <span style="color:var(--text-secondary);">(Elsevier JSS)</span></td>
+            <td>2025</td>
+            <td>LLM</td>
+            <td class="yes" style="color:var(--accent-green); font-weight:700;">&#10003;</td>
+            <td style="color:var(--accent-yellow);">Partial</td>
+            <td class="no" style="color:var(--accent-red);">&#10007;</td>
+            <td class="no" style="color:var(--accent-red);">&#10007;</td>
+          </tr>
+          <tr class="highlight-row" style="background:rgba(0,229,255,0.08);">
+            <td style="text-align:left;"><strong style="color:var(--accent-cyan);">This Work (Ours)</strong></td>
+            <td><strong>2026</strong></td>
             <td><strong>LSTM</strong></td>
-            <td class="yes" style="color:var(--accent-green); font-weight:700;">&#10003;</td>
-            <td class="yes" style="color:var(--accent-green); font-weight:700;">&#10003;</td>
-            <td class="yes" style="color:var(--accent-green); font-weight:700;">&#10003;</td>
-            <td class="yes" style="color:var(--accent-green); font-weight:700;">&#10003;</td>
+            <td class="yes" style="color:var(--accent-green); font-weight:700; font-size:1.1em;">&#10003;</td>
+            <td class="yes" style="color:var(--accent-green); font-weight:700; font-size:1.1em;">&#10003;</td>
+            <td class="yes" style="color:var(--accent-green); font-weight:700; font-size:1.1em;">&#10003;</td>
+            <td class="yes" style="color:var(--accent-green); font-weight:700; font-size:1.1em;">&#10003;</td>
           </tr>
         </tbody>
       </table>
-      <div class="card animate-in mt-16" style="text-align:center; border-top:2px solid var(--accent-green);">
-        <div class="card-text"><strong style="color:var(--accent-green);">Key Finding:</strong> No single prior work combines all four contributions. Our system is the first to integrate multi-metric LSTM, drift detection, cost awareness, and confidence-gated fallback in a unified Kubernetes auto-scaling framework.</div>
+      <div class="card animate-in mt-16" style="text-align:center; border-top:2px solid var(--accent-green); padding:12px 20px;">
+        <div class="card-text" style="font-size:0.85rem;"><strong style="color:var(--accent-green);">Key Finding:</strong> No single paper combines all 4 contributions. Closest: Patil &amp; Singh (2023) has multi-metric but lacks drift detection, cost tracking, and confidence gating. <strong>Our work is the first to integrate all 4 + end-to-end DevOps pipeline.</strong></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ SLIDE 16b: WHAT'S NEW IN OUR WORK ============ -->
+  <div class="slide" data-slide="16b">
+    <h2 class="slide-title animate-in">What's New in Our Research?</h2>
+    <p class="slide-subtitle animate-in">Why our paper is different from all 10 reviewed papers</p>
+    <div class="slide-content">
+      <div class="grid-2" style="gap:16px;">
+        <div class="card animate-in" style="border-left:4px solid var(--accent-cyan);">
+          <div class="card-title" style="color:var(--accent-cyan); font-size:0.95rem;">1. Multi-Metric LSTM</div>
+          <div class="card-text" style="font-size:0.78rem;">
+            <strong>Others:</strong> Most papers use single metric (CPU or HTTP requests)<br>
+            <strong>Patil 2023:</strong> Uses multi-metric BUT no drift/cost/confidence<br>
+            <strong style="color:var(--accent-green);">We added:</strong> CPU + Memory + Network as 3 correlated features. Network spikes predict CPU spikes 1–2 intervals ahead.
+          </div>
+        </div>
+        <div class="card animate-in" style="border-left:4px solid var(--accent-orange);">
+          <div class="card-title" style="color:var(--accent-orange); font-size:0.95rem;">2. Drift Detection + Auto-Retrain</div>
+          <div class="card-text" style="font-size:0.78rem;">
+            <strong>Others:</strong> No paper uses MAPE sliding window for drift<br>
+            <strong>DInos 2025:</strong> Transfer learning (different approach)<br>
+            <strong style="color:var(--accent-green);">We added:</strong> Sliding window of 20 errors, MAPE threshold &gt; 50% triggers emergency retrain. Real-time accuracy monitoring.
+          </div>
+        </div>
+        <div class="card animate-in" style="border-left:4px solid var(--accent-pink);">
+          <div class="card-title" style="color:var(--accent-pink); font-size:0.95rem;">3. Cost-Aware Scaling</div>
+          <div class="card-text" style="font-size:0.78rem;">
+            <strong>Others:</strong> No paper tracks $ per scaling decision<br>
+            <strong>Gwydion 2024:</strong> Cost-aware rewards but no per-event $ tracking<br>
+            <strong style="color:var(--accent-green);">We added:</strong> Every scale-up/down logged with exact $/hr impact. Enables ROI analysis: ML predictions vs reactive HPA.
+          </div>
+        </div>
+        <div class="card animate-in" style="border-left:4px solid var(--accent-purple);">
+          <div class="card-title" style="color:var(--accent-purple); font-size:0.95rem;">4. Confidence-Gated HPA Fallback</div>
+          <div class="card-text" style="font-size:0.78rem;">
+            <strong>Others:</strong> No paper falls back to HPA based on confidence<br>
+            <strong>Agarwal 2025:</strong> Hybrid but threshold-based, not confidence-based<br>
+            <strong style="color:var(--accent-green);">We added:</strong> If model confidence &lt; 70%, system falls back to Kubernetes HPA. Safety net prevents bad predictions.
+          </div>
+        </div>
+      </div>
+      <div class="card animate-in mt-16" style="text-align:center; background:rgba(0,229,255,0.06); border:1px solid rgba(0,229,255,0.2); padding:12px;">
+        <div class="card-text" style="font-size:0.85rem;"><strong style="color:var(--accent-cyan);">Plus:</strong> Complete DevOps pipeline (Jenkins 9-stage CI/CD + ArgoCD GitOps + 3-node K8s cluster) — <strong>no research paper includes this.</strong></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ SLIDE 16c: REFERENCES ============ -->
+  <div class="slide" data-slide="16c">
+    <h2 class="slide-title animate-in">References</h2>
+    <p class="slide-subtitle animate-in">10 recent papers reviewed (2021–2026)</p>
+    <div class="slide-content" style="overflow-y:auto; max-height:72vh;">
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; font-size:0.7rem;">
+        <div class="card animate-in" style="padding:10px 14px;">
+          <strong style="color:var(--accent-cyan);">[1]</strong> Toka, L. et al. "Machine Learning-Based Scaling Management for Kubernetes Edge Clusters."
+          <span style="color:var(--text-secondary);">IEEE TNSM, Vol. 18, pp. 958–972, 2021.</span>
+        </div>
+        <div class="card animate-in" style="padding:10px 14px;">
+          <strong style="color:var(--accent-cyan);">[2]</strong> Dang-Quang, N.-M. & Yoo, M. "Deep Learning-Based Autoscaling Using Bi-LSTM for Kubernetes."
+          <span style="color:var(--text-secondary);">MDPI Applied Sciences, Vol. 11(9), 2021.</span>
+        </div>
+        <div class="card animate-in" style="padding:10px 14px;">
+          <strong style="color:var(--accent-cyan);">[3]</strong> Xu, Y. et al. "A Meta Reinforcement Learning Approach for Predictive Autoscaling in the Cloud."
+          <span style="color:var(--text-secondary);">ACM SIGKDD (KDD '22), 2022.</span>
+        </div>
+        <div class="card animate-in" style="padding:10px 14px;">
+          <strong style="color:var(--accent-cyan);">[4]</strong> Patil, S. & Singh, D.G. "ILP Optimized LSTM-based Autoscaling and Scheduling in Edge-Cloud."
+          <span style="color:var(--text-secondary);">JTIT, 2023.</span>
+        </div>
+        <div class="card animate-in" style="padding:10px 14px;">
+          <strong style="color:var(--accent-cyan);">[5]</strong> Santos, J. et al. "Gwydion: Efficient Auto-Scaling for Containerized Applications via RL."
+          <span style="color:var(--text-secondary);">Elsevier JNCA, Vol. 234, 2024.</span>
+        </div>
+        <div class="card animate-in" style="padding:10px 14px;">
+          <strong style="color:var(--accent-cyan);">[6]</strong> Agarwal et al. "A Hybrid Reactive-Proactive Auto-scaling for SLA-Constrained Edge Computing."
+          <span style="color:var(--text-secondary);">arXiv:2512.14290, 2025.</span>
+        </div>
+        <div class="card animate-in" style="padding:10px 14px;">
+          <strong style="color:var(--accent-cyan);">[7]</strong> Kholidy et al. "Time Series Forecasting-Based K8s Autoscaling Using Prophet and LSTM."
+          <span style="color:var(--text-secondary);">Frontiers in Computer Science, 2025.</span>
+        </div>
+        <div class="card animate-in" style="padding:10px 14px;">
+          <strong style="color:var(--accent-cyan);">[8]</strong> DInos: "Deep RL Approach to Generalizable Autoscaling in Stateless Cloud Apps."
+          <span style="color:var(--text-secondary);">Springer, 2025.</span>
+        </div>
+        <div class="card animate-in" style="padding:10px 14px;">
+          <strong style="color:var(--accent-cyan);">[9]</strong> "Mitigating Temporal Blindness in K8s Autoscaling: Attention-Double-LSTM Framework."
+          <span style="color:var(--text-secondary);">arXiv:2603.28790, 2026.</span>
+        </div>
+        <div class="card animate-in" style="padding:10px 14px;">
+          <strong style="color:var(--accent-cyan);">[10]</strong> Rossi et al. "From Reactive to Predictive: Pattern-Aware Framework with LLM Integration."
+          <span style="color:var(--text-secondary);">Elsevier JSS, 2025.</span>
+        </div>
       </div>
     </div>
   </div>
