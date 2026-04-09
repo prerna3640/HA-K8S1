@@ -5,7 +5,7 @@
 ---
 
 ## Your Actual Node Specs (from baseline recording)
-
+    
 | Node | Role | vCPU | RAM | Disk | IP |
 |------|------|------|-----|------|----|
 | controller-kub | control-plane | 2 | 4 GB | 50 GB | 10.0.1.68 |
@@ -510,7 +510,7 @@ kubectl apply -f hpa.yaml
 
 kubectl create secret generic alertmanager-telegram \
   --namespace monitoring \
-  --from-literal=bot_token='REDACTED_BOT_TOKEN'
+  --from-literal=bot_token='7759441490:AAFNlaS5pe8d3KkfG14LebmFQbmdj5HjoHg'
   # IMPORTANT: Rotate this token first! It was exposed in your repo.
   # Go to @BotFather on Telegram → /revoke → get new token
 
