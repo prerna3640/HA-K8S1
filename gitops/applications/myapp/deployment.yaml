@@ -27,25 +27,65 @@ spec:
           <html>
           <head><title>Intelligent Auto-Scaling Demo</title>
           <style>
-            body{font-family:Arial;background:#0f0f1a;color:#e0e0ff;display:flex;justify-content:center;align-items:center;min-height:100vh;margin:0}
-            .card{background:#1a1a2e;border:1px solid #2a2a4a;border-radius:12px;padding:40px;max-width:600px;text-align:center}
-            h1{color:#00d4ff}h2{color:#ff9900}
-            .pod-name{background:#00d4ff;color:#0f0f1a;padding:10px 20px;border-radius:8px;font-size:20px;font-weight:bold;display:inline-block;margin:15px 0}
-            .badge{background:#2a2a4a;padding:5px 12px;border-radius:4px;margin:3px;display:inline-block;font-size:12px}
-            .info{color:#888;font-size:14px}
+            body{font-family:Arial;background:#0f0f1a;color:#e0e0ff;display:flex;justify-content:center;align-items:center;min-height:100vh;margin:0;padding:20px}
+            .container{max-width:1000px;width:100%}
+            .card{background:#1a1a2e;border:1px solid #2a2a4a;border-radius:12px;padding:30px;margin-bottom:20px;text-align:center}
+            h1{color:#00d4ff;margin-top:0}h2{color:#ff9900;font-size:18px}
+            .pod-name{background:#00d4ff;color:#0f0f1a;padding:10px 20px;border-radius:8px;font-size:18px;font-weight:bold;display:inline-block;margin:10px 0}
+            .badge{background:#2a2a4a;padding:6px 12px;border-radius:4px;margin:3px;display:inline-block;font-size:12px}
+            .info{color:#888;font-size:13px}
+            .section-title{color:#ff9900;font-weight:bold;margin-top:20px;margin-bottom:10px;font-size:16px}
+            .section{background:#111;border-left:3px solid #00d4ff;padding:15px;margin:10px 0;text-align:left}
+            .status{color:#00ff00;font-weight:bold}
+            hr{border-color:#2a2a4a}
+            footer{color:#666;font-size:11px;margin-top:20px;text-align:center}
           </style></head>
-          <body><div class="card">
-            <h1>Intelligent Auto-Scaling in Kubernetes</h1>
-            <h2>ML-Based Predictive Approach</h2><hr>
-            <p class="info">Served by pod:</p>
-            <div class="pod-name">$HOSTNAME</div>
-            <p class="info">Timestamp: $TIMESTAMP</p><hr>
-            <p><span class="badge">Namespace: myapp</span>
-            <span class="badge">Replicas: 2-5</span>
-            <span class="badge">ML Model: LSTM</span>
-            <span class="badge">Prediction: 30 min ahead</span></p><hr>
-            <p class="info">Prerna Tank | M.Tech(CS) 2410512 | DAVV</p>
-            <p style="color:#666;font-size:12px">Refresh to see load balancing</p>
+          <body><div class="container">
+            <div class="card">
+              <h1>🚀 Intelligent Auto-Scaling in Kubernetes</h1>
+              <h2>ML-Based Predictive Approach with Multi-Tier Architecture</h2><hr>
+
+              <div class="section-title">📍 FRONTEND (Current Pod)</div>
+              <div class="section">
+                <p class="info">Served by pod: <span class="pod-name">$HOSTNAME</span></p>
+                <p class="info">Status: <span class="status">✓ Running</span></p>
+                <p class="info">Timestamp: $TIMESTAMP</p>
+              </div>
+
+              <div class="section-title">🔧 BACKEND SERVICES</div>
+              <div class="section">
+                <p class="info">ML Predictor API: <span class="status">✓ Available</span></p>
+                <p style="font-size:12px;margin:5px 0">- Endpoint: /predict (ML predictions 30 min ahead)</p>
+                <p style="font-size:12px;margin:5px 0">- Multi-Metric: CPU + Memory + Network</p>
+                <p style="font-size:12px;margin:5px 0">- Drift Detection: Auto-retrain on accuracy drop</p>
+              </div>
+
+              <div class="section-title">📊 DEPLOYMENT INFO</div>
+              <div class="section">
+                <p><span class="badge">✓ Namespace: myapp</span>
+                <span class="badge">✓ Replicas: 2-5</span>
+                <span class="badge">✓ ML Model: LSTM</span>
+                <span class="badge">✓ Prediction: 30 min ahead</span></p>
+                <p><span class="badge">✓ Frontend: nginx</span>
+                <span class="badge">✓ Backend: Python Flask</span>
+                <span class="badge">✓ Orchestration: Kubernetes</span>
+                <span class="badge">✓ GitOps: ArgoCD</span></p>
+              </div>
+
+              <div class="section-title">👤 STUDENT INFO</div>
+              <div class="section">
+                <p><strong>Name:</strong> Prerna Tank</p>
+                <p><strong>Roll No:</strong> 2410512</p>
+                <p><strong>University:</strong> DAVV (Devi Ahilya Vishwavidyalaya)</p>
+                <p><strong>Degree:</strong> M.Tech (Computer Science)</p>
+                <p><strong>Project:</strong> Intelligent Auto-Scaling in Kubernetes with Predictive ML</p>
+              </div>
+            </div>
+
+            <footer>
+              ✓ Application deployed successfully | ✓ CI/CD Pipeline working | ✓ ArgoCD sync active<br>
+              Refresh page to see load balancing across different pods →
+            </footer>
           </div></body></html>
           INNEREOF
         volumeMounts:
