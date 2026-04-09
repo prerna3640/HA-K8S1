@@ -1,0 +1,64 @@
+---
+# ArgoCD Application: ml-predictor
+# Watches ml-predictor/k8s/ — when Jenkins updates image tag, ArgoCD syncs
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: ml-predictor
+  namespace: argocd
+  labels:
+    project: ha-k8s-thesis
+    component: ml-predictor
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/prerna3640/HA-K8S1.git
+    targetRevision: main
+    path: ml-predictor/k8s
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: monitoring
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=false
+      - ApplyOutOfSyncOnly=true
+  ignoreDifferences:
+  - group: apps
+    kind: Deployment
+    jsonPointers:
+    - /spec/template/metadata/annotations
+
+---
+# ArgoCD Application: predictive-scaler
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: predictive-scaler
+  namespace: argocd
+  labels:
+    project: ha-k8s-thesis
+    component: predictive-scaler
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/prerna3640/HA-K8S1.git
+    targetRevision: main
+    path: predictive-scaler/k8s
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: monitoring
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=false
+      - ApplyOutOfSyncOnly=true
+  ignoreDifferences:
+  - group: apps
+    kind: Deployment
+    jsonPointers:
+    - /spec/template/metadata/annotations

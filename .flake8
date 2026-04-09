@@ -1,0 +1,16 @@
+[flake8]
+max-line-length = 100
+exclude =
+    .git,
+    __pycache__,
+    *.egg-info,
+    build,
+    dist,
+    old-configs,
+    baseline-recording,
+    .claude
+per-file-ignores =
+    ml-predictor/tests/*:E501
+    ml-predictor/test_local.py:E501
+ignore =
+    W503
