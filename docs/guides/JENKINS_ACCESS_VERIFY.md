@@ -6,10 +6,10 @@ Complete step-by-step guide to access Jenkins, reload pipeline, and verify all 9
 
 ## 📍 Step 1: Open Jenkins in Browser
 
-**URL:** `http://172.83.83.156:8080`
+**URL:** `http://<master-public-ip>:8080`
 
 ```
-http://172.83.83.156:8080
+http://<master-public-ip>:8080
 ```
 
 **Expected Result:**
@@ -31,7 +31,7 @@ Or look for credentials at:
 **If you can't login:**
 ```bash
 # SSH to master (if you have access)
-ssh -i kub-cluster-key.pem ubuntu@10.0.1.7
+ssh -i <your-ssh-key>.pem ubuntu@<master-ip>
 
 # Check Jenkins is running
 sudo systemctl status jenkins
@@ -53,9 +53,9 @@ sudo cat /var/lib/jenkins/secrets/initialAdminPassword
 
 **Or use direct URL:**
 ```
-http://172.83.83.156:8080/job/ml-autoscaling-pipeline/
+http://<master-public-ip>:8080/job/ml-autoscaling-pipeline/
 OR
-http://172.83.83.156:8080/job/HA-K8S1/
+http://<master-public-ip>:8080/job/HA-K8S1/
 ```
 
 **Expected Result:**
@@ -221,9 +221,9 @@ nerdctl build -t predictive-scaler:BUILD_NUMBER
 ### **Stage 6: Transfer to Workers**
 ```
 Output should show:
-=== Transferring to worker-data (10.0.1.114) ===
+=== Transferring to worker-data (<worker-data-ip>) ===
 ✓ Image imported to worker-data
-=== Transferring to worker-app (10.0.1.105) ===
+=== Transferring to worker-app (<worker-app-ip>) ===
 ✓ Image imported to worker-app
 ```
 
@@ -327,7 +327,7 @@ predictive-scaler Synced
 **Check:**
 ```bash
 # SSH to master and run tests locally
-ssh ubuntu@10.0.1.7
+ssh ubuntu@<master-ip>
 cd /var/lib/jenkins/workspace/ml-autoscaling-pipeline/ml-predictor
 python3 -m pytest tests/ -v
 ```
@@ -335,13 +335,13 @@ python3 -m pytest tests/ -v
 ### **Problem: Cannot access Jenkins**
 
 **Try these URLs:**
-- `http://172.83.83.156:8080` (HTTP)
-- `http://10.0.1.7:8080` (Internal IP)
-- `https://172.83.83.156:8443` (HTTPS, if configured)
+- `http://<master-public-ip>:8080` (HTTP)
+- `http://<master-ip>:8080` (Internal IP)
+- `https://<master-public-ip>:8443` (HTTPS, if configured)
 
 **Check Jenkins is running:**
 ```bash
-ssh ubuntu@10.0.1.7
+ssh ubuntu@<master-ip>
 sudo systemctl status jenkins
 ```
 
@@ -349,7 +349,7 @@ sudo systemctl status jenkins
 
 ## ✅ Final Checklist
 
-- [ ] Opened Jenkins at http://172.83.83.156:8080
+- [ ] Opened Jenkins at http://<master-public-ip>:8080
 - [ ] Successfully logged in
 - [ ] Found ml-autoscaling-pipeline job
 - [ ] Clicked Configure
@@ -390,7 +390,7 @@ When taking screenshots, include:
 
 ```
 [Screenshot 1] Jenkins Login
-- URL: http://172.83.83.156:8080
+- URL: http://<master-public-ip>:8080
 - Status: Logged in ✓
 
 [Screenshot 2] Job Dashboard

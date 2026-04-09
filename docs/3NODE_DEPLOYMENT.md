@@ -8,9 +8,9 @@
     
 | Node | Role | vCPU | RAM | Disk | IP |
 |------|------|------|-----|------|----|
-| controller-kub | control-plane | 2 | 4 GB | 50 GB | 10.0.1.68 |
-| worker-2 | worker | 2 | 4 GB | 40 GB | 10.0.1.30 |
-| workernew | worker | 2 | 4 GB | 40 GB | 10.0.1.29 |
+| controller-kub | control-plane | 2 | 4 GB | 50 GB | <master-ip> |
+| worker-2 | worker | 2 | 4 GB | 40 GB | <worker-1-ip> |
+| workernew | worker | 2 | 4 GB | 40 GB | <worker-2-ip> |
 
 **OS:** Ubuntu 22.04.5 LTS
 **K8s version:** v1.30.14
@@ -48,7 +48,7 @@ What still works perfectly:
 
 ```
 ┌─────────────────────────────────────────────────────────┐
-│  controller-kub  (10.0.1.68)  2vCPU / 4GB              │
+│  controller-kub  (<master-ip>)  2vCPU / 4GB              │
 │  ─────────────────────────────────────────────────────  │
 │  [CONTROL PLANE ONLY — no app workloads]                │
 │  - kube-apiserver      (~200m CPU, ~512MB)              │
@@ -63,7 +63,7 @@ What still works perfectly:
 └─────────────────────────────────────────────────────────┘
 
 ┌─────────────────────────────────────────────────────────┐
-│  workernew  (10.0.1.29)  2vCPU / 4GB                   │
+│  workernew  (<worker-2-ip>)  2vCPU / 4GB                   │
 │  ─────────────────────────────────────────────────────  │
 │  [APP WORKER — web + ingress + gitops + scaler]         │
 │  - web pod (replica 1)   (~100m CPU, ~128MB)            │
@@ -82,7 +82,7 @@ What still works perfectly:
 └─────────────────────────────────────────────────────────┘
 
 ┌─────────────────────────────────────────────────────────┐
-│  worker-2  (10.0.1.30)  2vCPU / 4GB                    │
+│  worker-2  (<worker-1-ip>)  2vCPU / 4GB                    │
 │  ─────────────────────────────────────────────────────  │
 │  [DATA WORKER — ML + monitoring]                        │
 │  - ml-predictor          (~500m CPU, ~1GB)              │
@@ -272,7 +272,7 @@ kubectl -n argocd get secret argocd-initial-admin-secret \
   -o jsonpath="{.data.password}" | base64 -d && echo
 
 # Connect ArgoCD to your gitops repo
-# Access via: http://10.0.1.29:30080  (or kubectl port-forward)
+# Access via: http://<worker-2-ip>:30080  (or kubectl port-forward)
 kubectl port-forward svc/argocd-server -n argocd 8080:443
 # Open: https://localhost:8080
 ```
@@ -281,14 +281,14 @@ kubectl port-forward svc/argocd-server -n argocd 8080:443
 
 ```bash
 # Option A: Build directly on worker-2 (SSH into it)
-ssh ubuntu@10.0.1.30
+ssh ubuntu@<worker-1-ip>
 
 # Install Docker on worker-2
 curl -fsSL https://get.docker.com | sh
 sudo usermod -aG docker ubuntu
 
 # Copy ml-predictor folder to worker-2
-scp -r ml-predictor/ ubuntu@10.0.1.30:~/
+scp -r ml-predictor/ ubuntu@<worker-1-ip>:~/
 
 # Build image
 cd ~/ml-predictor

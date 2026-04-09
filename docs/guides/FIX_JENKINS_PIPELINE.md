@@ -9,7 +9,7 @@ This happens because **Jenkins caches the pipeline definition** and needs to rel
 ## 🔧 Manual Fix (via Jenkins UI)
 
 ### Step 1: Open Jenkins
-- Go to: **http://172.83.83.156:8080**
+- Go to: **http://<master-public-ip>:8080**
 - Login with your credentials
 
 ### Step 2: Select the Job
@@ -65,7 +65,7 @@ Your pipeline will show **these 9 stages:**
 Try this **via Jenkins Script Console**:
 
 ### Open Jenkins Script Console
-1. Go to http://172.83.83.156:8080
+1. Go to http://<master-public-ip>:8080
 2. Click **Manage Jenkins** (left menu)
 3. Click **Script Console**
 4. Paste this code:

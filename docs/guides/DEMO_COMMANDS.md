@@ -131,10 +131,10 @@ This runs everything and shows:
 
 ```bash
 # Check last build
-curl http://172.83.83.156:8080/job/HA-K8S1/lastBuild/api/json | jq '.result'
+curl http://<master-public-ip>:8080/job/HA-K8S1/lastBuild/api/json | jq '.result'
 
 # Trigger new build
-curl -X POST http://172.83.83.156:8080/job/HA-K8S1/build \
+curl -X POST http://<master-public-ip>:8080/job/HA-K8S1/build \
   -u jenkins:jenkins
 ```
 

@@ -1,6 +1,26 @@
-kub-cluster-key.pem
+# SSH keys and secrets
+*.pem
+*.key
+.env
+.env.*
+*secret*
+*credentials*
+
+# Python
 __pycache__/
 *.pyc
+*.egg-info/
+
+# Build artifacts
 *.tar.gz
-demo_output.png
+*.tar
+
+# IDE and tools
 .claude/
+.vscode/
+.idea/
+
+# Generated
+demo_output.png
+thesis_results.png
+Readme2.0.md

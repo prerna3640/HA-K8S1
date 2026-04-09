@@ -14,7 +14,7 @@ Your issue is that **Jenkins is not showing the new 9 stages**. Here's the exact
 ### Step 1: Go Back to Job Page
 Click the back button or go to:
 ```
-http://172.83.83.156:8080/job/ml-autoscaling-pipeline/
+http://<master-public-ip>:8080/job/ml-autoscaling-pipeline/
 ```
 
 ### Step 2: Click "Configure" (Left Sidebar)
@@ -90,17 +90,17 @@ Instead of clicking around, just copy-paste these URLs:
 
 **1. Go to job:**
 ```
-http://172.83.83.156:8080/job/ml-autoscaling-pipeline/
+http://<master-public-ip>:8080/job/ml-autoscaling-pipeline/
 ```
 
 **2. Go to configure:**
 ```
-http://172.83.83.156:8080/job/ml-autoscaling-pipeline/configure
+http://<master-public-ip>:8080/job/ml-autoscaling-pipeline/configure
 ```
 
 **3. After saving, see Stage View of latest build:**
 ```
-http://172.83.83.156:8080/job/ml-autoscaling-pipeline/lastBuild/
+http://<master-public-ip>:8080/job/ml-autoscaling-pipeline/lastBuild/
 ```
 
 ---

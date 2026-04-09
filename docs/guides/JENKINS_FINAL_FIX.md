@@ -41,7 +41,7 @@ The Jenkins pipeline **now has 9 GREEN stages** that will all pass!
 ### Step 1: Go to Jenkins Configuration
 
 ```
-http://172.83.83.156:8080/job/ml-autoscaling-pipeline/configure
+http://<master-public-ip>:8080/job/ml-autoscaling-pipeline/configure
 ```
 
 ### Step 2: In Pipeline Section

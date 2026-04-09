@@ -49,7 +49,7 @@ Permission denied (publickey)
 
 ### Error Type 3: Worker node unreachable
 ```
-ssh: connect to host 10.0.1.114 port 22: Connection refused
+ssh: connect to host <worker-data-ip> port 22: Connection refused
 ```
 **Fix:** Worker IP wrong or worker offline
 

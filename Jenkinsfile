@@ -3,6 +3,8 @@ pipeline {
 
     environment {
         GIT_REPO = 'https://github.com/prerna3640/HA-K8S1.git'
+        TELEGRAM_BOT_TOKEN = credentials('telegram-bot-token')
+        TELEGRAM_CHAT_ID = credentials('telegram-chat-id')
     }
 
     stages {
@@ -114,10 +116,10 @@ pipeline {
 
     post {
         success {
-            sh 'curl -s "https://api.telegram.org/bot8665863838:AAGjjlvA-s7ygCEFZ-yPb2CYAoDvnPYuj4Q/sendMessage" -d "chat_id=1150673339" -d "text=Build %23${BUILD_NUMBER} SUCCESS - All 9 stages passed" 2>&1 || true'
+            sh 'curl -s "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" -d "chat_id=${TELEGRAM_CHAT_ID}" -d "text=Build %23${BUILD_NUMBER} SUCCESS - All 9 stages passed" 2>&1 || true'
         }
         failure {
-            sh 'curl -s "https://api.telegram.org/bot8665863838:AAGjjlvA-s7ygCEFZ-yPb2CYAoDvnPYuj4Q/sendMessage" -d "chat_id=1150673339" -d "text=Build %23${BUILD_NUMBER} FAILED" 2>&1 || true'
+            sh 'curl -s "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" -d "chat_id=${TELEGRAM_CHAT_ID}" -d "text=Build %23${BUILD_NUMBER} FAILED" 2>&1 || true'
         }
     }
 }

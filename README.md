@@ -168,11 +168,11 @@ HA-K8S1/
 
 ## Infrastructure
 
-| Node | IP | Role | Services |
-|------|-----|------|----------|
-| **Master** | 10.0.1.7 | Control Plane | Jenkins, ArgoCD, K8s API |
-| **Worker-App** | 10.0.1.105 | Application | Web frontend, Predictive Scaler |
-| **Worker-Data** | 10.0.1.114 | Data/ML | ML Predictor, Prometheus, Grafana |
+| Node | Role | Services |
+|------|------|----------|
+| **Master** | Control Plane | Jenkins, ArgoCD, K8s API |
+| **Worker-App** | Application | Web frontend, Predictive Scaler |
+| **Worker-Data** | Data/ML | ML Predictor, Prometheus, Grafana |
 
 ---
 
@@ -258,10 +258,10 @@ print(f'Cost summary: {result[\"cost_summary\"]}')
 
 ```bash
 # SSH to master node
-ssh -i kub-cluster-key.pem ubuntu@10.0.1.7
+ssh -i <your-key>.pem ubuntu@<master-ip>
 
 # Deploy all services
-cd /tmp && git clone https://github.com/prerna3640/HA-K8S1.git && cd HA-K8S1
+git clone https://github.com/prerna3640/HA-K8S1.git && cd HA-K8S1
 bash scripts/deploy.sh
 
 # Or deploy frontend only
@@ -389,9 +389,9 @@ flake8 ml-predictor/ --count --statistics --max-line-length=100 --exclude=ml-pre
 | Service | URL |
 |---------|-----|
 | **GitHub** | https://github.com/prerna3640/HA-K8S1 |
-| **Jenkins** | http://172.83.83.156:8080 |
-| **ArgoCD** | https://172.83.83.156:31443 |
-| **Grafana** | http://172.83.83.156:3000 |
+| **Jenkins** | `http://<master-ip>:8080` |
+| **ArgoCD** | `https://<master-ip>:31443` |
+| **Grafana** | `http://<master-ip>:3000` |
 
 ---
 

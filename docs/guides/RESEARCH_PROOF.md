@@ -83,11 +83,11 @@ curl http://localhost:31080/predict 2>/dev/null | jq .
 
 ```bash
 # Trigger a build via Jenkins (or manually)
-curl -X POST http://172.83.83.156:8080/job/HA-K8S1/build \
+curl -X POST http://<master-public-ip>:8080/job/HA-K8S1/build \
   -u jenkins:jenkins
 
 # Watch build progress
-curl http://172.83.83.156:8080/job/HA-K8S1/lastBuild/api/json | jq '.stages[] | {name: .name, status: .status}'
+curl http://<master-public-ip>:8080/job/HA-K8S1/lastBuild/api/json | jq '.stages[] | {name: .name, status: .status}'
 
 # Verify ArgoCD auto-synced
 argocd app get ml-predictor --refresh

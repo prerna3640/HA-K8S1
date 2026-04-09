@@ -1,6 +1,6 @@
 # ⚡ Quick Deploy Command
 
-Copy-paste this command on your Kubernetes master (10.0.1.7) to deploy the application:
+Copy-paste this command on your Kubernetes master (<master-ip>) to deploy the application:
 
 ---
 
@@ -9,7 +9,7 @@ Copy-paste this command on your Kubernetes master (10.0.1.7) to deploy the appli
 SSH to master and run:
 
 ```bash
-ssh -i kub-cluster-key.pem ubuntu@10.0.1.7
+ssh -i <your-ssh-key>.pem ubuntu@<master-ip>
 
 # Once logged in, run:
 cd /tmp && \

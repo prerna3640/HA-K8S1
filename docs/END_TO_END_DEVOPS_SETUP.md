@@ -30,7 +30,7 @@
   - `predictive-scaler` — watches `predictive-scaler/k8s/`
 - ✅ Automatic sync when manifests change in git
 - ✅ Self-healing: reverts manual kubectl changes
-- ✅ Web UI at: `https://172.83.83.156:31443` (password: `oAAGmggB5LOIj4YB`)
+- ✅ Web UI at: `https://<master-public-ip>:31443` (password: `<argocd-password>`)
 
 ### 4. **Updated Jenkins Pipeline**
 - ✅ 9 stages total (upgraded from 6):
@@ -98,8 +98,8 @@ Jenkinsfile                   (updated with 3 new stages)
 ### **Step 1: Show Current State**
 ```bash
 # Show ArgoCD UI
-https://172.83.83.156:31443
-# Login: admin / oAAGmggB5LOIj4YB
+https://<master-public-ip>:31443
+# Login: admin / <argocd-password>
 # See 3 applications: ml-predictor, predictive-scaler, web-app (all Synced)
 
 # Show GitHub repo
@@ -120,7 +120,7 @@ git push origin main
 ### **Step 3: Watch Jenkins Pipeline**
 ```bash
 # Jenkins detects push, starts build automatically
-http://172.83.83.156:8080
+http://<master-public-ip>:8080
 
 # Pipeline executes:
 1. Checkout (15 sec)
@@ -143,7 +143,7 @@ https://github.com/prerna3640/HA-K8S1/commits/main
 # See new commit with updated image tag
 
 # Show ArgoCD detected change
-https://172.83.83.156:31443
+https://<master-public-ip>:31443
 # ml-predictor app shows OutOfSync → Syncing → Synced
 
 # Show pods rolling update
@@ -215,16 +215,16 @@ flake8 ml-predictor/
 ### Check ArgoCD Status
 ```bash
 kubectl get applications -n argocd
-argocd app list --server localhost:31443 --insecure --username admin --password oAAGmggB5LOIj4YB
+argocd app list --server localhost:31443 --insecure --username admin --password <argocd-password>
 ```
 
 ### Check Pipeline Status
 ```bash
 # Jenkins UI
-http://172.83.83.156:8080/job/HA-K8S1/
+http://<master-public-ip>:8080/job/HA-K8S1/
 
 # Or view recent builds
-curl http://172.83.83.156:8080/api/json | jq '.jobs[] | {name: .name, lastBuild: .lastBuild.number}'
+curl http://<master-public-ip>:8080/api/json | jq '.jobs[] | {name: .name, lastBuild: .lastBuild.number}'
 ```
 
 ### Manual ArgoCD Sync
@@ -233,7 +233,7 @@ argocd app sync ml-predictor \
   --server localhost:31443 \
   --insecure \
   --username admin \
-  --password oAAGmggB5LOIj4YB
+  --password <argocd-password>
 ```
 
 ---

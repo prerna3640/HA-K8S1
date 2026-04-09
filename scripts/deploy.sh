@@ -7,8 +7,8 @@
 set -e
 
 # Your cluster config
-WORKER_APP_IP="10.0.1.105"      # worker-node-1
-WORKER_DATA_IP="10.0.1.114"     # worker-node-2
+WORKER_APP_IP="<worker-app-ip>"      # worker-node-1
+WORKER_DATA_IP="<worker-data-ip>"     # worker-node-2
 SSH_KEY="~/.ssh/kub-cluster-key"
 
 echo "============================================================"

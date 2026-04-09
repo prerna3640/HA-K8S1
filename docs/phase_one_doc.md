@@ -8,9 +8,9 @@
 
 | Node | Role | vCPU | RAM | Disk | Private IP | Public IP |
 |------|------|------|-----|------|-----------|-----------|
-| master-node | control-plane | 4 | 8 GB | 60 GB | 10.0.1.7 | 172.83.83.156 |
-| worker-node-1 | worker (app) | 4 | 8 GB | 50 GB | 10.0.1.105 | 172.83.83.22 |
-| worker-node-2 | worker (data) | 4 | 8 GB | 50 GB | 10.0.1.114 | 172.83.83.158 |
+| master-node | control-plane | 4 | 8 GB | 60 GB | <master-ip> | <master-public-ip> |
+| worker-node-1 | worker (app) | 4 | 8 GB | 50 GB | <worker-app-ip> | <worker-app-public-ip> |
+| worker-node-2 | worker (data) | 4 | 8 GB | 50 GB | <worker-data-ip> | <worker-data-public-ip> |
 
 **Provider**: MegaFuse, Central India | **OS**: Ubuntu 22.04 | **K8s**: v1.30.14 | **CNI**: Flannel
 
@@ -74,7 +74,7 @@ kubectl apply -f https://raw.githubusercontent.com/flannel-io/flannel/master/Doc
 
 ### Step 5: Join workers (worker-node-1 & worker-node-2)
 ```bash
-sudo kubeadm join 10.0.1.7:6443 --token <token> --discovery-token-ca-cert-hash sha256:<hash>
+sudo kubeadm join <master-ip>:6443 --token <token> --discovery-token-ca-cert-hash sha256:<hash>
 ```
 
 ### Step 6: Verify cluster (master-node)
@@ -163,7 +163,7 @@ worker-node-2   132m         3%     2199Mi          28%
 - Shows pod name on each request (proves load balancing)
 - Service: ClusterIP + Traefik Ingress
 
-**Result**: `http://172.83.83.22:30080` — refresh shows different pod names.
+**Result**: `http://<worker-app-public-ip>:30080` — refresh shows different pod names.
 
 ### Step 15: Deploy HPA (master-node)
 - min: 2, max: 5, CPU threshold: 70%
@@ -243,7 +243,7 @@ NO CHANGE - 2 replicas (predicted CPU 0.0000 cores)
 kubectl patch svc prometheus-grafana -n monitoring --type=merge \
   -p '{"spec":{"type":"NodePort","ports":[{"port":80,"targetPort":3000,"nodePort":31000}]}}'
 ```
-**Result**: Grafana at `http://172.83.83.158:31000`
+**Result**: Grafana at `http://<worker-data-public-ip>:31000`
 
 ### Step 23: Create 5 Grafana dashboards (master-node)
 Pushed via Grafana API into "Auto-Scaling Project" folder.
@@ -304,17 +304,17 @@ Removed 28 built-in dashboards (deleted ConfigMaps).
 ```
                     INTERNET
                        |
-              http://172.83.83.22:30080
+              http://<worker-app-public-ip>:30080
                        |
 ┌──────────────────────────────────────────────────────────────┐
 │                    KUBERNETES CLUSTER                        │
 │                                                              │
-│  master-node (10.0.1.7)                                     │
+│  master-node (<master-ip>)                                     │
 │  ├── kube-apiserver, etcd, scheduler, controller-manager     │
 │  ├── metrics-server                                          │
 │  └── flannel, kube-proxy                                     │
 │                                                              │
-│  worker-node-1 (10.0.1.105) [workload=app]                  │
+│  worker-node-1 (<worker-app-ip>) [workload=app]                  │
 │  ├── web pod 1 (nginx) ──┐                                   │
 │  ├── web pod 2 (nginx) ──┤── Traefik load balances           │
 │  ├── traefik ingress     ┘                                   │
@@ -322,7 +322,7 @@ Removed 28 built-in dashboards (deleted ConfigMaps).
 │  ├── argocd (server, redis, dex, controller)                 │
 │  └── node-exporter, promtail                                 │
 │                                                              │
-│  worker-node-2 (10.0.1.114) [workload=data]                 │
+│  worker-node-2 (<worker-data-ip>) [workload=data]                 │
 │  ├── ml-predictor ──────────► LSTM model, Flask API :5000    │
 │  ├── prometheus ────────────► scrapes all pods/nodes          │
 │  ├── grafana ───────────────► 5 dashboards, port 31000       │
@@ -342,8 +342,8 @@ Removed 28 built-in dashboards (deleted ConfigMaps).
 
 | Service | URL | Credentials |
 |---------|-----|------------|
-| Web App | `http://172.83.83.22:30080` | — |
-| Grafana | `http://172.83.83.158:31000` | admin / VgltzC2tAy0J7u1GSKY5NoflV3zSxKk27GYfvhrw |
+| Web App | `http://<worker-app-public-ip>:30080` | — |
+| Grafana | `http://<worker-data-public-ip>:31000` | admin / <grafana-password> |
 | Telegram Bot | @Fire_k8s_bot | Chat ID: 1150673339 |
 
 ---
@@ -485,7 +485,7 @@ After 8 days of training on traffic patterns, the LSTM model predicted load 30 m
 
 ## Grafana Dashboard Screenshots & Explanations
 
-All screenshots taken on **April 5, 2026** from Grafana at `http://172.83.83.158:31000`
+All screenshots taken on **April 5, 2026** from Grafana at `http://<worker-data-public-ip>:31000`
 Saved in `screenshots/` folder.
 
 ### Screenshot 1: Cluster Overview (Last 7 days)

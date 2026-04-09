@@ -30,7 +30,7 @@ Complete guide to deploy your web application with student info to Kubernetes.
 
 ```bash
 # SSH to Kubernetes master
-ssh -i kub-cluster-key.pem ubuntu@10.0.1.7
+ssh -i <your-ssh-key>.pem ubuntu@<master-ip>
 
 # Navigate to repo
 cd /tmp/HA-K8S1
@@ -109,7 +109,7 @@ http://localhost:8080
 kubectl get svc -n myapp -o jsonpath='{.items[0].spec.ports[0].nodePort}'
 
 # Access via worker node IP
-http://10.0.1.105:<NODEPORT>/
+http://<worker-app-ip>:<NODEPORT>/
 ```
 
 ---

@@ -350,8 +350,8 @@ project/
 ### D. Access URLs
 | Service | URL |
 |---------|-----|
-| Web App | http://172.83.83.22:30080 |
-| Grafana | http://172.83.83.158:31000 |
+| Web App | http://<worker-app-public-ip>:30080 |
+| Grafana | http://<worker-data-public-ip>:31000 |
 | GitHub | https://github.com/prerna3640/HA-K8S1 |
 
 ---
