@@ -57,7 +57,7 @@ html, body {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  padding: 60px 80px;
+  padding: 45px 80px 30px 80px;
   opacity: 0;
   transform: translateX(100px);
   transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
@@ -98,6 +98,43 @@ html, body {
   z-index: 1000;
   font-weight: 500;
   font-family: 'Fira Code', monospace;
+}
+
+/* ===== TOP HEADER BAR ===== */
+.top-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background: rgba(10, 14, 39, 0.92);
+  border-bottom: 1px solid rgba(0, 229, 255, 0.15);
+  padding: 6px 0;
+  text-align: center;
+  z-index: 999;
+  backdrop-filter: blur(8px);
+}
+.top-header .college-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--accent-green);
+  letter-spacing: 0.5px;
+}
+.top-header .university-name {
+  font-size: 10px;
+  color: var(--text-secondary);
+  margin-top: 1px;
+}
+
+/* ===== BOTTOM FOOTER BAR ===== */
+.bottom-footer {
+  position: fixed;
+  bottom: 6px;
+  left: 24px;
+  font-size: 10px;
+  color: var(--text-secondary);
+  z-index: 1000;
+  font-style: italic;
+  opacity: 0.7;
 }
 
 /* ===== NAVIGATION HINT ===== */
@@ -655,7 +692,7 @@ html, body {
   }
   .slide.prev { opacity: 1 !important; transform: none !important; }
   .animate-in { opacity: 1 !important; }
-  .progress-bar, .slide-number, .nav-hint { display: none; }
+  .progress-bar, .slide-number, .nav-hint, .bottom-footer { display: none; }
 }
 
 /* ===== RESPONSIVE ===== */
@@ -672,18 +709,45 @@ html, body {
 </head>
 <body>
 
+<!-- BOTTOM FOOTER: Project Name (on every slide) -->
+<div class="bottom-footer">Intelligent Auto-Scaling in Kubernetes: A Machine Learning Based Predictive Approach &nbsp;|&nbsp; Prerna Tank (2410512)</div>
+
 <div class="presentation" id="presentation">
 
   <!-- ============ SLIDE 1: TITLE ============ -->
-  <div class="slide title-slide active" data-slide="1">
-    <span class="section-label animate-in">M.Tech Thesis Defense</span>
-    <h1 class="main-title animate-in">Intelligent Auto-Scaling in Kubernetes:<br>A Machine Learning Based Predictive Approach with End-to-End DevOps Pipeline</h1>
-    <div class="divider animate-in"></div>
-    <p class="student-info animate-in">Prerna Tank</p>
-    <p class="meta-info animate-in">Roll No: 2410512 &nbsp;|&nbsp; M.Tech (Computer Science)</p>
-    <p class="meta-info animate-in">Devi Ahilya Vishwavidyalaya (DAVV), Indore</p>
-    <p class="meta-info animate-in" style="margin-top:12px;">Advisor: <strong style="color:var(--accent-cyan);">Dr. Shraddha Masih</strong></p>
-    <span class="title-badge animate-in">April 2026</span>
+  <div class="slide title-slide active" data-slide="1" style="justify-content:center; padding:40px 60px;">
+
+    <!-- College Name -->
+    <div class="animate-in" style="text-align:center; margin-bottom:12px;">
+      <p style="font-size:1.6rem; font-weight:700; color:var(--accent-green); letter-spacing:0.5px;">School of Computer Science and Information Technology (SCSIT)</p>
+      <p style="font-size:1.0rem; color:var(--text-secondary); margin-top:4px;">Devi Ahilya Vishwavidyalaya (DAVV), Indore</p>
+    </div>
+
+    <!-- Decorative line -->
+    <div class="animate-in" style="width:160px; height:4px; margin:10px auto 24px; background:linear-gradient(90deg, var(--accent-cyan) 50%, var(--accent-orange) 50%); border-radius:2px;"></div>
+
+    <!-- Title - BIG and CENTER -->
+    <h1 class="main-title animate-in" style="font-size:2.2rem; margin:0 auto; max-width:90%; line-height:1.4; text-align:center;">
+      INTELLIGENT AUTO-SCALING IN KUBERNETES:<br>
+      <span style="font-weight:400; font-size:0.78em; color:var(--text-secondary);">A Machine Learning Based Predictive Approach</span>
+    </h1>
+
+    <!-- Divider -->
+    <div class="animate-in" style="width:80px; height:3px; margin:24px auto; background:var(--accent-cyan); border-radius:2px;"></div>
+
+    <!-- Guide + Student Info - BIGGER text, centered layout -->
+    <div class="animate-in" style="display:flex; justify-content:space-between; width:80%; margin:10px auto 0; text-align:left;">
+      <div>
+        <p style="font-size:1.1rem; color:var(--text-secondary); margin-bottom:6px; font-weight:600;">Guide Name:</p>
+        <p style="font-size:1.5rem; color:var(--accent-cyan); font-weight:700;">Dr. Shraddha Masih</p>
+      </div>
+      <div style="text-align:right;">
+        <p style="font-size:1.1rem; color:var(--text-secondary); margin-bottom:6px; font-weight:600;">Presented by:</p>
+        <p style="font-size:1.5rem; color:var(--accent-orange); font-weight:700;">Prerna Tank</p>
+        <p style="font-size:1.1rem; color:var(--text-secondary); margin-top:4px;">M.Tech(CS) &nbsp;|&nbsp; 2410512</p>
+      </div>
+    </div>
+
   </div>
 
   <!-- ============ SLIDE 2: AGENDA ============ -->
