@@ -1,11 +1,17 @@
-# Multi-Metric LSTM with Drift Detection and Cost-Aware Proactive Auto-Scaling in Kubernetes: An Integrated DevOps-ML Framework
+# Multi-Metric LSTM with Drift Detection and Cost-Aware Proactive Auto-Scaling in Kubernetes
 
-**Prerna Tank¹, [Guide Name]²**
-¹M.Tech Student, School of Computer Science and IT, DAVV, Indore, India
-²Associate Professor, School of Computer Science and IT, DAVV, Indore, India
-Email: nexapptechnologies@gmail.com
+### An Integrated DevOps-ML Framework
 
-**Target Venue: IEEE Access (SCI-indexed, Open Access)**
+---
+
+**Authors**
+
+| | Name | Affiliation |
+|---|---|---|
+| ¹ | **Prerna Tank** | M.Tech Student, School of Computer Science and IT, DAVV, Indore, India |
+| ² | **[Guide Name]** | Associate Professor, School of Computer Science and IT, DAVV, Indore, India |
+
+**Target Venue:** IEEE Access (SCI-indexed, Open Access)
 
 ---
 
