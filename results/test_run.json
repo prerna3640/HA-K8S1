@@ -1,0 +1,38 @@
+[
+  {
+    "experiment": "BASELINE_hpa",
+    "timestamp": "2026-04-16T18:20:27.657578+00:00",
+    "duration_sec": 120,
+    "config": {
+      "ENABLE_DRIFT": "false",
+      "ENABLE_CONFIDENCE_GATE": "false",
+      "NUM_FEATURES": "0",
+      "ENABLE_COST": "false",
+      "USE_HPA_ONLY": "true"
+    },
+    "latency": {
+      "total_requests": 2112,
+      "sla_200ms_violations": 0,
+      "sla_500ms_violations": 0,
+      "violation_pct_200ms": 0.0,
+      "avg_latency_ms": 6.699242488001332,
+      "p95_latency_ms": 8.467912673950195,
+      "p99_latency_ms": 10.1470947265625
+    },
+    "cost": {
+      "error": "Expecting value: line 1 column 1 (char 0)",
+      "total_cost_usd": 0.0
+    },
+    "drift": {
+      "drift_retrains": 0,
+      "drift_stats": {
+        "drift_count": 0,
+        "drift_detected": false,
+        "max_error": 0.47763626905811174,
+        "mean_error": 0.45929918012163673,
+        "window_size": 2
+      },
+      "total_retrains": 2
+    }
+  }
+]

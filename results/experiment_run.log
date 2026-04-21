@@ -1,0 +1,349 @@
+[Mon Apr 20 18:02:18 UTC 2026] [1/6] START BASELINE_hpa
+
+============================================================
+Experiment: BASELINE_hpa
+Duration: 1800s  |  Load: 50 req/s
+============================================================
+Config: {'ENABLE_DRIFT': 'false', 'ENABLE_CONFIDENCE_GATE': 'false', 'NUM_FEATURES': '0', 'ENABLE_COST': 'false', 'USE_HPA_ONLY': 'true'}
+Apply these env vars on the cluster, then press ENTER to start load test
+{
+  "experiment": "BASELINE_hpa",
+  "timestamp": "2026-04-20T18:32:19.002759+00:00",
+  "duration_sec": 1800,
+  "config": {
+    "ENABLE_DRIFT": "false",
+    "ENABLE_CONFIDENCE_GATE": "false",
+    "NUM_FEATURES": "0",
+    "ENABLE_COST": "false",
+    "USE_HPA_ONLY": "true"
+  },
+  "latency": {
+    "total_requests": 68716,
+    "sla_200ms_violations": 4,
+    "sla_500ms_violations": 3,
+    "violation_pct_200ms": 0.005821060597240817,
+    "avg_latency_ms": 5.9749235322773036,
+    "p95_latency_ms": 7.980585098266602,
+    "p99_latency_ms": 10.061979293823242
+  },
+  "cost": {
+    "error": "Expecting value: line 1 column 1 (char 0)",
+    "total_cost_usd": 0.0
+  },
+  "drift": {
+    "drift_retrains": 0,
+    "drift_stats": {
+      "drift_count": 0,
+      "drift_detected": false,
+      "max_error": 3.5885904176785037,
+      "mean_error": 3.5885904176785037,
+      "window_size": 1
+    },
+    "total_retrains": 25
+  }
+}
+
+Intermediate results saved to results/BASELINE_hpa.json
+
+============================================================
+ALL EXPERIMENTS COMPLETE
+============================================================
+
+Summary Table:
+Experiment                SLA Viol %   Avg Lat ms   Cost $    
+------------------------------------------------------------
+BASELINE_hpa              0.01         5.97         0.0000    
+
+Results saved to: /tmp/HA-K8S1/results/BASELINE_hpa.json
+Copy these numbers into Section VI of IEEE_Paper_Prerna_Tank.md
+[Mon Apr 20 18:32:19 UTC 2026] [1/6] DONE BASELINE_hpa
+[Mon Apr 20 18:32:49 UTC 2026] [2/6] START E4_cpu_only
+
+============================================================
+Experiment: E4_cpu_only
+Duration: 1800s  |  Load: 50 req/s
+============================================================
+Config: {'ENABLE_DRIFT': 'true', 'ENABLE_CONFIDENCE_GATE': 'true', 'NUM_FEATURES': '1', 'ENABLE_COST': 'true'}
+Apply these env vars on the cluster, then press ENTER to start load test
+{
+  "experiment": "E4_cpu_only",
+  "timestamp": "2026-04-20T19:02:49.469011+00:00",
+  "duration_sec": 1800,
+  "config": {
+    "ENABLE_DRIFT": "true",
+    "ENABLE_CONFIDENCE_GATE": "true",
+    "NUM_FEATURES": "1",
+    "ENABLE_COST": "true"
+  },
+  "latency": {
+    "total_requests": 68389,
+    "sla_200ms_violations": 4,
+    "sla_500ms_violations": 4,
+    "violation_pct_200ms": 0.005848893827954788,
+    "avg_latency_ms": 6.067665555702539,
+    "p95_latency_ms": 8.097410202026367,
+    "p99_latency_ms": 10.239839553833008
+  },
+  "cost": {
+    "error": "Expecting value: line 1 column 1 (char 0)",
+    "total_cost_usd": 0.0
+  },
+  "drift": {
+    "drift_retrains": 0,
+    "drift_stats": {
+      "drift_count": 0,
+      "drift_detected": false,
+      "max_error": 3.5885904176785037,
+      "mean_error": 3.5885904176785037,
+      "window_size": 1
+    },
+    "total_retrains": 25
+  }
+}
+
+Intermediate results saved to results/E4_cpu_only.json
+
+============================================================
+ALL EXPERIMENTS COMPLETE
+============================================================
+
+Summary Table:
+Experiment                SLA Viol %   Avg Lat ms   Cost $    
+------------------------------------------------------------
+E4_cpu_only               0.01         6.07         0.0000    
+
+Results saved to: /tmp/HA-K8S1/results/E4_cpu_only.json
+Copy these numbers into Section VI of IEEE_Paper_Prerna_Tank.md
+[Mon Apr 20 19:02:49 UTC 2026] [2/6] DONE E4_cpu_only
+[Mon Apr 20 19:03:19 UTC 2026] [3/6] START E5_no_cost
+
+============================================================
+Experiment: E5_no_cost
+Duration: 1800s  |  Load: 50 req/s
+============================================================
+Config: {'ENABLE_DRIFT': 'true', 'ENABLE_CONFIDENCE_GATE': 'true', 'NUM_FEATURES': '3', 'ENABLE_COST': 'false'}
+Apply these env vars on the cluster, then press ENTER to start load test
+{
+  "experiment": "E5_no_cost",
+  "timestamp": "2026-04-20T19:33:19.831337+00:00",
+  "duration_sec": 1800,
+  "config": {
+    "ENABLE_DRIFT": "true",
+    "ENABLE_CONFIDENCE_GATE": "true",
+    "NUM_FEATURES": "3",
+    "ENABLE_COST": "false"
+  },
+  "latency": {
+    "total_requests": 68896,
+    "sla_200ms_violations": 2,
+    "sla_500ms_violations": 2,
+    "violation_pct_200ms": 0.0029029261495587553,
+    "avg_latency_ms": 5.935305842682735,
+    "p95_latency_ms": 7.812738418579102,
+    "p99_latency_ms": 9.636163711547852
+  },
+  "cost": {
+    "error": "Expecting value: line 1 column 1 (char 0)",
+    "total_cost_usd": 0.0
+  },
+  "drift": {
+    "drift_retrains": 0,
+    "drift_stats": {
+      "drift_count": 0,
+      "drift_detected": false,
+      "max_error": 3.589693169726282,
+      "mean_error": 3.589141793702393,
+      "window_size": 2
+    },
+    "total_retrains": 26
+  }
+}
+
+Intermediate results saved to results/E5_no_cost.json
+
+============================================================
+ALL EXPERIMENTS COMPLETE
+============================================================
+
+Summary Table:
+Experiment                SLA Viol %   Avg Lat ms   Cost $    
+------------------------------------------------------------
+E5_no_cost                0.00         5.94         0.0000    
+
+Results saved to: /tmp/HA-K8S1/results/E5_no_cost.json
+Copy these numbers into Section VI of IEEE_Paper_Prerna_Tank.md
+[Mon Apr 20 19:33:19 UTC 2026] [3/6] DONE E5_no_cost
+[Mon Apr 20 19:33:49 UTC 2026] [4/6] START E3_no_confidence
+
+============================================================
+Experiment: E3_no_confidence
+Duration: 1800s  |  Load: 50 req/s
+============================================================
+Config: {'ENABLE_DRIFT': 'true', 'ENABLE_CONFIDENCE_GATE': 'false', 'NUM_FEATURES': '3', 'ENABLE_COST': 'true'}
+Apply these env vars on the cluster, then press ENTER to start load test
+{
+  "experiment": "E3_no_confidence",
+  "timestamp": "2026-04-20T20:03:50.093646+00:00",
+  "duration_sec": 1800,
+  "config": {
+    "ENABLE_DRIFT": "true",
+    "ENABLE_CONFIDENCE_GATE": "false",
+    "NUM_FEATURES": "3",
+    "ENABLE_COST": "true"
+  },
+  "latency": {
+    "total_requests": 68961,
+    "sla_200ms_violations": 2,
+    "sla_500ms_violations": 1,
+    "violation_pct_200ms": 0.00290018996244254,
+    "avg_latency_ms": 5.967107702630213,
+    "p95_latency_ms": 7.858991622924805,
+    "p99_latency_ms": 9.653806686401367
+  },
+  "cost": {
+    "error": "Expecting value: line 1 column 1 (char 0)",
+    "total_cost_usd": 0.0
+  },
+  "drift": {
+    "drift_retrains": 0,
+    "drift_stats": {
+      "drift_count": 0,
+      "drift_detected": false,
+      "max_error": 3.589693169726282,
+      "mean_error": 3.589141793702393,
+      "window_size": 2
+    },
+    "total_retrains": 26
+  }
+}
+
+Intermediate results saved to results/E3_no_confidence.json
+
+============================================================
+ALL EXPERIMENTS COMPLETE
+============================================================
+
+Summary Table:
+Experiment                SLA Viol %   Avg Lat ms   Cost $    
+------------------------------------------------------------
+E3_no_confidence          0.00         5.97         0.0000    
+
+Results saved to: /tmp/HA-K8S1/results/E3_no_confidence.json
+Copy these numbers into Section VI of IEEE_Paper_Prerna_Tank.md
+[Mon Apr 20 20:03:50 UTC 2026] [4/6] DONE E3_no_confidence
+[Mon Apr 20 20:04:20 UTC 2026] [5/6] START E2_no_drift
+
+============================================================
+Experiment: E2_no_drift
+Duration: 1800s  |  Load: 50 req/s
+============================================================
+Config: {'ENABLE_DRIFT': 'false', 'ENABLE_CONFIDENCE_GATE': 'true', 'NUM_FEATURES': '3', 'ENABLE_COST': 'true'}
+Apply these env vars on the cluster, then press ENTER to start load test
+{
+  "experiment": "E2_no_drift",
+  "timestamp": "2026-04-20T20:34:20.403767+00:00",
+  "duration_sec": 1800,
+  "config": {
+    "ENABLE_DRIFT": "false",
+    "ENABLE_CONFIDENCE_GATE": "true",
+    "NUM_FEATURES": "3",
+    "ENABLE_COST": "true"
+  },
+  "latency": {
+    "total_requests": 68665,
+    "sla_200ms_violations": 6,
+    "sla_500ms_violations": 3,
+    "violation_pct_200ms": 0.008738076166897254,
+    "avg_latency_ms": 6.050116703613896,
+    "p95_latency_ms": 7.877588272094727,
+    "p99_latency_ms": 9.639978408813477
+  },
+  "cost": {
+    "error": "Expecting value: line 1 column 1 (char 0)",
+    "total_cost_usd": 0.0
+  },
+  "drift": {
+    "drift_retrains": 0,
+    "drift_stats": {
+      "drift_count": 0,
+      "drift_detected": false,
+      "max_error": 3.589693169726282,
+      "mean_error": 3.128161865590407,
+      "window_size": 3
+    },
+    "total_retrains": 27
+  }
+}
+
+Intermediate results saved to results/E2_no_drift.json
+
+============================================================
+ALL EXPERIMENTS COMPLETE
+============================================================
+
+Summary Table:
+Experiment                SLA Viol %   Avg Lat ms   Cost $    
+------------------------------------------------------------
+E2_no_drift               0.01         6.05         0.0000    
+
+Results saved to: /tmp/HA-K8S1/results/E2_no_drift.json
+Copy these numbers into Section VI of IEEE_Paper_Prerna_Tank.md
+[Mon Apr 20 20:34:20 UTC 2026] [5/6] DONE E2_no_drift
+[Mon Apr 20 20:34:50 UTC 2026] [6/6] START E1_full
+
+============================================================
+Experiment: E1_full
+Duration: 1800s  |  Load: 50 req/s
+============================================================
+Config: {'ENABLE_DRIFT': 'true', 'ENABLE_CONFIDENCE_GATE': 'true', 'NUM_FEATURES': '3', 'ENABLE_COST': 'true'}
+Apply these env vars on the cluster, then press ENTER to start load test
+{
+  "experiment": "E1_full",
+  "timestamp": "2026-04-20T21:04:50.684015+00:00",
+  "duration_sec": 1800,
+  "config": {
+    "ENABLE_DRIFT": "true",
+    "ENABLE_CONFIDENCE_GATE": "true",
+    "NUM_FEATURES": "3",
+    "ENABLE_COST": "true"
+  },
+  "latency": {
+    "total_requests": 68665,
+    "sla_200ms_violations": 2,
+    "sla_500ms_violations": 1,
+    "violation_pct_200ms": 0.0029126920556324185,
+    "avg_latency_ms": 6.051063124399898,
+    "p95_latency_ms": 7.939577102661133,
+    "p99_latency_ms": 9.635210037231445
+  },
+  "cost": {
+    "error": "Expecting value: line 1 column 1 (char 0)",
+    "total_cost_usd": 0.0
+  },
+  "drift": {
+    "drift_retrains": 0,
+    "drift_stats": {
+      "drift_count": 0,
+      "drift_detected": false,
+      "max_error": 3.589693169726282,
+      "mean_error": 3.128161865590407,
+      "window_size": 3
+    },
+    "total_retrains": 27
+  }
+}
+
+Intermediate results saved to results/E1_full.json
+
+============================================================
+ALL EXPERIMENTS COMPLETE
+============================================================
+
+Summary Table:
+Experiment                SLA Viol %   Avg Lat ms   Cost $    
+------------------------------------------------------------
+E1_full                   0.00         6.05         0.0000    
+
+Results saved to: /tmp/HA-K8S1/results/E1_full.json
+Copy these numbers into Section VI of IEEE_Paper_Prerna_Tank.md
+[Mon Apr 20 21:04:50 UTC 2026] [6/6] DONE E1_full

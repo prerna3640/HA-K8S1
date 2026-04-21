@@ -1,0 +1,37 @@
+[
+  {
+    "experiment": "E5_no_cost",
+    "timestamp": "2026-04-20T19:33:19.831337+00:00",
+    "duration_sec": 1800,
+    "config": {
+      "ENABLE_DRIFT": "true",
+      "ENABLE_CONFIDENCE_GATE": "true",
+      "NUM_FEATURES": "3",
+      "ENABLE_COST": "false"
+    },
+    "latency": {
+      "total_requests": 68896,
+      "sla_200ms_violations": 2,
+      "sla_500ms_violations": 2,
+      "violation_pct_200ms": 0.0029029261495587553,
+      "avg_latency_ms": 5.935305842682735,
+      "p95_latency_ms": 7.812738418579102,
+      "p99_latency_ms": 9.636163711547852
+    },
+    "cost": {
+      "error": "Expecting value: line 1 column 1 (char 0)",
+      "total_cost_usd": 0.0
+    },
+    "drift": {
+      "drift_retrains": 0,
+      "drift_stats": {
+        "drift_count": 0,
+        "drift_detected": false,
+        "max_error": 3.589693169726282,
+        "mean_error": 3.589141793702393,
+        "window_size": 2
+      },
+      "total_retrains": 26
+    }
+  }
+]
