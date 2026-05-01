@@ -19,7 +19,7 @@ spec:
         workload: data
       containers:
         - name: ml-predictor
-          image: ml-predictor:v1.0.0
+          image: ml-predictor:v2.0.0
           imagePullPolicy: Never
           ports:
             - containerPort: 5000
