@@ -510,9 +510,7 @@ kubectl apply -f hpa.yaml
 
 kubectl create secret generic alertmanager-telegram \
   --namespace monitoring \
-  --from-literal=bot_token='7759441490:AAFNlaS5pe8d3KkfG14LebmFQbmdj5HjoHg'
-  # IMPORTANT: Rotate this token first! It was exposed in your repo.
-  # Go to @BotFather on Telegram → /revoke → get new token
+  --from-literal=bot_token='YOUR_TELEGRAM_BOT_TOKEN'
 
 # Then reference in alertmanager config via:
 # env:

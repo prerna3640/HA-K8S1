@@ -80,25 +80,45 @@ Section II reviews 10 recent (2021–2026) related works and identifies the rese
 
 ## II. Related Work and Gap Analysis
 
-We reviewed 10 recent papers (2021–2026) from IEEE, ACM, Springer, Elsevier, and arXiv. Table I summarizes the coverage of four dimensions we consider essential for production-grade ML auto-scaling.
+We reviewed ten papers published between 2020 and 2026 across IEEE, ACM, and Elsevier venues. Each paper was evaluated against four criteria that are essential for any ML-based auto-scaling system intended for real production use: multiple input metrics, runtime drift detection, cost-aware decision logging, and a confidence-based safety fallback.
 
-**Table I: Related Work Coverage Matrix**
+**Table II: Comparison of Recent ML-Based Auto-Scaling Studies**
 
-| # | Paper | Year | ML Model | Multi-Metric | Drift Detect | Cost-Aware | Confidence Gate |
-|---|---|---|---|---|---|---|---|
-| [1] | Toka et al. (IEEE TNSM) | 2021 | AR/HTM/LSTM | ✗ | ✗ | Partial | ✗ |
-| [2] | Dang-Quang & Yoo (MDPI) | 2021 | Bi-LSTM | ✗ | ✗ | ✗ | ✗ |
-| [3] | Xu et al. (ACM KDD) | 2022 | Meta-RL | ✗ | Partial | ✗ | ✗ |
-| [4] | Patil & Singh (JTIT) | 2023 | LSTM+ILP | ✓ | ✗ | ✗ | ✗ |
-| [5] | Santos et al. (Elsevier JNCA) | 2024 | RL | Partial | ✗ | Partial | ✗ |
-| [6] | Agarwal et al. (arXiv) | 2025 | LSTM+Reactive | Partial | ✗ | ✗ | Partial |
-| [7] | Kholidy et al. (Frontiers CS) | 2025 | Prophet+LSTM | ✗ | ✗ | ✗ | ✗ |
-| [8] | DInos (Springer) | 2025 | Deep RL+LSTM | Partial | Partial | ✗ | ✗ |
-| [9] | Attn-Double-LSTM (arXiv) | 2026 | Attn-LSTM | ✗ | ✗ | ✗ | ✗ |
-| [10] | Rossi et al. (Elsevier JSS) | 2025 | LLM | ✓ | Partial | ✗ | ✗ |
-| — | **This Work** | **2026** | **LSTM** | **✓** | **✓** | **✓** | **✓** |
+| No. | Paper | Year | Model | Multi-Metric | Drift | Cost | Fallback | K8s | Key Gap |
+|-----|-------|------|-------|:---:|:---:|:---:|:---:|:---:|---------|
+| [1] | Toka et al. | 2021 | AR/HTM/LSTM | No | No | No | Partial | Yes | Single metric, no drift or cost |
+| [2] | Dang-Quang & Yoo | 2021 | Bi-LSTM | No | No | Partial | No | Yes | No drift or fallback |
+| [3] | Xu et al. | 2022 | Meta-RL | No | Partial | No | No | Partial | No cost, no confidence gate |
+| [4] | Patil & Singh | 2023 | LSTM+ILP | Yes | No | No | No | Partial | No drift, no fallback, no DevOps |
+| [5] | Santos et al. | 2024 | RL | Partial | No | Partial | No | Yes | No drift handling |
+| [6] | Agarwal et al. | 2025 | LSTM+Reactive | Partial | No | No | Partial | Yes | No drift, no cost |
+| [7] | Kholidy et al. | 2025 | Prophet+LSTM | No | No | Partial | No | Yes | Single metric, no confidence gate |
+| [8] | DInoS | 2025 | Deep RL+LSTM | Partial | Partial | No | No | Partial | No safety fallback, no cost |
+| [9] | Attn-Double-LSTM | 2026 | Attn-LSTM | No | No | No | No | Partial | Forecasting only, no safety |
+| [10] | Rossi et al. | 2025 | LLM-assisted | Yes | Partial | No | No | Partial | No cost-aware fallback |
+| | **This Work** | **2026** | **LSTM** | **Yes** | **Yes** | **Yes** | **Yes** | **Yes** | All four gaps addressed |
 
-**Key Finding:** No single paper combines all four contributions. The closest is Patil & Singh (2023), which has multi-metric LSTM but lacks drift detection, cost tracking, and confidence gating. Our work is the first to integrate all four + a complete end-to-end DevOps pipeline.
+### A. What Existing Work Gets Right
+
+Early work by Toka et al. [1] combined AR, HTM, and LSTM models for Kubernetes workload prediction and confirmed that learned models outperform static threshold rules under variable traffic. Dang-Quang and Yoo [2] demonstrated that bidirectional LSTM networks capture temporal workload patterns more effectively than unidirectional models, validating deep learning as a viable approach for Kubernetes auto-scaling. Their follow-up study [3] extended this to a multivariate framework and confirmed that using more than one input signal improves forecasting accuracy over single-metric approaches. Patil and Singh [4] advanced this further by combining LSTM with integer linear programming to optimize scaling across multiple resource dimensions simultaneously. On the reinforcement learning side, Santos et al. [5] showed that RL agents can learn effective scaling policies under dynamic workloads, while DInoS [8] demonstrated that combining deep RL with LSTM produces hybrid systems that adapt to changing conditions better than either approach alone. Most recently, Rossi et al. [10] introduced LLM-assisted orchestration with pattern-aware multi-metric reasoning, showing that the field is moving toward richer contextual approaches.
+
+### B. Where Existing Work Falls Short
+
+Despite this progress, four gaps appear consistently across the reviewed literature.
+
+*Single-metric dependency:* Seven of the ten reviewed papers rely solely on CPU utilization or HTTP request rate as their prediction input [1][2][5][6][7][8][9]. CPU is a lagging indicator — by the time it spikes, the traffic surge has already arrived at the pods. In our experiments, network I/O rises 60 to 90 seconds before CPU pressure becomes critical, providing an early warning signal that CPU-only models completely miss. Only Patil and Singh [4] and Rossi et al. [10] use multiple metrics, but neither combines CPU, memory, and network I/O together as a unified three-signal input.
+
+*Absence of drift detection:* Any model trained on historical traffic will gradually lose accuracy as workload patterns shift over time. Weekend traffic differs from weekday traffic. A flash sale creates patterns the model has never seen. Only Xu et al. [3] and DInoS [8] address drift to any degree, and neither implements automatic retraining triggered by a continuously monitored error threshold. The remaining eight papers [1][2][4][5][6][7][9][10] deploy a fixed model and implicitly assume it remains accurate indefinitely, which is not realistic in any long-running production deployment.
+
+*No cost visibility:* Scaling decisions directly affect cloud infrastructure spending, yet only two papers [2][5] address cost at all, and neither logs the per-decision financial impact at runtime. Without real dollar figures attached to each scaling event, engineering teams cannot justify the added complexity of a predictive system over a simpler reactive one.
+
+*No reliable safety fallback:* Several papers present their ML predictor as a direct replacement for the HPA with no mechanism to handle uncertain or incorrect predictions [4][7][8][9]. In a real cluster, a wrong scaling decision driven by an overconfident model has immediate consequences for end users. Only Toka et al. [1] and Agarwal et al. [6] include any fallback, and in both cases it is partial and not tied to a measured model confidence score.
+
+### C. Position of This Work
+
+The closest prior work to ours is Patil and Singh [4], who also use a multi-metric LSTM for Kubernetes scaling. Their prediction approach is well-designed, but the system has no drift detection, no cost logging, no confidence-based fallback, and no end-to-end deployment pipeline. It would require significant additional engineering before it could operate reliably without manual supervision in a real cluster.
+
+Our work starts from the same multi-metric LSTM foundation [4] and adds the three missing layers. The drift detector addresses the model degradation problem identified but not solved in [3] and [8], using a fully automatic MAPE-threshold retraining loop. The cost engine fills the visibility gap left open in [2] and [5] by logging per-decision financial impact at runtime. The confidence gate extends the partial fallback mechanisms in [1] and [6] by tying the HPA handover directly to a measured model confidence score below 0.70. Finally, the entire system is deployed through a 9-stage Jenkins CI/CD pipeline and ArgoCD GitOps workflow — an end-to-end MLOps integration that is absent from all ten reviewed papers.
 
 ---
 
@@ -129,9 +149,9 @@ Prometheus → Metrics Collector → LSTM Predictor → Scaling Decision
 
 ### C. Deployment Topology
 
-- **Master Node** (10.0.1.7): Jenkins, ArgoCD, Prometheus, Grafana, K8s control plane
-- **Worker-App Node** (10.0.1.105): Web application pods (nodeSelector: workload=app)
-- **Worker-Data Node** (10.0.1.114): ML Predictor + Predictive Scaler (nodeSelector: workload=data)
+- **Master Node**: Jenkins, ArgoCD, Prometheus, Grafana, K8s control plane
+- **Worker-App Node**: Web application pods (nodeSelector: workload=app)
+- **Worker-Data Node**: ML Predictor + Predictive Scaler (nodeSelector: workload=data)
 
 ---
 

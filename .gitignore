@@ -1,10 +1,25 @@
 # SSH keys and secrets
 *.pem
 *.key
+*.ppk
 .env
 .env.*
 *secret*
 *credentials*
+
+# Office documents (not needed in repo)
+*.docx
+*.doc
+*.pdf
+
+# Presentations (keep only in presentation/ folder)
+ppt.x_k8s.pptx
+Prerna_Tank_Presentation.pptx
+Thesis_Presentation_Prerna_Tank.pptx
+
+# Scripts not needed in repo
+create_pptx.py
+humanic.docx
 
 # Python
 __pycache__/

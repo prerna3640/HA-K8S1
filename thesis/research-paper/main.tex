@@ -677,6 +677,20 @@ Self-healing & None & 3-failure fallback & \textbf{New} \\
 \end{tabular}
 \end{table}
 
+\begin{figure}[h]
+\centering
+\includegraphics[width=\columnwidth]{figures/fig_sla_violations.png}
+\caption{SLA violation rate across the baseline and ablation experiments. The full system reduces the number of requests exceeding 200 ms from 4 to 2 compared with the baseline HPA.}
+\label{fig:sla_ablation}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\columnwidth]{figures/fig_latency_profile.png}
+\caption{Latency profile across all configurations. All experiments remain comfortably below the 200 ms SLA threshold, while the full system provides slightly better tail latency than the baseline.}
+\label{fig:latency_profile}
+\end{figure}
+
 \subsection{LSTM Training Performance}
 Table~\ref{tab:training} shows the training loss progression for a representative cycle.
 
@@ -700,6 +714,13 @@ Table~\ref{tab:training} shows the training loss progression for a representativ
 
 The multi-metric LSTM (3 features) converged at the same rate as the single-metric variant, demonstrating that the additional input features do not increase training complexity. Total training time per cycle was approximately 7 seconds on a single CPU core.
 
+\begin{figure}[h]
+\centering
+\includegraphics[width=\columnwidth]{figures/fig_drift_retraining.png}
+\caption{Prediction stability and retraining behavior across experiments. The full system exhibits lower mean prediction error than the baseline while maintaining frequent retraining for adaptation.}
+\label{fig:drift_retraining}
+\end{figure}
+
 \subsection{7-Day Traffic Pattern and Scaling Behavior}
 Over the 7-day observation period, Table~\ref{tab:7day} shows representative hourly scaling data, demonstrating the learned daily traffic patterns.
 
@@ -719,6 +740,13 @@ Over the 7-day observation period, Table~\ref{tab:7day} shows representative hou
 \bottomrule
 \end{tabular}
 \end{table}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\columnwidth]{figures/fig_full_vs_baseline.png}
+\caption{Relative improvement of the full system over the baseline HPA. The strongest gain is a 50\% reduction in SLA violations, with modest improvements in P99 latency and mean prediction error.}
+\label{fig:full_vs_baseline}
+\end{figure}
 
 \subsection{Cost Tracking Results}
 Over 10 days of operation, the cost calculator recorded 87 scaling events:
